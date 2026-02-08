@@ -1,0 +1,192 @@
+/* Reset básico para tirar margens padrão */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh; /* Ocupa 100% da altura da tela */
+    width: 100%;
+    
+    /* Centraliza a caixa de login */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+    
+    /* Configuração da Imagem de Fundo */
+    background: url('fundo.jpg') no-repeat center center fixed;
+    background-size: cover; /* Faz a imagem cobrir tudo sem esticar */
+    
+    /* Truque para a imagem ficar escura (Overlay) */
+    position: relative;
+    overflow: hidden; /* Evita barras de rolagem durante o zoom */
+}
+
+/* Criando a Máscara Escura e a Animação */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    /* A imagem da igreja vai aqui também para ser animada */
+    background: linear-gradient(rgba(0, 30, 60, 0.7), rgba(0, 30, 60, 0.7)), /* Filtro Azul Escuro */
+                url('foto da igreja CCB') no-repeat center center;
+    background-size: cover;
+    
+    z-index: -1; /* Fica atrás de tudo */
+    
+    /* A Animação de Zoom Lento (Clean) */
+    animation: zoomSuave 20s infinite alternate;
+}
+
+@keyframes zoomSuave {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); } /* Aumenta só 10% para não enjoar */
+}
+
+.login-box {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 10px; /* Bordas arredondadas */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.5); /* Sombra suave */
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+/* Adicione isso logo abaixo do h2 */
+.login-box p {
+    margin-bottom: 10px; /* É AQUI que empurra o Email para baixo */
+    color: #555;         /* Deixa o texto num cinza elegante */
+    font-size: 17px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+input, select {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5%;
+    border: 5px solid #042930;
+    border-radius: 30px;
+}
+
+/* BOTÃO NEON (Cyberpunk Style) */
+#btn-entrar {
+    position: relative;
+    display: block; /* Ocupa a largura disponível */
+    padding: 15px 30px;
+    width: 100%;
+    
+    /* Cores e Texto */
+    color: #03e9f4; /* Azul Neon */
+    background: linear-gradient(135deg, #0b1b3d, #08142b); /* Fundo escuro */
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    
+    /* Estrutura */
+    border: none;
+    overflow: hidden; /* Corta as linhas que saem */
+    transition: 0.2s;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 5px; /* Leve arredondamento */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5); /* Sombra 3D */
+}
+
+/* Efeito Hover (Quando passa o mouse) */
+#btn-entrar:hover {
+    background: #03e9f4; /* Fundo acende */
+    color: #050801;      /* Texto fica preto */
+    box-shadow: 0 0 10px #03e9f4, 
+                0 0 40px #03e9f4, 
+                0 0 80px #03e9f4; /* Brilho intenso */
+}
+
+/* Configuração das Linhas de Luz */
+#btn-entrar span {
+    position: absolute;
+    display: block;
+}
+
+/* Linha 1 (Topo) */
+#btn-entrar span:nth-child(1) {
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #03e9f4);
+    animation: btn-anim1 1s linear infinite;
+}
+@keyframes btn-anim1 {
+    0% { left: -100%; }
+    50%, 100% { left: 100%; }
+}
+
+/* Linha 2 (Direita) */
+#btn-entrar span:nth-child(2) {
+    top: -100%;
+    right: 0;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent, #03e9f4);
+    animation: btn-anim2 1s linear infinite;
+    animation-delay: 0.25s;
+}
+@keyframes btn-anim2 {
+    0% { top: -100%; }
+    50%, 100% { top: 100%; }
+}
+
+/* Linha 3 (Baixo) */
+#btn-entrar span:nth-child(3) {
+    bottom: 0;
+    right: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(270deg, transparent, #03e9f4);
+    animation: btn-anim3 1s linear infinite;
+    animation-delay: 0.5s;
+}
+@keyframes btn-anim3 {
+    0% { right: -100%; }
+    50%, 100% { right: 100%; }
+}
+
+/* Linha 4 (Esquerda) */
+#btn-entrar span:nth-child(4) {
+    bottom: -100%;
+    left: 0;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(360deg, transparent, #03e9f4);
+    animation: btn-anim4 1s linear infinite;
+    animation-delay: 0.75s;
+}
+@keyframes btn-anim4 {
+    0% { bottom: -100%; }
+    50%, 100% { bottom: 100%; }
+}
+.footer-text {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #666;
+}

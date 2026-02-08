@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão - CCB Recitativos</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilo Corporativo para a Área de Gestão */
+        body {
+    background-color: #f0f2f5; /* Se quiser manter a imagem da igreja, pode tirar essa linha */
+    display: block !important;   /* Remove a centralização forçada */
+    height: auto !important;     /* Deixa a altura crescer o quanto precisar */
+    overflow-y: auto !important; /* OBRIGA a barra de rolagem a aparecer */
+    padding: 20px;
+    background: url('fundo.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+        .admin-header {
+            background: #0b1b3d;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .container-gestao {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Formulário */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        textarea { height: 100px; resize: vertical; }
+
+        /* Botão de Salvar (Verde) */
+        .btn-salvar {
+            background-color: #28a745;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-salvar:hover { background-color: #218838; }
+
+        .btn-sair {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-header">
+        <div>
+            <h2>Painel do Auxiliar</h2>
+            <small id="info-usuario">Carregando...</small>
+        </div>
+        <button class="btn-sair" onclick="sair()">Sair</button>
+    </div>
+
+    <div class="container-gestao">
+        <h2 style="color: #0b1b3d; border-bottom: 2px solid #eee; padding-bottom: 15px;">Novo Recitativo</h2>
+        
+        <form id="form-recitativo">
+            <div class="form-group">
+                <label>Tema / Título</label>
+                <input type="text" id="tema" placeholder="Ex: A Grande Comissão" required>
+            </div>
+
+            <div class="form-group">
+                <label>Referência Bíblica</label>
+                <input type="text" id="referencia" placeholder="Ex: Mateus 28:19" required>
+            </div>
+
+            <div class="form-group">
+                <label>Texto do Recitativo</label>
+                <textarea id="texto" placeholder="Digite o verso completo aqui..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Data da Apresentação</label>
+                <input type="date" id="data_apresentacao" required>
+            </div>
+
+            <div class="form-group">
+                <label>Público Alvo</label>
+                <select id="publico_alvo" disabled style="background-color: #e9ecef;">
+                    <option value="MASCULINO">Irmãos (Masculino)</option>
+                    <option value="FEMININO">Irmãs (Feminino)</option>
+                </select>
+                <small style="color: #666;">*Travado conforme o seu gênero.</small>
+            </div>
+
+            <button type="submit" class="btn-salvar" id="btn-salvar">Salvar Recitativo</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 1. CONFIGURAÇÃO
+        const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
+        const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 2. SEGURANÇA E INICIALIZAÇÃO
+        const funcao = localStorage.getItem('usuario_funcao');
+        const genero = localStorage.getItem('usuario_genero');
+        const email = localStorage.getItem('usuario_email');
+
+        // Se não for ADMIN, chuta pra fora
+        if (funcao !== 'ADMIN') {
+            alert("Área restrita apenas para Auxiliares.");
+            window.location.href = 'index.html';
+        }
+
+        // Mostra quem está logado
+        document.getElementById('info-usuario').textContent = `Logado como: ${email} (${genero})`;
+
+        // APLICANDO A TRAVA DE GÊNERO
+        const selectPublico = document.getElementById('publico_alvo');
+        selectPublico.value = genero; // Força a seleção para o seu gênero
+
+        // 3. SALVAR NO BANCO
+        const form = document.getElementById('form-recitativo');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btn-salvar');
+            btn.textContent = "Salvando...";
+            btn.disabled = true;
+
+            const novoRecitativo = {
+                tema: document.getElementById('tema').value,
+                referencia_biblica: document.getElementById('referencia').value,
+                conteudo_texto: document.getElementById('texto').value,
+                data_apresentacao: document.getElementById('data_apresentacao').value,
+                publico_alvo: genero, // Usa o gênero do admin, não o do select (segurança dupla)
+                ativo: true
+            };
+
+            try {
+                const { error } = await clienteSupabase
+                    .from('recitativos')
+                    .insert([novoRecitativo]);
+
+                if (error) throw error;
+
+                alert("Recitativo Salvo com Sucesso!");
+                form.reset(); // Limpa o formulário
+                
+            } catch (erro) {
+                alert("Erro ao salvar: " + erro.message);
+                console.error(erro);
+            } finally {
+                btn.textContent = "Salvar Recitativo";
+                btn.disabled = false;
+            }
+        });
+
+        function sair() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

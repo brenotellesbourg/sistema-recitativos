@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recitativos - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="login-box">
+            <h2>Bem-vindo</h2>
+            <p>Sistema de Gestão de Recitativos</p>
+            
+            <form id="form-login">
+                
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="seu@email.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Senha</label>
+                    <input type="password" id="senha" placeholder="********" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Sou:</label>
+                    <select id="genero">
+                        <option value="MASCULINO">Irmão (Masculino)</option>
+                        <option value="FEMININO">Irmã (Feminino)</option>
+                    </select>
+                </div>
+
+                <button type="submit" id="btn-entrar">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    Entrar
+</button>
+            </form>
+
+            <p class="footer-text">Não tem conta? Fale com o Auxiliar.</p>
+        </div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
