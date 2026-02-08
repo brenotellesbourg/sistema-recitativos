@@ -6,16 +6,14 @@
     <title>Painel de Gestão - CCB</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* CSS Otimizado para Mobile e Desktop */
+        /* CSS Otimizado */
         body { background-color: #f0f2f5; display: block !important; height: auto !important; padding: 20px; overflow-y: auto !important; }
         
-        /* Header */
         .header-admin {
             display: flex; justify-content: space-between; align-items: center;
             background: #0b1b3d; color: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px;
         }
 
-        /* Cartões */
         .secao-admin {
             background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 20px; margin-bottom: 30px;
@@ -24,14 +22,12 @@
         h2 { color: #0b1b3d; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 1.2rem; }
         label { font-weight: bold; color: #333; margin-top: 10px; display: block; font-size: 0.9rem; }
         
-        /* Inputs */
         input, textarea, select {
             width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 15px;
             border: 1px solid #ddd; border-radius: 5px; font-size: 16px; box-sizing: border-box;
         }
         textarea { height: 100px; resize: vertical; }
 
-        /* Botões */
         .btn-principal {
             background-color: #28a745; color: white; font-weight: bold; border: none;
             padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 16px;
@@ -41,9 +37,8 @@
             border-radius: 5px; cursor: pointer; font-size: 14px;
         }
 
-        /* Tabela */
         .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; } /* Força largura mínima para não quebrar */
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
         th { background: #e9ecef; padding: 12px; text-align: left; color: #495057; font-size: 0.9rem; }
         td { padding: 10px; border-bottom: 1px solid #dee2e6; vertical-align: middle; }
         
@@ -129,10 +124,9 @@
                     ? '<option value="Irmãos">Irmãos (Masculino)</option>' 
                     : '<option value="Irmãs">Irmãs (Feminino)</option>';
 
-                // 2. Carregar Planilha (COM TRATAMENTO DE ERRO)
+                // 2. Carregar Planilha (COM PROTEÇÃO)
                 const corpo = document.getElementById('tabela-corpo');
 
-                // Busca Perfis
                 const { data: perfis, error: errPerfis } = await clienteSupabase
                     .from('profiles')
                     .select('*')
@@ -140,14 +134,10 @@
                     .order('nome_completo');
                 
                 if (errPerfis) throw errPerfis;
-                if (!perfis || perfis.length === 0) {
-                    corpo.innerHTML = '<tr><td colspan="3" style="text-align:center;">Nenhum membro encontrado.</td></tr>';
-                    return;
-                }
-
+                
                 // Busca Atribuições
                 const { data: atribuicoesData } = await clienteSupabase.from('versoes_atribuidas').select('*');
-                const atribuicoes = atribuicoesData || []; // Garante que não é null
+                const atribuicoes = atribuicoesData || [];
 
                 // Conta Lotação
                 let contadorGrupos = {};
@@ -170,8 +160,15 @@
                         opcoesHtml += `<option value="${op.grupo}|${op.versos}" ${isSelected}>Gp ${op.grupo}: ${op.versos} ${estilo}</option>`;
                     });
 
-                    // Nome seguro (se não tiver nome completo, usa email)
-                    const nomeExibicao = perfil.nome_completo || perfil.email.split('@')[0];
+                    // --- AQUI ESTAVA O ERRO ---
+                    // Antes: perfil.email.split('@')[0] (quebrava se email fosse vazio)
+                    // Agora: Verificamos se existe antes de tentar cortar
+                    let nomeExibicao = "Usuário sem Nome";
+                    if (perfil.nome_completo) {
+                        nomeExibicao = perfil.nome_completo;
+                    } else if (perfil.email) {
+                        nomeExibicao = perfil.email.split('@')[0];
+                    }
 
                     html += `
                         <tr>
@@ -189,8 +186,9 @@
 
             } catch (erro) {
                 console.error(erro);
+                // Mostra o erro na tela sem travar
                 document.getElementById('tabela-corpo').innerHTML = 
-                    `<tr><td colspan="3" style="color:red; text-align:center;">Erro ao carregar: ${erro.message}</td></tr>`;
+                    `<tr><td colspan="3" style="color:red; text-align:center;">Erro: ${erro.message}</td></tr>`;
             }
         }
 
@@ -221,13 +219,14 @@
             const select = document.getElementById(`select-${usuarioId}`);
             const valor = select.value;
 
+            // Se não selecionar nada, não faz nada
             if (!valor) { btn.innerText = originalTexto; return; }
 
             const [grupo, versos] = valor.split('|');
 
             const { data: recitativos } = await clienteSupabase.from('recitativos').select('id').eq('ativo', true).limit(1);
             if(!recitativos || !recitativos.length) {
-                alert("Erro: Crie um Recitativo (parte de cima) primeiro!");
+                alert("Crie um Recitativo primeiro!");
                 btn.innerText = originalTexto;
                 return;
             }
@@ -247,7 +246,7 @@
             }
 
             if (erro) alert("Erro: " + erro.message);
-            else carregarDados(); // Recarrega para atualizar contadores
+            else carregarDados();
             
             btn.innerText = originalTexto;
         }
