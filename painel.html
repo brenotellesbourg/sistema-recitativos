@@ -3,119 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel CCB</title>
+    <title>Minha Missão - CCB</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: url('fundo.jpg') no-repeat center center fixed;
-            background-size: cover;
+        /* Estilos específicos para o Cartão de Missão */
+        .card-missao {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-top: 20px;
+            border-left: 5px solid #007bff; /* Azul padrão */
         }
-        body::before {
-            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 30, 60, 0.9); z-index: -1;
+
+        .grupo-badge {
+            background-color: #0b1b3d; color: white;
+            padding: 5px 15px; border-radius: 20px;
+            font-size: 0.9em; font-weight: bold;
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        .painel-container {
-            background-color: #fff; padding: 30px; border-radius: 15px;
-            width: 90%; max-width: 600px; text-align: center;
+
+        .versos-destaque {
+            font-size: 1.4em; font-weight: bold; color: #333;
+            margin: 15px 0; display: block;
         }
-        .card-recitativo {
-            background: #f1f3f5; border-left: 5px solid #0056b3;
-            padding: 15px; margin-bottom: 15px; text-align: left; border-radius: 5px;
+
+        /* O Botão de Presença */
+        .btn-presenca {
+            width: 100%; padding: 15px; border: none; border-radius: 10px;
+            font-size: 1.1em; font-weight: bold; cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
-        .btn-sair {
-            background-color: #dc3545; color: white; padding: 10px 20px;
-            border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 15px;
+
+        /* Estado: Não Confirmado (Padrão) */
+        .btn-nao-confirmado {
+            background-color: #e9ecef; color: #495057; border: 2px solid #dee2e6;
         }
+        
+        /* Estado: Confirmado (Verde) */
+        .btn-confirmado {
+            background-color: #28a745; color: white; border: 2px solid #28a745;
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+
+        .historico-bolinhas {
+            display: flex; justify-content: center; gap: 5px; margin-top: 15px;
+        }
+        .bolinha {
+            width: 12px; height: 12px; border-radius: 50%; background-color: #e9ecef;
+        }
+        .bolinha.cheia { background-color: #28a745; }
+
     </style>
 </head>
 <body>
 
-    <div class="painel-container">
-        <h1 id="saudacao">Bem-vindo</h1>
-        <hr>
-        
-        <div id="conteudo-principal">
-            <p>Carregando...</p>
+    <div class="login-container" style="max-width: 500px;"> <div class="header-painel">
+            <h2 id="saudacao">A Paz de Deus!</h2>
+            <button onclick="sair()" class="btn-sair">Sair</button>
         </div>
-        
-        <p id="msg-erro" style="color: red; font-size: 12px;"></p>
 
-        <hr>
-        <button class="btn-sair" onclick="sairDoSistema()">Sair do Sistema</button>
+        <div id="area-recitativo">
+            <p style="text-align: center; color: #666;">Carregando sua missão...</p>
+        </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // 1. FUNÇÃO DE SAIR
-        function sairDoSistema() {
+        const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
+        const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Verifica Login
+        const usuarioEmail = localStorage.getItem('usuario_email');
+        const usuarioId = localStorage.getItem('usuario_id');
+        
+        if (!usuarioEmail) window.location.href = 'index.html';
+
+        // Atualiza saudação
+        document.getElementById('saudacao').innerText = `A Paz de Deus, Irmão!`;
+
+        async function carregarMissao() {
+            const area = document.getElementById('area-recitativo');
+
+            // 1. Busca se tem Recitativo Ativo (Geral)
+            const { data: recitativos } = await clienteSupabase
+                .from('recitativos')
+                .select('*')
+                .eq('ativo', true)
+                .limit(1);
+
+            if (!recitativos || recitativos.length === 0) {
+                area.innerHTML = '<div class="card-missao"><p>Nenhum recitativo ativo no momento.</p></div>';
+                return;
+            }
+            const recitativo = recitativos[0];
+
+            // 2. Busca a ATRIBUIÇÃO ESPECÍFICA desse usuário (O que o Admin definiu)
+            const { data: minhasAtribuicoes } = await clienteSupabase
+                .from('versoes_atribuidas')
+                .select('*')
+                .eq('usuario_id', usuarioId)
+                .eq('recitativo_id', recitativo.id); // Garante que é deste recitativo
+
+            let cartaoHTML = '';
+
+            // 3. Monta o Visual
+            if (minhasAtribuicoes && minhasAtribuicoes.length > 0) {
+                const missao = minhasAtribuicoes[0]; // Pega a primeira atribuição encontrada
+                const statusClass = missao.presenca_confirmada ? 'btn-confirmado' : 'btn-nao-confirmado';
+                const textoBotao = missao.presenca_confirmada ? '✅ Presença Confirmada' : 'Confirmar Presença';
+
+                cartaoHTML = `
+                    <div class="card-missao">
+                        <h3>${recitativo.tema}</h3>
+                        <p style="font-style: italic; color: #555;">"${recitativo.referencia_biblica}"</p>
+                        
+                        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+
+                        <span class="grupo-badge">GRUPO ${missao.grupo || '?'}</span>
+                        
+                        <span class="versos-destaque">
+                            Estudar Versos: <br>
+                            <span style="font-size: 1.5em; color: #0b1b3d;">${missao.faixa_versos}</span>
+                        </span>
+
+                        <p style="font-size: 0.9em; color: #777; margin-bottom: 20px;">
+                            No sábado, o sistema definirá qual verso específico você lerá.
+                        </p>
+
+                        <button id="btn-presenca" class="btn-presenca ${statusClass}" onclick="alternarPresenca('${missao.id}', ${missao.presenca_confirmada})">
+                            ${textoBotao}
+                        </button>
+
+                        <div class="historico-bolinhas">
+                            <div class="bolinha cheia" title="Seg"></div>
+                            <div class="bolinha cheia" title="Ter"></div>
+                            <div class="bolinha" title="Qua"></div>
+                            <div class="bolinha" title="Qui"></div>
+                            <div class="bolinha" title="Sex"></div>
+                            <div class="bolinha" title="Sab"></div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Se o usuário entrou mas o Admin AINDA NÃO definiu o grupo dele
+                cartaoHTML = `
+                    <div class="card-missao" style="border-left-color: orange;">
+                        <h3>${recitativo.tema}</h3>
+                        <br>
+                        <p><strong>Aguardando Distribuição...</strong></p>
+                        <p>O Auxiliar ainda não definiu seu grupo para este recitativo.</p>
+                        <p>Fale com ele ou aguarde a atualização.</p>
+                    </div>
+                `;
+            }
+
+            area.innerHTML = cartaoHTML;
+        }
+
+        async function alternarPresenca(atribuicaoId, estadoAtual) {
+            const novoEstado = !estadoAtual; // Inverte (se tava true vira false)
+            const btn = document.getElementById('btn-presenca');
+
+            // Feedback Visual Imediato (antes de salvar)
+            btn.innerText = "Salvando...";
+            
+            // Atualiza no Banco
+            const { error } = await clienteSupabase
+                .from('versoes_atribuidas')
+                .update({ presenca_confirmada: novoEstado })
+                .eq('id', atribuicaoId);
+
+            if (error) {
+                alert("Erro ao confirmar: " + error.message);
+                carregarMissao(); // Recarrega para voltar ao estado original
+            } else {
+                // Recarrega para mostrar a cor certa
+                carregarMissao();
+            }
+        }
+
+        function sair() {
             localStorage.clear();
             window.location.href = 'index.html';
         }
 
-        // 2. INÍCIO DO SISTEMA
-        async function iniciar() {
-            const area = document.getElementById('conteudo-principal');
-            const areaErro = document.getElementById('msg-erro');
-            
-            try {
-                const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
-                const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
-                
-                // CORREÇÃO AQUI: Mudamos o nome para 'clienteSupabase' para não dar conflito
-                const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-                // Recupera dados
-                const genero = localStorage.getItem('usuario_genero');
-                
-                // Atualiza Saudação
-                const titulo = document.getElementById('saudacao');
-                if (genero === 'MASCULINO') titulo.textContent = "A Paz de Deus, Irmão!";
-                else if (genero === 'FEMININO') titulo.textContent = "A Paz de Deus, Irmã!";
-                
-                if (!genero) {
-                    area.innerHTML = '<p>Sessão expirada. Faça login novamente.</p>';
-                    return;
-                }
-
-                // BUSCA NO BANCO (Usando o nome novo 'clienteSupabase')
-                const { data, error } = await clienteSupabase
-                    .from('recitativos')
-                    .select('*')
-                    .eq('ativo', true);
-
-                if (error) throw error;
-
-                // Filtra os dados
-                const recitativosFiltrados = data.filter(item => 
-                    item.publico_alvo === 'AMBOS' || item.publico_alvo === genero
-                );
-
-                if (recitativosFiltrados.length === 0) {
-                    area.innerHTML = '<p>Nenhum recitativo encontrado.</p>';
-                    return;
-                }
-
-                // Mostra na tela
-                area.innerHTML = recitativosFiltrados.map(item => `
-                    <div class="card-recitativo">
-                        <h3>${item.tema}</h3>
-                        <p><i>"${item.conteudo_texto}"</i></p>
-                        <small>📖 ${item.referencia_biblica}</small>
-                    </div>
-                `).join('');
-
-            } catch (erro) {
-                console.error(erro);
-                area.innerHTML = '<p>Erro ao carregar dados.</p>';
-                areaErro.textContent = "Detalhe: " + erro.message;
-            }
-        }
-
-        iniciar();
+        carregarMissao();
     </script>
 </body>
 </html>
