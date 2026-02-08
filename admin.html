@@ -3,65 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestão Inteligente - CCB</title>
+    <title>Painel de Gestão - CCB</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        body { background-color: #f8f9fa; padding: 20px; display: block !important; height: auto !important; }
+        /* CSS Otimizado para Mobile e Desktop */
+        body { background-color: #f0f2f5; display: block !important; height: auto !important; padding: 20px; overflow-y: auto !important; }
         
+        /* Header */
         .header-admin {
             display: flex; justify-content: space-between; align-items: center;
             background: #0b1b3d; color: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px;
         }
 
-        .container-planilha {
-            background: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 20px; overflow-x: auto;
+        /* Cartões */
+        .secao-admin {
+            background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px; margin-bottom: 30px;
         }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { background: #e9ecef; padding: 12px; text-align: left; color: #495057; }
+        h2 { color: #0b1b3d; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 1.2rem; }
+        label { font-weight: bold; color: #333; margin-top: 10px; display: block; font-size: 0.9rem; }
+        
+        /* Inputs */
+        input, textarea, select {
+            width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 15px;
+            border: 1px solid #ddd; border-radius: 5px; font-size: 16px; box-sizing: border-box;
+        }
+        textarea { height: 100px; resize: vertical; }
+
+        /* Botões */
+        .btn-principal {
+            background-color: #28a745; color: white; font-weight: bold; border: none;
+            padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 16px;
+        }
+        .btn-pequeno {
+            background: #007bff; color: white; border: none; padding: 8px 12px; 
+            border-radius: 5px; cursor: pointer; font-size: 14px;
+        }
+
+        /* Tabela */
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; } /* Força largura mínima para não quebrar */
+        th { background: #e9ecef; padding: 12px; text-align: left; color: #495057; font-size: 0.9rem; }
         td { padding: 10px; border-bottom: 1px solid #dee2e6; vertical-align: middle; }
         
-        /* O Seletor Inteligente */
-        select.select-grupo {
-            width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 5px;
-            background-color: #fff; font-weight: bold; color: #333;
-        }
-
-        /* Cores para o status */
-        .status-cheio { color: #dc3545; font-weight: bold; } /* Vermelho se lotar */
-        .status-ok { color: #28a745; font-weight: bold; }    /* Verde se livre */
-        
-        .btn-salvar {
-            background: #007bff; color: white; border: none; padding: 8px 15px; 
-            border-radius: 5px; cursor: pointer; width: 100%;
-        }
-        .btn-salvar:hover { background: #0056b3; }
+        .status-cheio { color: #dc3545; font-weight: bold; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <div class="header-admin">
-        <h3>📋 Distribuição de Versos</h3>
-        <button onclick="sair()" style="background:#dc3545; color:white; border:none; padding:8px 15px; border-radius:4px;">Sair</button>
+        <h3>Painel de Gestão</h3>
+        <button onclick="sair()" style="background:#dc3545; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">Sair</button>
     </div>
 
-    <div class="container-planilha">
-        <h2 style="color:#0b1b3d;">Escala de Sábado</h2>
-        <p>Selecione o bloco de versos. O sistema controla os grupos automaticamente (Máx 3 por grupo).</p>
+    <div class="secao-admin">
+        <h2>1. Novo Recitativo</h2>
         
-        <table>
-            <thead>
-                <tr>
-                    <th>Irmão</th>
-                    <th>Seleção de Versos (Grupo Automático)</th>
-                    <th style="width: 100px;">Ação</th>
-                </tr>
-            </thead>
-            <tbody id="tabela-corpo">
-                <tr><td colspan="3">Carregando sistema...</td></tr>
-            </tbody>
-        </table>
+        <label>Tema / Título</label>
+        <input type="text" id="tema" placeholder="Ex: A Grande Comissão">
+
+        <label>Referência Bíblica</label>
+        <input type="text" id="referencia" placeholder="Ex: Mateus 28:19">
+
+        <label>Texto Completo</label>
+        <textarea id="conteudo" placeholder="Digite o verso completo aqui..."></textarea>
+
+        <label>Data da Apresentação</label>
+        <input type="date" id="data_apres">
+
+        <label>Público Alvo</label>
+        <select id="publico_alvo" disabled style="background-color: #e9ecef;">
+            <option>Carregando...</option>
+        </select>
+
+        <button onclick="salvarRecitativo()" class="btn-principal">Salvar Recitativo Geral</button>
+    </div>
+
+    <div class="secao-admin">
+        <h2>2. Distribuição de Versos</h2>
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">Selecione o grupo. O sistema controla o limite de 3 pessoas.</p>
+        
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Irmão</th>
+                        <th>Grupo / Versos</th>
+                        <th style="width: 80px;">Salvar</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-corpo">
+                    <tr><td colspan="3" style="text-align:center; padding: 20px;">Carregando planilha...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -70,7 +106,6 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- CONFIGURAÇÃO DOS GRUPOS ---
         const OPCOES_VERSOS = [
             { grupo: 'A', versos: '1 ao 3' },
             { grupo: 'B', versos: '4 ao 6' },
@@ -80,83 +115,126 @@
         ];
         const LIMITE_POR_GRUPO = 3;
 
-        if (localStorage.getItem('usuario_funcao') !== 'ADMIN') window.location.href = 'index.html';
-
-        async function carregarPlanilha() {
-            const corpo = document.getElementById('tabela-corpo');
-            
-            // 1. Busca dados
-            const { data: perfis } = await clienteSupabase.from('profiles').select('*').eq('funcao', 'MEMBRO').order('nome_completo');
-            const { data: atribuicoes } = await clienteSupabase.from('versoes_atribuidas').select('*');
-
-            // 2. Conta lotação
-            let contadorGrupos = { 'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0 };
-            atribuicoes.forEach(a => {
-                if(a.grupo && contadorGrupos[a.grupo] !== undefined) contadorGrupos[a.grupo]++;
-            });
-
-            let html = '';
-
-            perfis.forEach(perfil => {
-                const tarefa = atribuicoes.find(a => a.usuario_id === perfil.id) || {};
-                const grupoAtual = tarefa.grupo || '';
-                
-                let opcoesHtml = `<option value="">-- Sem Atribuição --</option>`;
-                
-                OPCOES_VERSOS.forEach(op => {
-                    const isSelected = (grupoAtual === op.grupo) ? 'selected' : '';
-                    let ocupados = contadorGrupos[op.grupo];
-                    let aviso = `(${ocupados}/${LIMITE_POR_GRUPO})`;
-                    let estilo = (ocupados >= LIMITE_POR_GRUPO && !isSelected) ? '🔴 CHEIO' : aviso;
-
-                    opcoesHtml += `<option value="${op.grupo}|${op.versos}" ${isSelected}>
-                        Grupo ${op.grupo}: Versos ${op.versos} ${estilo}
-                    </option>`;
-                });
-
-                html += `
-                    <tr>
-                        <td><strong>${perfil.email.split('@')[0]}</strong></td>
-                        <td>
-                            <select class="select-grupo" id="select-${perfil.id}" onchange="verificarLotacao(this)">
-                                ${opcoesHtml}
-                            </select>
-                        </td>
-                        <td>
-                            <button class="btn-salvar" onclick="salvarLinha('${perfil.id}', '${tarefa.id || ''}')">💾 Salvar</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            corpo.innerHTML = html;
+        // Verifica Admin
+        if (localStorage.getItem('usuario_funcao') !== 'ADMIN') {
+            window.location.href = 'index.html';
         }
 
-        function verificarLotacao(select) {
-            let texto = select.options[select.selectedIndex].text;
-            if (texto.includes('CHEIO')) {
-                alert("Atenção: Grupo cheio! Deseja continuar?");
-                select.style.border = "2px solid red";
-            } else {
-                select.style.border = "1px solid #ced4da";
+        async function carregarDados() {
+            try {
+                // 1. Configurar Gênero
+                const generoAdmin = localStorage.getItem('usuario_genero') || 'MASCULINO';
+                const selectPublico = document.getElementById('publico_alvo');
+                selectPublico.innerHTML = (generoAdmin === 'MASCULINO') 
+                    ? '<option value="Irmãos">Irmãos (Masculino)</option>' 
+                    : '<option value="Irmãs">Irmãs (Feminino)</option>';
+
+                // 2. Carregar Planilha (COM TRATAMENTO DE ERRO)
+                const corpo = document.getElementById('tabela-corpo');
+
+                // Busca Perfis
+                const { data: perfis, error: errPerfis } = await clienteSupabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('funcao', 'MEMBRO')
+                    .order('nome_completo');
+                
+                if (errPerfis) throw errPerfis;
+                if (!perfis || perfis.length === 0) {
+                    corpo.innerHTML = '<tr><td colspan="3" style="text-align:center;">Nenhum membro encontrado.</td></tr>';
+                    return;
+                }
+
+                // Busca Atribuições
+                const { data: atribuicoesData } = await clienteSupabase.from('versoes_atribuidas').select('*');
+                const atribuicoes = atribuicoesData || []; // Garante que não é null
+
+                // Conta Lotação
+                let contadorGrupos = {};
+                atribuicoes.forEach(a => { 
+                    if(a.grupo) contadorGrupos[a.grupo] = (contadorGrupos[a.grupo] || 0) + 1; 
+                });
+
+                let html = '';
+                perfis.forEach(perfil => {
+                    const tarefa = atribuicoes.find(a => a.usuario_id === perfil.id) || {};
+                    const grupoAtual = tarefa.grupo || '';
+                    
+                    let opcoesHtml = `<option value="">-- Selecione --</option>`;
+                    OPCOES_VERSOS.forEach(op => {
+                        const isSelected = (grupoAtual === op.grupo) ? 'selected' : '';
+                        let ocupados = contadorGrupos[op.grupo] || 0;
+                        let aviso = `(${ocupados}/${LIMITE_POR_GRUPO})`;
+                        let estilo = (ocupados >= LIMITE_POR_GRUPO && !isSelected) ? '🔴 CHEIO' : aviso;
+
+                        opcoesHtml += `<option value="${op.grupo}|${op.versos}" ${isSelected}>Gp ${op.grupo}: ${op.versos} ${estilo}</option>`;
+                    });
+
+                    // Nome seguro (se não tiver nome completo, usa email)
+                    const nomeExibicao = perfil.nome_completo || perfil.email.split('@')[0];
+
+                    html += `
+                        <tr>
+                            <td><strong>${nomeExibicao}</strong></td>
+                            <td>
+                                <select id="select-${perfil.id}" style="margin:0;">${opcoesHtml}</select>
+                            </td>
+                            <td>
+                                <button class="btn-pequeno" onclick="salvarLinha('${perfil.id}', '${tarefa.id || ''}', this)">💾</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                corpo.innerHTML = html;
+
+            } catch (erro) {
+                console.error(erro);
+                document.getElementById('tabela-corpo').innerHTML = 
+                    `<tr><td colspan="3" style="color:red; text-align:center;">Erro ao carregar: ${erro.message}</td></tr>`;
             }
         }
 
-        async function salvarLinha(usuarioId, idAtribuicao) {
+        async function salvarRecitativo() {
+            const tema = document.getElementById('tema').value;
+            const ref = document.getElementById('referencia').value;
+            const texto = document.getElementById('conteudo').value;
+            const data = document.getElementById('data_apres').value;
+            const publico = document.getElementById('publico_alvo').value;
+
+            if (!tema || !data) return alert("Preencha Tema e Data!");
+
+            await clienteSupabase.from('recitativos').update({ ativo: false }).eq('publico_alvo', publico);
+
+            const { error } = await clienteSupabase.from('recitativos').insert([{
+                tema: tema, referencia_biblica: ref, conteudo_texto: texto, 
+                data_apresentacao: data, publico_alvo: publico, ativo: true
+            }]);
+
+            if (error) alert("Erro: " + error.message);
+            else { alert("Recitativo Salvo!"); window.location.reload(); }
+        }
+
+        async function salvarLinha(usuarioId, idAtribuicao, btn) {
+            const originalTexto = btn.innerText;
+            btn.innerText = "..."; 
+            
             const select = document.getElementById(`select-${usuarioId}`);
             const valor = select.value;
 
-            if (!valor) return; // Se quiser limpar, precisaria implementar delete
+            if (!valor) { btn.innerText = originalTexto; return; }
 
             const [grupo, versos] = valor.split('|');
 
             const { data: recitativos } = await clienteSupabase.from('recitativos').select('id').eq('ativo', true).limit(1);
-            if(!recitativos || !recitativos.length) return alert("Crie um recitativo primeiro!");
+            if(!recitativos || !recitativos.length) {
+                alert("Erro: Crie um Recitativo (parte de cima) primeiro!");
+                btn.innerText = originalTexto;
+                return;
+            }
 
             const dados = {
-                usuario_id: usuarioId,
-                recitativo_id: recitativos[0].id,
-                grupo: grupo,
-                faixa_versos: versos
+                usuario_id: usuarioId, recitativo_id: recitativos[0].id,
+                grupo: grupo, faixa_versos: versos
             };
 
             let erro;
@@ -169,11 +247,14 @@
             }
 
             if (erro) alert("Erro: " + erro.message);
-            else carregarPlanilha(); 
+            else carregarDados(); // Recarrega para atualizar contadores
+            
+            btn.innerText = originalTexto;
         }
 
         function sair() { localStorage.clear(); window.location.href = 'index.html'; }
-        carregarPlanilha();
+        
+        carregarDados();
     </script>
 </body>
 </html>
