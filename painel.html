@@ -10,22 +10,41 @@
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; }
 
-        h2.titulo-pagina { color: #0b1b3d; text-align: center; margin-bottom: 20px; font-weight: 800; letter-spacing: -1px; }
+        /* HEADER COM SAUDAÇÃO */
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        /* Estilo da Saudação (A Paz de Deus) */
+        h2.saudacao-texto {
+            color: #0b1b3d; margin: 0;
+            font-weight: 800; letter-spacing: -0.5px;
+            font-size: 1.5rem;
+        }
+        .subtitulo-saudacao {
+            color: #666; font-size: 0.9rem; margin-top: 2px;
+        }
 
-        /* --- NOVO: BLOCO DO TEXTO BÍBLICO (O que faltava) --- */
+        /* Botão Sair Discreto */
+        .btn-sair {
+            padding: 8px 15px; border: 1px solid #ccc; background: transparent;
+            border-radius: 20px; cursor: pointer; color: #555; font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-sair:hover { background: #e2e6ea; border-color: #aaa; }
+
+        /* --- BLOCO DO TEXTO BÍBLICO (Contexto) --- */
         .recitativo-card {
-            background-color: #fffde7; /* Amarelo clarinho */
-            border-left: 5px solid #fbc02d; /* Faixa amarela escura */
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px; /* Espaço antes dos cartões */
+            background-color: #fffde7; border-left: 5px solid #fbc02d;
+            border-radius: 8px; padding: 20px; margin-bottom: 25px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .recitativo-titulo { font-weight: 800; color: #f57f17; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; }
         .recitativo-texto { font-style: italic; color: #444; line-height: 1.5; font-size: 1rem; }
         .recitativo-data { text-align: right; font-size: 0.8rem; color: #888; margin-top: 10px; font-weight: bold; }
 
-        /* --- CARTÕES (Igual V6.1) --- */
+        /* --- CARTÕES (Design Fixo) --- */
         .dashboard-card {
             background: #eef2f8; border: 1px solid #ccd6e0; border-radius: 20px;
             padding: 15px; display: flex; flex-direction: column; gap: 15px;
@@ -63,9 +82,12 @@
 </head>
 <body>
 
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2 class="titulo-pagina">Painel de Leitura</h2>
-        <button onclick="sair()" style="padding:5px 10px; cursor: pointer;">Sair</button>
+    <div class="header-top">
+        <div>
+            <h2 id="saudacao-titulo" class="saudacao-texto">A Paz de Deus!</h2>
+            <div id="saudacao-sub" class="subtitulo-saudacao">Bem-vindo ao recitativo</div>
+        </div>
+        <button onclick="sair()" class="btn-sair">Sair</button>
     </div>
 
     <div id="area-texto-biblico"></div>
@@ -88,12 +110,33 @@
 
         async function carregarTudo() {
             try {
-                // 1. Recitativo Ativo
+                // 1. Busca TODOS os perfis (Para saber quem sou eu e saudar corretamente)
+                const { data: perfis, error: errPerfil } = await clienteSupabase.from('profiles').select('*');
+                if (errPerfil) throw errPerfil;
+
+                // --- NOVA LÓGICA DE SAUDAÇÃO ---
+                const meuPerfil = perfis.find(p => p.id === meuId);
+                if (meuPerfil) {
+                    const nomeExibicao = meuPerfil.nome_completo ? meuPerfil.nome_completo.split(' ')[0] : 'Irmão';
+                    // Se for feminino, usa 'Irmã', senão 'Irmão'
+                    const tratamento = (meuPerfil.genero === 'FEMININO') ? 'Irmã' : 'Irmão';
+                    
+                    document.getElementById('saudacao-titulo').innerText = `A Paz de Deus, ${tratamento} ${nomeExibicao}!`;
+                    document.getElementById('saudacao-sub').innerText = "Confira sua missão abaixo.";
+                }
+                // -------------------------------
+
+                // 2. Recitativo Ativo
                 const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
-                if (!recitativos || recitativos.length === 0) return document.getElementById('meu-painel').innerHTML = 'Sem recitativo ativo.';
+                
+                // Se não tiver recitativo, avisa e para
+                if (!recitativos || recitativos.length === 0) {
+                     document.getElementById('meu-painel').innerHTML = 'Sem recitativo ativo no momento.';
+                     return;
+                }
                 const recitativo = recitativos[0];
 
-                // --- CORREÇÃO: RENDERIZAR O TEXTO AQUI ---
+                // Renderiza Texto Bíblico
                 const dataFormatada = new Date(recitativo.data_apresentacao + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
                 document.getElementById('area-texto-biblico').innerHTML = `
                     <div class="recitativo-card">
@@ -102,19 +145,15 @@
                         <div class="recitativo-data">Apresentação: ${dataFormatada}</div>
                     </div>
                 `;
-                // -----------------------------------------
 
-                // 2. Busca TODAS as atribuições
+                // 3. Busca Atribuições
                 const { data: atribuicoes } = await clienteSupabase
                     .from('versoes_atribuidas')
                     .select('*')
                     .eq('recitativo_id', recitativo.id)
                     .order('grupo');
-                
-                // 3. Busca TODOS os perfis
-                const { data: perfis } = await clienteSupabase.from('profiles').select('*');
 
-                // 4. Junta tudo
+                // 4. Junta as peças (Join Manual)
                 const participantes = atribuicoes.map(atrib => {
                     const perfil = perfis.find(p => p.id === atrib.usuario_id) || {};
                     return { ...atrib, profiles: perfil };
@@ -123,16 +162,16 @@
                 const eu = participantes.find(p => p.usuario_id === meuId);
                 const outros = participantes.filter(p => p.usuario_id !== meuId);
 
-                // Renderiza
+                // Renderiza Cartões
                 if (eu) renderizarCard(eu, 'meu-painel', true);
-                else document.getElementById('meu-painel').innerHTML = '<p style="text-align:center">Você não foi escalado.</p>';
+                else document.getElementById('meu-painel').innerHTML = '<p style="text-align:center; color:#666;">Você não foi escalado para este recitativo.</p>';
                 
                 document.getElementById('lista-outros').innerHTML = '';
                 outros.forEach(p => renderizarCard(p, 'lista-outros', false));
 
             } catch (erro) {
                 console.error(erro);
-                alert("Erro: " + erro.message);
+                // Não usamos alert para erro simples, apenas log
             }
         }
 
