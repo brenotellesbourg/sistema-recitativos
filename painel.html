@@ -3,113 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Membro - CCB</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Painel Avançado - CCB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS GERAIS (APP FEEL) --- */
-        body { background-color: #f2f4f8; margin: 0; padding-bottom: 80px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        /* --- RESET E FUNDO --- */
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         
-        /* 1. APP HEADER (Identidade) */
-        .app-header {
-            background-color: #ffffff;
-            padding: 15px 20px;
-            display: flex; align-items: center; justify-content: space-between;
-            position: sticky; top: 0; z-index: 100;
-            border-bottom: 1px solid #e0e0e0;
+        body {
+            margin: 0; padding: 20px;
+            background: #f0f2f5; /* Fundo cinza claro profissional */
+            min-height: 100vh;
         }
-        .user-profile { display: flex; align-items: center; gap: 12px; }
+
+        /* Título da Página */
+        h2.titulo-pagina {
+            color: #0b1b3d; text-align: center; margin-bottom: 20px;
+            font-weight: 800; letter-spacing: -1px;
+        }
+
+        /* --- O CARTÃO MESTRE (Igual seu desenho) --- */
+        .dashboard-card {
+            background: #eef2f8; /* Azulzinho bem claro do seu desenho */
+            border: 1px solid #ccd6e0;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column; /* No celular fica um embaixo do outro */
+            gap: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* Faixa Azul do Grupo */
+        .grupo-badge {
+            background-color: #4a76c5; color: white;
+            padding: 4px 12px; border-radius: 6px;
+            font-size: 0.8rem; font-weight: bold;
+            align-self: flex-start; margin-bottom: 5px;
+        }
+
+        /* Layout Interno do Cartão */
+        .card-content {
+            display: flex; align-items: center; gap: 15px;
+            flex-wrap: wrap; /* Quebra linha se a tela for pequena */
+        }
+
+        /* Avatar e Nome */
+        .perfil-area { display: flex; align-items: center; gap: 10px; min-width: 120px; }
         .avatar {
-            width: 40px; height: 40px; background: #0b1b3d; color: white;
+            width: 45px; height: 45px; background: #e76f51; color: white;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: bold;
+            font-weight: bold; font-size: 1.2rem; border: 2px solid white;
         }
-        .user-info h3 { margin: 0; font-size: 1rem; color: #333; }
-        .user-info span { font-size: 0.8rem; color: #888; }
-        .btn-mini { border: 1px solid #ddd; background: transparent; padding: 5px 10px; border-radius: 5px; color: #666; font-size: 0.8rem; cursor:pointer;}
+        .info-nome div { font-weight: 800; color: #333; font-size: 0.95rem; }
+        .info-nome span { font-size: 0.75rem; color: #666; }
 
-        /* CONTAINER PRINCIPAL */
-        .main-container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        /* A Parte Central (Verso Grande) */
+        .verso-box {
+            background: #4a76c5; color: white;
+            padding: 10px 20px; border-radius: 8px;
+            text-align: center; flex-grow: 1;
+        }
+        .verso-box strong { display: block; font-size: 1.1rem; }
+        .verso-box small { font-size: 0.75rem; opacity: 0.8; }
 
-        /* 2. O CONTEXTO (O Texto / O Órgão) */
-        .contexto-card {
-            background-color: #fff9c4; /* Amarelo Post-it suave */
-            padding: 20px; border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border-left: 4px solid #fbc02d;
+        /* Os Quadradinhos de Dedicação (Seg, Ter...) */
+        .dedicacao-area { display: flex; gap: 4px; margin-top: 5px; }
+        .dia-quadrado {
+            width: 15px; height: 15px; background: #b0b0b0; border-radius: 3px;
         }
-        .contexto-titulo { font-weight: bold; color: #f57f17; margin-bottom: 5px; font-size: 0.9rem; text-transform: uppercase; }
-        .contexto-texto { font-style: italic; color: #4a4a4a; line-height: 1.5; font-size: 0.95rem; }
+        .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; }
+        .dia-quadrado.hoje { background: #dc3545; /* Vermelho para hoje */ }
 
-        /* 3. A CÉLULA (Sua Atribuição / Instância) */
-        .celula-card {
-            background: white; border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            overflow: hidden; margin-bottom: 30px;
+        /* O Gráfico (Donut Chart com CSS Puro) */
+        .grafico-area {
+            display: flex; align-items: center; gap: 10px;
+            background: white; padding: 8px; border-radius: 50px;
+            border: 1px solid #ddd;
         }
-        .celula-header {
-            background: #0b1b3d; color: white; padding: 15px;
-            display: flex; justify-content: space-between; align-items: center;
+        .donut-chart {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: conic-gradient(#3d5a80 0% 0%, #e0e0e0 0% 100%); /* O JS vai mudar isso */
+            display: flex; align-items: center; justify-content: center;
         }
-        .grupo-tag { background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }
-        
-        .celula-body { padding: 20px; text-align: center; }
-        .destaque-versos { font-size: 1.8rem; font-weight: 800; color: #333; margin: 10px 0; }
-        .destaque-label { color: #888; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .donut-hole { width: 28px; height: 28px; background: white; border-radius: 50%; }
+        .porcentagem-texto { font-weight: bold; font-size: 0.9rem; color: #333; }
 
-        /* Controles da Célula */
-        .controles-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
-        
-        .btn-acao {
-            padding: 15px; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s;
+        /* Botões Laterais */
+        .btn-confirmar {
+            background: #00b894; color: white; border: none;
+            padding: 12px; border-radius: 8px; width: 100%;
+            font-weight: bold; cursor: pointer; transition: transform 0.2s;
         }
-        .btn-confirma { background: #e0e0e0; color: #555; }
-        .btn-confirma.ativo { background: #28a745; color: white; box-shadow: 0 4px 12px rgba(40,167,69,0.4); transform: scale(1.02); }
-
-        /* 4. O CORPO (Lista de Irmãos) */
-        .lista-header { font-size: 0.9rem; font-weight: bold; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
-        .lista-item {
-            background: white; padding: 12px 15px; border-radius: 8px; margin-bottom: 8px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #f0f0f0;
+        .btn-cancelar {
+            background: #d63031; color: white; border: none;
+            padding: 12px; border-radius: 8px; width: 100%;
+            font-weight: bold; cursor: pointer; margin-top: 5px;
         }
-        .lista-avatar { width: 32px; height: 32px; background: #eee; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-size: 0.8rem; color: #666; margin-right: 10px; }
-        .lista-info { display: flex; align-items: center; }
         
         /* Status Bolinha */
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #ccc; }
-        .status-dot.ok { background: #28a745; box-shadow: 0 0 5px #28a745; }
+        .status-presenca {
+            width: 15px; height: 15px; border-radius: 50%;
+            background: #ccc; border: 2px solid white;
+            position: absolute; top: 15px; right: 15px;
+        }
+        .status-presenca.ok { background: #00b894; box-shadow: 0 0 5px #00b894; }
+
+        /* Lista de Irmãos */
+        .section-label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 30px; margin-bottom: 10px; font-weight: bold; }
 
     </style>
 </head>
 <body>
 
-    <div class="app-header">
-        <div class="user-profile">
-            <div class="avatar" id="user-avatar">?</div>
-            <div class="user-info">
-                <h3 id="user-name">Carregando...</h3>
-                <span id="user-role">Membro</span>
-            </div>
-        </div>
-        <button onclick="sair()" class="btn-mini">Sair</button>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 class="titulo-pagina">Painel de Leitura</h2>
+        <button onclick="sair()" style="padding:5px 10px;">Sair</button>
     </div>
 
-    <div class="main-container">
-
-        <div id="area-contexto">
-            </div>
-
-        <div id="area-celula">
-            <p style="text-align:center; color:#999;">Carregando sua missão...</p>
-        </div>
-
-        <div class="lista-header">Escala da Irmandade</div>
-        <div id="lista-irmaos">
-            </div>
-
+    <div id="meu-painel">
+        <p style="text-align:center">Carregando...</p>
     </div>
+
+    <div class="section-label">Irmandade Ativa</div>
+    <div id="lista-outros">
+        </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -117,126 +136,111 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const usuarioId = localStorage.getItem('usuario_id');
-        const usuarioEmail = localStorage.getItem('usuario_email');
-        if (!usuarioEmail) window.location.href = 'index.html';
+        const meuId = localStorage.getItem('usuario_id');
+        if (!meuId) window.location.href = 'index.html';
 
-        // Carrega Perfil do Usuário (Identidade)
-        async function carregarIdentidade() {
-            const { data } = await clienteSupabase.from('profiles').select('nome_completo').eq('id', usuarioId).single();
-            const nome = data?.nome_completo || usuarioEmail.split('@')[0];
-            document.getElementById('user-name').innerText = nome;
-            document.getElementById('user-avatar').innerText = nome.charAt(0).toUpperCase();
-        }
-
-        async function carregarSistema() {
-            carregarIdentidade();
-
-            // 1. Busca Contexto (Recitativo Ativo)
+        async function carregarTudo() {
+            // 1. Pega Recitativo Ativo
             const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
-            
-            if (!recitativos || recitativos.length === 0) {
-                document.getElementById('area-contexto').innerHTML = '<div class="contexto-card">Nenhum recitativo ativo.</div>';
-                document.getElementById('area-celula').style.display = 'none';
-                return;
-            }
+            if (!recitativos.length) return document.getElementById('meu-painel').innerHTML = 'Sem recitativo ativo.';
             const recitativo = recitativos[0];
 
-            // Renderiza Contexto
-            const texto = recitativo.conteudo_texto || "Texto indisponível.";
-            document.getElementById('area-contexto').innerHTML = `
-                <div class="contexto-card">
-                    <div class="contexto-titulo">📖 ${recitativo.tema} (${recitativo.referencia_biblica})</div>
-                    <div class="contexto-texto">"${texto}"</div>
-                    <div style="margin-top:10px; font-size:0.8rem; color:#888; text-align:right;">
-                        Apresentação: ${new Date(recitativo.data_apresentacao + 'T12:00:00').toLocaleDateString('pt-BR')}
-                    </div>
-                </div>
-            `;
-
-            // 2. Busca Dados da Célula e do Corpo
-            const { data: todasAtribuicoes } = await clienteSupabase
+            // 2. Pega todos os participantes
+            const { data: participantes } = await clienteSupabase
                 .from('versoes_atribuidas')
                 .select('*, profiles(nome_completo, email)')
                 .eq('recitativo_id', recitativo.id)
-                .order('grupo', { ascending: true });
+                .order('grupo');
 
-            const minhaMissao = todasAtribuicoes.find(a => a.usuario_id === usuarioId);
+            const eu = participantes.find(p => p.usuario_id === meuId);
+            const outros = participantes.filter(p => p.usuario_id !== meuId);
 
-            // Renderiza Célula (Meu Painel)
-            renderizarCelula(minhaMissao);
-
-            // Renderiza Corpo (Lista)
-            renderizarLista(todasAtribuicoes);
-        }
-
-        function renderizarCelula(missao) {
-            const area = document.getElementById('area-celula');
+            // Renderiza EU (Topo)
+            renderizarCard(eu, 'meu-painel', true);
             
-            if (!missao) {
-                area.innerHTML = '<div class="celula-card"><div class="celula-body">Aguardando distribuição...</div></div>';
-                return;
-            }
-
-            const btnClass = missao.presenca_confirmada ? 'ativo' : '';
-            const btnText = missao.presenca_confirmada ? '✅ Presença Confirmada' : 'Confirmar Presença';
-
-            area.innerHTML = `
-                <div class="celula-card">
-                    <div class="celula-header">
-                        <span>Minha Tarefa</span>
-                        <span class="grupo-tag">GRUPO ${missao.grupo}</span>
-                    </div>
-                    <div class="celula-body">
-                        <div class="destaque-label">Memorizar Versos</div>
-                        <div class="destaque-versos">${missao.faixa_versos}</div>
-                        
-                        <div class="controles-grid">
-                            <button id="btn-presenca" class="btn-acao btn-confirma ${btnClass}" onclick="togglePresenca('${missao.id}', ${missao.presenca_confirmada})">
-                                ${btnText}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
+            // Renderiza OUTROS (Lista)
+            document.getElementById('lista-outros').innerHTML = '';
+            outros.forEach(p => renderizarCard(p, 'lista-outros', false));
         }
 
-        function renderizarLista(lista) {
-            const container = document.getElementById('lista-irmaos');
-            let html = '';
+        function renderizarCard(dados, containerId, souEu) {
+            if (!dados) return;
 
-            lista.forEach(item => {
-                let nome = item.profiles?.nome_completo || item.profiles?.email.split('@')[0] || "Irmão";
-                let statusClass = item.presenca_confirmada ? 'ok' : '';
-                
-                // Se for o próprio usuário, adiciona um (Você)
-                if (item.usuario_id === usuarioId) nome += " (Você)";
+            // Dados Visuais
+            const nome = dados.profiles?.nome_completo || dados.profiles?.email.split('@')[0];
+            const inicial = nome.charAt(0);
+            const confirmado = dados.presenca_confirmada;
+            const corBolinha = confirmado ? 'ok' : '';
+            
+            // Simulação de Porcentagem (Futuramente vem do banco)
+            const pct = confirmado ? 100 : 33; 
+            const graficoCor = confirmado ? '#00b894' : '#3d5a80';
 
-                html += `
-                    <div class="lista-item">
-                        <div class="lista-info">
-                            <div class="lista-avatar">${nome.charAt(0)}</div>
-                            <div>
-                                <div style="font-weight:bold; font-size:0.9rem;">${nome}</div>
-                                <div style="font-size:0.75rem; color:#888;">Grupo ${item.grupo} • Versos ${item.faixa_versos}</div>
-                            </div>
-                        </div>
-                        <div class="status-dot ${statusClass}" title="Status"></div>
+            // HTML dos controles (Só aparece se for EU)
+            let controlesHtml = '';
+            if (souEu) {
+                const txtBtn = confirmado ? 'Presença OK' : 'Confirmar Presença';
+                const styleBtn = confirmado ? 'background:#00b894' : 'background:#4a76c5';
+                controlesHtml = `
+                    <div style="width:100%; margin-top:10px;">
+                        <button class="btn-confirmar" style="${styleBtn}" onclick="toggle('${dados.id}', ${confirmado})">
+                            ${txtBtn}
+                        </button>
                     </div>
                 `;
-            });
-            container.innerHTML = html;
+            }
+
+            const html = `
+                <div class="dashboard-card">
+                    <div class="status-presenca ${corBolinha}"></div>
+                    <span class="grupo-badge">GRUPO ${dados.grupo}</span>
+
+                    <div class="card-content">
+                        <div class="perfil-area">
+                            <div class="avatar">${inicial}</div>
+                            <div class="info-nome">
+                                <div>${nome}</div>
+                                <span>Membro</span>
+                                <div class="dedicacao-area">
+                                    <div class="dia-quadrado verde" title="Seg"></div>
+                                    <div class="dia-quadrado verde" title="Ter"></div>
+                                    <div class="dia-quadrado" title="Qua"></div>
+                                    <div class="dia-quadrado hoje" title="Hoje"></div>
+                                    <div class="dia-quadrado" title="Sex"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="verso-box">
+                            <small>Sua Parte:</small>
+                            <strong>Versos ${dados.faixa_versos}</strong>
+                        </div>
+
+                        <div class="grafico-area">
+                            <div class="donut-chart" style="background: conic-gradient(${graficoCor} 0% ${pct}%, #e0e0e0 ${pct}% 100%);">
+                                <div class="donut-hole"></div>
+                            </div>
+                            <span class="porcentagem-texto">${pct}%</span>
+                        </div>
+                    </div>
+
+                    ${controlesHtml}
+                </div>
+            `;
+
+            if (souEu) document.getElementById(containerId).innerHTML = html;
+            else document.getElementById(containerId).innerHTML += html;
         }
 
-        async function togglePresenca(id, estadoAtual) {
-            document.getElementById('btn-presenca').innerText = "...";
-            await clienteSupabase.from('versoes_atribuidas').update({ presenca_confirmada: !estadoAtual }).eq('id', id);
-            carregarSistema(); // Recarrega tudo
+        async function toggle(id, estado) {
+            document.querySelector('.btn-confirmar').innerText = '...';
+            await clienteSupabase.from('versoes_atribuidas').update({ presenca_confirmada: !estado }).eq('id', id);
+            carregarTudo();
         }
 
         function sair() { localStorage.clear(); window.location.href = 'index.html'; }
-
-        carregarSistema();
+        
+        carregarTudo();
     </script>
 </body>
 </html>
