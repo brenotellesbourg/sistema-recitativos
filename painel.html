@@ -8,85 +8,54 @@
     <style>
         /* --- RESET E FUNDO --- */
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        
-        body {
-            margin: 0; padding: 20px;
-            background: #f0f2f5; 
-            min-height: 100vh;
-        }
+        body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; }
 
-        h2.titulo-pagina {
-            color: #0b1b3d; text-align: center; margin-bottom: 20px;
-            font-weight: 800; letter-spacing: -1px;
-        }
+        h2.titulo-pagina { color: #0b1b3d; text-align: center; margin-bottom: 20px; font-weight: 800; letter-spacing: -1px; }
 
-        /* --- O CARTÃO MESTRE --- */
+        /* --- NOVO: BLOCO DO TEXTO BÍBLICO (O que faltava) --- */
+        .recitativo-card {
+            background-color: #fffde7; /* Amarelo clarinho */
+            border-left: 5px solid #fbc02d; /* Faixa amarela escura */
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px; /* Espaço antes dos cartões */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .recitativo-titulo { font-weight: 800; color: #f57f17; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 10px; }
+        .recitativo-texto { font-style: italic; color: #444; line-height: 1.5; font-size: 1rem; }
+        .recitativo-data { text-align: right; font-size: 0.8rem; color: #888; margin-top: 10px; font-weight: bold; }
+
+        /* --- CARTÕES (Igual V6.1) --- */
         .dashboard-card {
-            background: #eef2f8; 
-            border: 1px solid #ccd6e0;
-            border-radius: 20px;
-            padding: 15px;
-            display: flex; flex-direction: column; gap: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-            position: relative;
+            background: #eef2f8; border: 1px solid #ccd6e0; border-radius: 20px;
+            padding: 15px; display: flex; flex-direction: column; gap: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; position: relative;
         }
 
-        .grupo-badge {
-            background-color: #4a76c5; color: white;
-            padding: 4px 12px; border-radius: 6px;
-            font-size: 0.8rem; font-weight: bold;
-            align-self: flex-start;
-        }
-
+        .grupo-badge { background-color: #4a76c5; color: white; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; align-self: flex-start; }
         .card-content { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
 
         .perfil-area { display: flex; align-items: center; gap: 10px; min-width: 120px; }
-        .avatar {
-            width: 45px; height: 45px; background: #e76f51; color: white;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 1.2rem; border: 2px solid white;
-        }
+        .avatar { width: 45px; height: 45px; background: #e76f51; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border: 2px solid white; }
         .info-nome div { font-weight: 800; color: #333; font-size: 0.95rem; }
         .info-nome span { font-size: 0.75rem; color: #666; }
 
-        .verso-box {
-            background: #4a76c5; color: white;
-            padding: 10px 20px; border-radius: 8px;
-            text-align: center; flex-grow: 1;
-        }
+        .verso-box { background: #4a76c5; color: white; padding: 10px 20px; border-radius: 8px; text-align: center; flex-grow: 1; }
         .verso-box strong { display: block; font-size: 1.1rem; }
 
-        /* Quadradinhos de Dedicação */
         .dedicacao-area { display: flex; gap: 4px; margin-top: 5px; }
         .dia-quadrado { width: 15px; height: 15px; background: #b0b0b0; border-radius: 3px; }
         .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; }
         .dia-quadrado.hoje { background: #dc3545; }
 
-        /* Gráfico Donut */
-        .grafico-area {
-            display: flex; align-items: center; gap: 10px;
-            background: white; padding: 8px; border-radius: 50px; border: 1px solid #ddd;
-        }
-        .donut-chart {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: conic-gradient(#3d5a80 0% 0%, #e0e0e0 0% 100%);
-            display: flex; align-items: center; justify-content: center;
-        }
+        .grafico-area { display: flex; align-items: center; gap: 10px; background: white; padding: 8px; border-radius: 50px; border: 1px solid #ddd; }
+        .donut-chart { width: 40px; height: 40px; border-radius: 50%; background: conic-gradient(#3d5a80 0% 0%, #e0e0e0 0% 100%); display: flex; align-items: center; justify-content: center; }
         .donut-hole { width: 28px; height: 28px; background: white; border-radius: 50%; }
         .porcentagem-texto { font-weight: bold; font-size: 0.9rem; color: #333; }
 
-        .btn-confirmar {
-            background: #00b894; color: white; border: none;
-            padding: 12px; border-radius: 8px; width: 100%;
-            font-weight: bold; cursor: pointer; transition: transform 0.2s;
-        }
+        .btn-confirmar { background: #00b894; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
         
-        .status-presenca {
-            width: 15px; height: 15px; border-radius: 50%;
-            background: #ccc; border: 2px solid white;
-            position: absolute; top: 15px; right: 15px;
-        }
+        .status-presenca { width: 15px; height: 15px; border-radius: 50%; background: #ccc; border: 2px solid white; position: absolute; top: 15px; right: 15px; }
         .status-presenca.ok { background: #00b894; box-shadow: 0 0 5px #00b894; }
 
         .section-label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 30px; margin-bottom: 10px; font-weight: bold; }
@@ -96,8 +65,10 @@
 
     <div style="display:flex; justify-content:space-between; align-items:center;">
         <h2 class="titulo-pagina">Painel de Leitura</h2>
-        <button onclick="sair()" style="padding:5px 10px;">Sair</button>
+        <button onclick="sair()" style="padding:5px 10px; cursor: pointer;">Sair</button>
     </div>
+
+    <div id="area-texto-biblico"></div>
 
     <div id="meu-painel">
         <p style="text-align:center">Carregando...</p>
@@ -122,23 +93,31 @@
                 if (!recitativos || recitativos.length === 0) return document.getElementById('meu-painel').innerHTML = 'Sem recitativo ativo.';
                 const recitativo = recitativos[0];
 
-                // 2. Busca TODAS as atribuições (SEM JOIN, para evitar erro 400)
-                const { data: atribuicoes, error: errAtrib } = await clienteSupabase
+                // --- CORREÇÃO: RENDERIZAR O TEXTO AQUI ---
+                const dataFormatada = new Date(recitativo.data_apresentacao + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+                document.getElementById('area-texto-biblico').innerHTML = `
+                    <div class="recitativo-card">
+                        <div class="recitativo-titulo">📖 ${recitativo.tema} (${recitativo.referencia_biblica})</div>
+                        <div class="recitativo-texto">"${recitativo.conteudo_texto || '...'}"</div>
+                        <div class="recitativo-data">Apresentação: ${dataFormatada}</div>
+                    </div>
+                `;
+                // -----------------------------------------
+
+                // 2. Busca TODAS as atribuições
+                const { data: atribuicoes } = await clienteSupabase
                     .from('versoes_atribuidas')
                     .select('*')
                     .eq('recitativo_id', recitativo.id)
                     .order('grupo');
                 
-                if (errAtrib) throw errAtrib;
+                // 3. Busca TODOS os perfis
+                const { data: perfis } = await clienteSupabase.from('profiles').select('*');
 
-                // 3. Busca TODOS os perfis (Separado, seguro)
-                const { data: perfis, error: errPerfil } = await clienteSupabase.from('profiles').select('*');
-                if (errPerfil) throw errPerfil;
-
-                // 4. Junta tudo no JavaScript (Manual Join)
+                // 4. Junta tudo
                 const participantes = atribuicoes.map(atrib => {
                     const perfil = perfis.find(p => p.id === atrib.usuario_id) || {};
-                    return { ...atrib, profiles: perfil }; // Cria o formato que a gente queria
+                    return { ...atrib, profiles: perfil };
                 });
 
                 const eu = participantes.find(p => p.usuario_id === meuId);
@@ -153,12 +132,11 @@
 
             } catch (erro) {
                 console.error(erro);
-                alert("Erro ao carregar: " + erro.message);
+                alert("Erro: " + erro.message);
             }
         }
 
         function renderizarCard(dados, containerId, souEu) {
-            // Se perfil não tiver nome, usa email, se não tiver email, usa "Irmão"
             let nome = "Irmão";
             if (dados.profiles.nome_completo) nome = dados.profiles.nome_completo;
             else if (dados.profiles.email) nome = dados.profiles.email.split('@')[0];
