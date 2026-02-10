@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Status da Obra - CCB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { margin: 0; padding: 20px; background: #eef2f8; min-height: 100vh; }
+
+        .container { max-width: 600px; margin: 0 auto; }
+
+        .header { display: flex; align-items: center; margin-bottom: 25px; }
+        .btn-voltar { 
+            text-decoration: none; color: #555; font-weight: bold; 
+            background: white; padding: 10px 15px; border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 5px;
+        }
+        .titulo { margin-left: 15px; font-size: 1.5rem; color: #0b1b3d; font-weight: 800; }
+
+        /* PAINEL GERAL (RESUMO) */
+        .resumo-card {
+            background: linear-gradient(135deg, #0b1b3d 0%, #1a2f5a 100%);
+            color: white; padding: 30px; border-radius: 20px; text-align: center;
+            margin-bottom: 30px; box-shadow: 0 5px 20px rgba(11, 27, 61, 0.3);
+        }
+        .numero-grande { font-size: 3.5rem; font-weight: 800; margin: 10px 0; }
+        .label-resumo { text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; opacity: 0.7; }
+
+        /* BARRAS DE GRUPO */
+        .card-grupo {
+            background: white; padding: 20px; border-radius: 15px;
+            margin-bottom: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .info-grupo { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; color: #333; }
+        
+        .trilho { width: 100%; height: 15px; background: #f0f2f5; border-radius: 10px; overflow: hidden; }
+        .barra { height: 100%; background: #4a76c5; border-radius: 10px; transition: width 1s; }
+        .barra.completo { background: #00b894; } /* Verde se 100% */
+        .barra.atencao { background: #ff7675; } /* Vermelho se 0% */
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="painel.html" class="btn-voltar">⬅ Voltar</a>
+            <div class="titulo">Progresso da Obra</div>
+        </div>
+
+        <div id="area-resumo" class="resumo-card">
+            <div class="label-resumo">Confirmação Geral</div>
+            <div class="numero-grande" id="pct-total">--%</div>
+            <div id="txt-total">Calculando...</div>
+        </div>
+
+        <h3 style="color:#555; margin-bottom:15px;">Detalhes por Grupo</h3>
+        <div id="lista-grupos">
+            <p style="text-align:center">Carregando dados...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
+        const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function carregarStatus() {
+            // 1. Pega Recitativo
+            const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
+            if (!recitativos.length) return;
+            const recitativoId = recitativos[0].id;
+
+            // 2. Pega todas as atribuições
+            const { data: atribuicoes } = await clienteSupabase
+                .from('versoes_atribuidas')
+                .select('*')
+                .eq('recitativo_id', recitativoId);
+
+            // 3. Matemática
+            let totalGeral = 0;
+            let confirmadosGeral = 0;
+            const statsGrupo = {};
+
+            atribuicoes.forEach(a => {
+                // Geral
+                totalGeral++;
+                if (a.presenca_confirmada) confirmadosGeral++;
+
+                // Por Grupo
+                if (!statsGrupo[a.grupo]) statsGrupo[a.grupo] = { total: 0, ok: 0 };
+                statsGrupo[a.grupo].total++;
+                if (a.presenca_confirmada) statsGrupo[a.grupo].ok++;
+            });
+
+            // 4. Renderiza Geral
+            const pctGeral = totalGeral === 0 ? 0 : Math.round((confirmadosGeral / totalGeral) * 100);
+            document.getElementById('pct-total').innerText = pctGeral + "%";
+            document.getElementById('txt-total').innerText = `${confirmadosGeral} de ${totalGeral} irmãos confirmados`;
+
+            // 5. Renderiza Grupos
+            let html = '';
+            Object.keys(statsGrupo).sort().forEach(grupo => {
+                const dados = statsGrupo[grupo];
+                const pct = Math.round((dados.ok / dados.total) * 100);
+                
+                let corClasse = '';
+                if(pct === 100) corClasse = 'completo'; // Verde
+                else if(pct < 30) corClasse = 'atencao'; // Vermelho
+
+                html += `
+                    <div class="card-grupo">
+                        <div class="info-grupo">
+                            <span>GRUPO ${grupo}</span>
+                            <span>${pct}%</span>
+                        </div>
+                        <div class="trilho">
+                            <div class="barra ${corClasse}" style="width: ${pct}%"></div>
+                        </div>
+                        <div style="font-size:0.8rem; color:#888; margin-top:5px;">
+                            Faltam ${dados.total - dados.ok} pessoas confirmarem.
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('lista-grupos').innerHTML = html;
+        }
+
+        carregarStatus();
+    </script>
+</body>
+</html>
