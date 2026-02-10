@@ -11,45 +11,36 @@
         
         body {
             margin: 0; padding: 20px;
-            background: #f0f2f5; /* Fundo cinza claro profissional */
+            background: #f0f2f5; 
             min-height: 100vh;
         }
 
-        /* Título da Página */
         h2.titulo-pagina {
             color: #0b1b3d; text-align: center; margin-bottom: 20px;
             font-weight: 800; letter-spacing: -1px;
         }
 
-        /* --- O CARTÃO MESTRE (Igual seu desenho) --- */
+        /* --- O CARTÃO MESTRE --- */
         .dashboard-card {
-            background: #eef2f8; /* Azulzinho bem claro do seu desenho */
+            background: #eef2f8; 
             border: 1px solid #ccd6e0;
             border-radius: 20px;
             padding: 15px;
-            display: flex;
-            flex-direction: column; /* No celular fica um embaixo do outro */
-            gap: 15px;
+            display: flex; flex-direction: column; gap: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.05);
             margin-bottom: 20px;
             position: relative;
         }
 
-        /* Faixa Azul do Grupo */
         .grupo-badge {
             background-color: #4a76c5; color: white;
             padding: 4px 12px; border-radius: 6px;
             font-size: 0.8rem; font-weight: bold;
-            align-self: flex-start; margin-bottom: 5px;
+            align-self: flex-start;
         }
 
-        /* Layout Interno do Cartão */
-        .card-content {
-            display: flex; align-items: center; gap: 15px;
-            flex-wrap: wrap; /* Quebra linha se a tela for pequena */
-        }
+        .card-content { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
 
-        /* Avatar e Nome */
         .perfil-area { display: flex; align-items: center; gap: 10px; min-width: 120px; }
         .avatar {
             width: 45px; height: 45px; background: #e76f51; color: white;
@@ -59,50 +50,38 @@
         .info-nome div { font-weight: 800; color: #333; font-size: 0.95rem; }
         .info-nome span { font-size: 0.75rem; color: #666; }
 
-        /* A Parte Central (Verso Grande) */
         .verso-box {
             background: #4a76c5; color: white;
             padding: 10px 20px; border-radius: 8px;
             text-align: center; flex-grow: 1;
         }
         .verso-box strong { display: block; font-size: 1.1rem; }
-        .verso-box small { font-size: 0.75rem; opacity: 0.8; }
 
-        /* Os Quadradinhos de Dedicação (Seg, Ter...) */
+        /* Quadradinhos de Dedicação */
         .dedicacao-area { display: flex; gap: 4px; margin-top: 5px; }
-        .dia-quadrado {
-            width: 15px; height: 15px; background: #b0b0b0; border-radius: 3px;
-        }
+        .dia-quadrado { width: 15px; height: 15px; background: #b0b0b0; border-radius: 3px; }
         .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; }
-        .dia-quadrado.hoje { background: #dc3545; /* Vermelho para hoje */ }
+        .dia-quadrado.hoje { background: #dc3545; }
 
-        /* O Gráfico (Donut Chart com CSS Puro) */
+        /* Gráfico Donut */
         .grafico-area {
             display: flex; align-items: center; gap: 10px;
-            background: white; padding: 8px; border-radius: 50px;
-            border: 1px solid #ddd;
+            background: white; padding: 8px; border-radius: 50px; border: 1px solid #ddd;
         }
         .donut-chart {
             width: 40px; height: 40px; border-radius: 50%;
-            background: conic-gradient(#3d5a80 0% 0%, #e0e0e0 0% 100%); /* O JS vai mudar isso */
+            background: conic-gradient(#3d5a80 0% 0%, #e0e0e0 0% 100%);
             display: flex; align-items: center; justify-content: center;
         }
         .donut-hole { width: 28px; height: 28px; background: white; border-radius: 50%; }
         .porcentagem-texto { font-weight: bold; font-size: 0.9rem; color: #333; }
 
-        /* Botões Laterais */
         .btn-confirmar {
             background: #00b894; color: white; border: none;
             padding: 12px; border-radius: 8px; width: 100%;
             font-weight: bold; cursor: pointer; transition: transform 0.2s;
         }
-        .btn-cancelar {
-            background: #d63031; color: white; border: none;
-            padding: 12px; border-radius: 8px; width: 100%;
-            font-weight: bold; cursor: pointer; margin-top: 5px;
-        }
         
-        /* Status Bolinha */
         .status-presenca {
             width: 15px; height: 15px; border-radius: 50%;
             background: #ccc; border: 2px solid white;
@@ -110,9 +89,7 @@
         }
         .status-presenca.ok { background: #00b894; box-shadow: 0 0 5px #00b894; }
 
-        /* Lista de Irmãos */
         .section-label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 30px; margin-bottom: 10px; font-weight: bold; }
-
     </style>
 </head>
 <body>
@@ -127,8 +104,7 @@
     </div>
 
     <div class="section-label">Irmandade Ativa</div>
-    <div id="lista-outros">
-        </div>
+    <div id="lista-outros"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -140,46 +116,62 @@
         if (!meuId) window.location.href = 'index.html';
 
         async function carregarTudo() {
-            // 1. Pega Recitativo Ativo
-            const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
-            if (!recitativos.length) return document.getElementById('meu-painel').innerHTML = 'Sem recitativo ativo.';
-            const recitativo = recitativos[0];
+            try {
+                // 1. Recitativo Ativo
+                const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
+                if (!recitativos || recitativos.length === 0) return document.getElementById('meu-painel').innerHTML = 'Sem recitativo ativo.';
+                const recitativo = recitativos[0];
 
-            // 2. Pega todos os participantes
-            const { data: participantes } = await clienteSupabase
-                .from('versoes_atribuidas')
-                .select('*, profiles(nome_completo, email)')
-                .eq('recitativo_id', recitativo.id)
-                .order('grupo');
+                // 2. Busca TODAS as atribuições (SEM JOIN, para evitar erro 400)
+                const { data: atribuicoes, error: errAtrib } = await clienteSupabase
+                    .from('versoes_atribuidas')
+                    .select('*')
+                    .eq('recitativo_id', recitativo.id)
+                    .order('grupo');
+                
+                if (errAtrib) throw errAtrib;
 
-            const eu = participantes.find(p => p.usuario_id === meuId);
-            const outros = participantes.filter(p => p.usuario_id !== meuId);
+                // 3. Busca TODOS os perfis (Separado, seguro)
+                const { data: perfis, error: errPerfil } = await clienteSupabase.from('profiles').select('*');
+                if (errPerfil) throw errPerfil;
 
-            // Renderiza EU (Topo)
-            renderizarCard(eu, 'meu-painel', true);
-            
-            // Renderiza OUTROS (Lista)
-            document.getElementById('lista-outros').innerHTML = '';
-            outros.forEach(p => renderizarCard(p, 'lista-outros', false));
+                // 4. Junta tudo no JavaScript (Manual Join)
+                const participantes = atribuicoes.map(atrib => {
+                    const perfil = perfis.find(p => p.id === atrib.usuario_id) || {};
+                    return { ...atrib, profiles: perfil }; // Cria o formato que a gente queria
+                });
+
+                const eu = participantes.find(p => p.usuario_id === meuId);
+                const outros = participantes.filter(p => p.usuario_id !== meuId);
+
+                // Renderiza
+                if (eu) renderizarCard(eu, 'meu-painel', true);
+                else document.getElementById('meu-painel').innerHTML = '<p style="text-align:center">Você não foi escalado.</p>';
+                
+                document.getElementById('lista-outros').innerHTML = '';
+                outros.forEach(p => renderizarCard(p, 'lista-outros', false));
+
+            } catch (erro) {
+                console.error(erro);
+                alert("Erro ao carregar: " + erro.message);
+            }
         }
 
         function renderizarCard(dados, containerId, souEu) {
-            if (!dados) return;
+            // Se perfil não tiver nome, usa email, se não tiver email, usa "Irmão"
+            let nome = "Irmão";
+            if (dados.profiles.nome_completo) nome = dados.profiles.nome_completo;
+            else if (dados.profiles.email) nome = dados.profiles.email.split('@')[0];
 
-            // Dados Visuais
-            const nome = dados.profiles?.nome_completo || dados.profiles?.email.split('@')[0];
-            const inicial = nome.charAt(0);
+            const inicial = nome.charAt(0).toUpperCase();
             const confirmado = dados.presenca_confirmada;
             const corBolinha = confirmado ? 'ok' : '';
-            
-            // Simulação de Porcentagem (Futuramente vem do banco)
             const pct = confirmado ? 100 : 33; 
             const graficoCor = confirmado ? '#00b894' : '#3d5a80';
 
-            // HTML dos controles (Só aparece se for EU)
             let controlesHtml = '';
             if (souEu) {
-                const txtBtn = confirmado ? 'Presença OK' : 'Confirmar Presença';
+                const txtBtn = confirmado ? 'Presença Confirmada' : 'Confirmar Presença';
                 const styleBtn = confirmado ? 'background:#00b894' : 'background:#4a76c5';
                 controlesHtml = `
                     <div style="width:100%; margin-top:10px;">
@@ -202,18 +194,18 @@
                                 <div>${nome}</div>
                                 <span>Membro</span>
                                 <div class="dedicacao-area">
-                                    <div class="dia-quadrado verde" title="Seg"></div>
-                                    <div class="dia-quadrado verde" title="Ter"></div>
-                                    <div class="dia-quadrado" title="Qua"></div>
-                                    <div class="dia-quadrado hoje" title="Hoje"></div>
-                                    <div class="dia-quadrado" title="Sex"></div>
+                                    <div class="dia-quadrado verde"></div>
+                                    <div class="dia-quadrado verde"></div>
+                                    <div class="dia-quadrado"></div>
+                                    <div class="dia-quadrado hoje"></div>
+                                    <div class="dia-quadrado"></div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="verso-box">
-                            <small>Sua Parte:</small>
-                            <strong>Versos ${dados.faixa_versos}</strong>
+                            <small>Versos</small>
+                            <strong>${dados.faixa_versos}</strong>
                         </div>
 
                         <div class="grafico-area">
@@ -223,7 +215,6 @@
                             <span class="porcentagem-texto">${pct}%</span>
                         </div>
                     </div>
-
                     ${controlesHtml}
                 </div>
             `;
@@ -233,7 +224,7 @@
         }
 
         async function toggle(id, estado) {
-            document.querySelector('.btn-confirmar').innerText = '...';
+            document.querySelector('.btn-confirmar').innerText = 'Salvando...';
             await clienteSupabase.from('versoes_atribuidas').update({ presenca_confirmada: !estado }).eq('id', id);
             carregarTudo();
         }
