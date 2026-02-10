@@ -3,26 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Gestão - CCB</title>
+    <title>Painel Pessoal - CCB</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS VISUAIS (Mantendo o padrão bonito) --- */
+        /* (MANTENDO O CSS BONITO DE SEMPRE) */
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; }
-
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         h2.saudacao-texto { color: #0b1b3d; margin: 0; font-weight: 800; font-size: 1.4rem; }
         .subtitulo-saudacao { color: #666; font-size: 0.9rem; }
         .btn-sair { padding: 8px 15px; border: 1px solid #ccc; background: transparent; border-radius: 20px; cursor: pointer; color: #555; font-weight: 600; }
 
+        /* O BOTÃO POST-IT (Portal) */
+        .btn-portal {
+            display: block; width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; text-align: center; padding: 15px;
+            border-radius: 15px; text-decoration: none;
+            font-weight: bold; font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+            margin-bottom: 30px; transition: transform 0.2s;
+        }
+        .btn-portal:hover { transform: translateY(-3px); }
+
+        /* CARTÕES e RESTO DO DESIGN */
         .recitativo-card { background-color: #fffde7; border-left: 5px solid #fbc02d; border-radius: 8px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .recitativo-titulo { font-weight: 800; color: #f57f17; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 5px; }
         .recitativo-texto { font-style: italic; color: #444; font-size: 1rem; }
 
         .dashboard-card { background: #eef2f8; border: 1px solid #ccd6e0; border-radius: 20px; padding: 15px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; position: relative; }
-        
         .grupo-badge { background-color: #4a76c5; color: white; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; align-self: flex-start; }
-        
         .card-content { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .perfil-area { display: flex; align-items: center; gap: 10px; min-width: 140px; }
         .avatar { width: 45px; height: 45px; background: #e76f51; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border: 2px solid white; }
@@ -30,7 +40,7 @@
         .info-nome span { font-size: 0.75rem; color: #666; }
 
         .dedicacao-area { display: flex; gap: 4px; margin-top: 5px; }
-        .dia-quadrado { width: 12px; height: 12px; background: #d0d0d0; border-radius: 3px; transition: all 0.3s; }
+        .dia-quadrado { width: 12px; height: 12px; background: #d0d0d0; border-radius: 3px; }
         .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; }
         .dia-quadrado.hoje { background: #ff9800; border: 1px solid #e65100; transform: scale(1.2); }
 
@@ -46,20 +56,6 @@
         .btn-confirmar { background: #00b894; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
         .status-presenca { width: 15px; height: 15px; border-radius: 50%; background: #ccc; border: 2px solid white; position: absolute; top: 15px; right: 15px; }
         .status-presenca.ok { background: #00b894; box-shadow: 0 0 5px #00b894; }
-        
-        /* --- NOVO: SEÇÃO DE GRÁFICOS DOS GRUPOS --- */
-        .painel-grupos {
-            background: white; border-radius: 15px; padding: 20px;
-            margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .barra-container { margin-bottom: 15px; }
-        .barra-info { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; font-weight: 600; color: #555; }
-        .barra-trilho { width: 100%; height: 10px; background: #e9ecef; border-radius: 10px; overflow: hidden; }
-        .barra-progresso { height: 100%; background: #4a76c5; border-radius: 10px; transition: width 1s ease-in-out; }
-        
-        /* Cor especial se estiver 100% */
-        .barra-progresso.completo { background: #28a745; }
-
         .section-label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 30px; margin-bottom: 10px; font-weight: bold; }
     </style>
 </head>
@@ -68,19 +64,18 @@
     <div class="header-top">
         <div>
             <h2 id="saudacao-titulo" class="saudacao-texto">A Paz de Deus!</h2>
-            <div class="subtitulo-saudacao">Confira o andamento da obra:</div>
+            <div class="subtitulo-saudacao">Foque na sua parte.</div>
         </div>
         <button onclick="sair()" class="btn-sair">Sair</button>
     </div>
 
+    <a href="status.html" class="btn-portal">
+        📊 Ver Progresso da Obra (Todos os Grupos)
+    </a>
+
     <div id="area-texto-biblico"></div>
     <div id="meu-painel"><p style="text-align:center">Carregando...</p></div>
     
-    <div class="section-label">Status por Grupo</div>
-    <div id="area-grupos" class="painel-grupos">
-        <p style="color:#999; text-align:center;">Calculando estatísticas...</p>
-    </div>
-
     <div class="section-label">Irmandade Ativa</div>
     <div id="lista-outros"></div>
 
@@ -89,11 +84,9 @@
         const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
         const meuId = localStorage.getItem('usuario_id');
         if (!meuId) window.location.href = 'index.html';
 
-        // Lógica de dia da semana (Simulação para o individual)
         const hoje = new Date().getDay(); 
         const diaSemanaIndex = hoje === 0 ? 6 : hoje - 1; 
 
@@ -111,7 +104,6 @@
             try {
                 const { data: perfis } = await clienteSupabase.from('profiles').select('*');
                 const meuPerfil = perfis.find(p => p.id === meuId);
-                
                 if (meuPerfil) {
                     const nome = meuPerfil.nome_completo ? meuPerfil.nome_completo.split(' ')[0] : 'Irmão';
                     const trat = (meuPerfil.genero === 'FEMININO') ? 'Irmã' : 'Irmão';
@@ -129,39 +121,7 @@
                     </div>`;
 
                 const { data: atribuicoes } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', recitativo.id);
-
-                // --- CÁLCULO DAS ESTATÍSTICAS DE GRUPO ---
-                const stats = {};
-                atribuicoes.forEach(a => {
-                    if(!stats[a.grupo]) stats[a.grupo] = { total: 0, ok: 0 };
-                    stats[a.grupo].total++;
-                    if(a.presenca_confirmada) stats[a.grupo].ok++;
-                });
-
-                // Renderiza Barras de Grupo
-                let htmlGrupos = '';
-                // Ordena grupos alfabeticamente (A, B, C...)
-                Object.keys(stats).sort().forEach(grupo => {
-                    const dados = stats[grupo];
-                    const pct = Math.round((dados.ok / dados.total) * 100);
-                    const corClasse = pct === 100 ? 'completo' : '';
-                    
-                    htmlGrupos += `
-                        <div class="barra-container">
-                            <div class="barra-info">
-                                <span>GRUPO ${grupo}</span>
-                                <span>${dados.ok}/${dados.total} Confirmados (${pct}%)</span>
-                            </div>
-                            <div class="barra-trilho">
-                                <div class="barra-progresso ${corClasse}" style="width: ${pct}%"></div>
-                            </div>
-                        </div>
-                    `;
-                });
-                if(htmlGrupos === '') htmlGrupos = '<p>Nenhum grupo formado.</p>';
-                document.getElementById('area-grupos').innerHTML = htmlGrupos;
-                // ------------------------------------------
-
+                
                 let participantes = atribuicoes.map(atrib => {
                     const perfil = perfis.find(p => p.id === atrib.usuario_id) || {};
                     return { ...atrib, profiles: perfil };
@@ -185,8 +145,6 @@
             let nome = dados.profiles.nome_completo || dados.profiles.email?.split('@')[0];
             const inicial = nome.charAt(0).toUpperCase();
             const confirmado = dados.presenca_confirmada;
-            
-            // Rosquinha segue a simulação de dias da semana
             const pctDedicao = Math.round(((diaSemanaIndex + 1) / 6) * 100);
             const corGrafico = '#ff9800'; 
 
