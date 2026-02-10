@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Dedicação - CCB</title>
+    <title>Painel de Gestão - CCB</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS VISUAIS --- */
+        /* --- ESTILOS VISUAIS (Mantendo o padrão bonito) --- */
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; }
 
@@ -29,18 +29,15 @@
         .info-nome div { font-weight: 800; color: #333; font-size: 0.95rem; }
         .info-nome span { font-size: 0.75rem; color: #666; }
 
-        /* QUADRADINHOS DE DEDICAÇÃO */
         .dedicacao-area { display: flex; gap: 4px; margin-top: 5px; }
         .dia-quadrado { width: 12px; height: 12px; background: #d0d0d0; border-radius: 3px; transition: all 0.3s; }
-        .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; } /* Estudou */
-        .dia-quadrado.hoje { background: #ff9800; border: 1px solid #e65100; transform: scale(1.2); } /* Dia Atual */
+        .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; }
+        .dia-quadrado.hoje { background: #ff9800; border: 1px solid #e65100; transform: scale(1.2); }
 
-        /* CAIXA DE VERSOS (O Algoritmo vai agir aqui depois) */
         .verso-box { background: #4a76c5; color: white; padding: 10px 20px; border-radius: 8px; text-align: center; flex-grow: 1; min-width: 100px; }
         .verso-box small { font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
         .verso-box strong { display: block; font-size: 1.1rem; }
 
-        /* GRÁFICO DE DEDICAÇÃO */
         .grafico-area { display: flex; align-items: center; gap: 10px; background: white; padding: 5px 10px; border-radius: 50px; border: 1px solid #ddd; }
         .donut-chart { width: 40px; height: 40px; border-radius: 50%; background: conic-gradient(#3d5a80 0% 0%, #e0e0e0 0% 100%); display: flex; align-items: center; justify-content: center; }
         .donut-hole { width: 28px; height: 28px; background: white; border-radius: 50%; }
@@ -49,6 +46,20 @@
         .btn-confirmar { background: #00b894; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
         .status-presenca { width: 15px; height: 15px; border-radius: 50%; background: #ccc; border: 2px solid white; position: absolute; top: 15px; right: 15px; }
         .status-presenca.ok { background: #00b894; box-shadow: 0 0 5px #00b894; }
+        
+        /* --- NOVO: SEÇÃO DE GRÁFICOS DOS GRUPOS --- */
+        .painel-grupos {
+            background: white; border-radius: 15px; padding: 20px;
+            margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .barra-container { margin-bottom: 15px; }
+        .barra-info { display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 5px; font-weight: 600; color: #555; }
+        .barra-trilho { width: 100%; height: 10px; background: #e9ecef; border-radius: 10px; overflow: hidden; }
+        .barra-progresso { height: 100%; background: #4a76c5; border-radius: 10px; transition: width 1s ease-in-out; }
+        
+        /* Cor especial se estiver 100% */
+        .barra-progresso.completo { background: #28a745; }
+
         .section-label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 30px; margin-bottom: 10px; font-weight: bold; }
     </style>
 </head>
@@ -57,7 +68,7 @@
     <div class="header-top">
         <div>
             <h2 id="saudacao-titulo" class="saudacao-texto">A Paz de Deus!</h2>
-            <div class="subtitulo-saudacao">Sua dedicação semanal:</div>
+            <div class="subtitulo-saudacao">Confira o andamento da obra:</div>
         </div>
         <button onclick="sair()" class="btn-sair">Sair</button>
     </div>
@@ -65,6 +76,11 @@
     <div id="area-texto-biblico"></div>
     <div id="meu-painel"><p style="text-align:center">Carregando...</p></div>
     
+    <div class="section-label">Status por Grupo</div>
+    <div id="area-grupos" class="painel-grupos">
+        <p style="color:#999; text-align:center;">Calculando estatísticas...</p>
+    </div>
+
     <div class="section-label">Irmandade Ativa</div>
     <div id="lista-outros"></div>
 
@@ -77,22 +93,15 @@
         const meuId = localStorage.getItem('usuario_id');
         if (!meuId) window.location.href = 'index.html';
 
-        // LÓGICA DE DEDICAÇÃO (SIMULADA POR ENQUANTO)
-        // Pega o dia da semana: 0=Dom, 1=Seg, 2=Ter, 3=Qua...
+        // Lógica de dia da semana (Simulação para o individual)
         const hoje = new Date().getDay(); 
-        // Se for Domingo (0), vamos considerar que a semana acabou (6 dias estudados)
-        const diaSemanaIndex = hoje === 0 ? 6 : hoje - 1; // Ajusta para Seg=0, Ter=1...
-        
+        const diaSemanaIndex = hoje === 0 ? 6 : hoje - 1; 
+
         function gerarQuadradinhos() {
             let html = '';
             const dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
-            
             dias.forEach((dia, index) => {
-                let classe = '';
-                if (index < diaSemanaIndex) classe = 'verde'; // Dias passados = Estudados
-                else if (index === diaSemanaIndex) classe = 'hoje'; // Hoje
-                else classe = ''; // Futuro = Cinza
-                
+                let classe = index < diaSemanaIndex ? 'verde' : (index === diaSemanaIndex ? 'hoje' : '');
                 html += `<div class="dia-quadrado ${classe}" title="${dia}"></div>`;
             });
             return html;
@@ -100,7 +109,6 @@
 
         async function carregarTudo() {
             try {
-                // 1. Busca Dados Básicos
                 const { data: perfis } = await clienteSupabase.from('profiles').select('*');
                 const meuPerfil = perfis.find(p => p.id === meuId);
                 
@@ -110,7 +118,6 @@
                     document.getElementById('saudacao-titulo').innerText = `A Paz de Deus, ${trat} ${nome}!`;
                 }
 
-                // 2. Recitativo
                 const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
                 if (!recitativos.length) { document.getElementById('meu-painel').innerHTML = 'Sem recitativo.'; return; }
                 const recitativo = recitativos[0];
@@ -121,24 +128,46 @@
                         <div class="recitativo-texto">"${recitativo.conteudo_texto || '...'}"</div>
                     </div>`;
 
-                // 3. Atribuições (Ordenado por NOME para preparar o Algoritmo Alfabético)
-                const { data: atribuicoes } = await clienteSupabase
-                    .from('versoes_atribuidas')
-                    .select('*')
-                    .eq('recitativo_id', recitativo.id); // Tirei a ordem de grupo por enquanto
+                const { data: atribuicoes } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', recitativo.id);
 
-                // Junta Perfis
+                // --- CÁLCULO DAS ESTATÍSTICAS DE GRUPO ---
+                const stats = {};
+                atribuicoes.forEach(a => {
+                    if(!stats[a.grupo]) stats[a.grupo] = { total: 0, ok: 0 };
+                    stats[a.grupo].total++;
+                    if(a.presenca_confirmada) stats[a.grupo].ok++;
+                });
+
+                // Renderiza Barras de Grupo
+                let htmlGrupos = '';
+                // Ordena grupos alfabeticamente (A, B, C...)
+                Object.keys(stats).sort().forEach(grupo => {
+                    const dados = stats[grupo];
+                    const pct = Math.round((dados.ok / dados.total) * 100);
+                    const corClasse = pct === 100 ? 'completo' : '';
+                    
+                    htmlGrupos += `
+                        <div class="barra-container">
+                            <div class="barra-info">
+                                <span>GRUPO ${grupo}</span>
+                                <span>${dados.ok}/${dados.total} Confirmados (${pct}%)</span>
+                            </div>
+                            <div class="barra-trilho">
+                                <div class="barra-progresso ${corClasse}" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+                if(htmlGrupos === '') htmlGrupos = '<p>Nenhum grupo formado.</p>';
+                document.getElementById('area-grupos').innerHTML = htmlGrupos;
+                // ------------------------------------------
+
                 let participantes = atribuicoes.map(atrib => {
                     const perfil = perfis.find(p => p.id === atrib.usuario_id) || {};
                     return { ...atrib, profiles: perfil };
                 });
-
-                // ORDEM ALFABÉTICA (Fundamental para o seu algoritmo futuro)
-                participantes.sort((a, b) => {
-                    const nomeA = a.profiles.nome_completo || "";
-                    const nomeB = b.profiles.nome_completo || "";
-                    return nomeA.localeCompare(nomeB);
-                });
+                
+                participantes.sort((a, b) => (a.profiles.nome_completo || "").localeCompare(b.profiles.nome_completo || ""));
 
                 const eu = participantes.find(p => p.usuario_id === meuId);
                 const outros = participantes.filter(p => p.usuario_id !== meuId);
@@ -157,10 +186,9 @@
             const inicial = nome.charAt(0).toUpperCase();
             const confirmado = dados.presenca_confirmada;
             
-            // CÁLCULO DE DEDICAÇÃO (Baseado nos dias da semana que passaram)
-            // Ex: Se hoje é Quarta (3º dia útil), dedicação é 50% da semana de 6 dias
+            // Rosquinha segue a simulação de dias da semana
             const pctDedicao = Math.round(((diaSemanaIndex + 1) / 6) * 100);
-            const corGrafico = '#ff9800'; // Laranja de dedicação
+            const corGrafico = '#ff9800'; 
 
             let btnHtml = '';
             if (souEu) {
@@ -177,19 +205,12 @@
                         <div class="perfil-area">
                             <div class="avatar">${inicial}</div>
                             <div class="info-nome"><div>${nome}</div>
-                                <div class="dedicacao-area">
-                                    ${gerarQuadradinhos()}
-                                </div>
+                                <div class="dedicacao-area">${gerarQuadradinhos()}</div>
                             </div>
                         </div>
-                        
-                        <div class="verso-box">
-                            <small>Sua Parte:</small>
-                            <strong>Versos ${dados.faixa_versos}</strong>
-                        </div>
-                        
-                        <div class="grafico-area" title="Sua dedicação na semana">
-                            <div class="donut-chart" style="background: conic-gradient(${corGrafico} 0% ${pctDedicao}%, #e0e0e0 ${pctDedicao}%, #e0e0e0 100%);">
+                        <div class="verso-box"><small>Versos</small><strong>${dados.faixa_versos}</strong></div>
+                        <div class="grafico-area">
+                            <div class="donut-chart" style="background: conic-gradient(${corGrafico} 0% ${pctDedicao}%, #e0e0e0 ${pctDedicao}%);">
                                 <div class="donut-hole"></div>
                             </div>
                             <span class="porcentagem-texto">${pctDedicao}%</span>
