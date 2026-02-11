@@ -3,65 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administração - CCB</title>
+    <title>Painel Admin - CCB</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { 
             margin: 0; padding: 20px; 
-            background-color: #1e1e2e; /* Fundo escuro estilo Hacker/Admin */
+            background-color: #1e1e2e; /* Fundo escuro */
             color: #cdd6f4;
             min-height: 100vh;
         }
 
-        .container { max-width: 800px; margin: 0 auto; }
+        .container { max-width: 900px; margin: 0 auto; }
 
-        /* CABEÇALHO */
+        /* HEADER */
         .header { 
             display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 30px; border-bottom: 1px solid #313244; padding-bottom: 20px;
+            margin-bottom: 20px; border-bottom: 1px solid #313244; padding-bottom: 20px;
         }
         .titulo { font-size: 1.8rem; font-weight: 800; color: #fab387; }
-        .btn-voltar { color: #bac2de; text-decoration: none; font-weight: bold; }
+        .btn-voltar { color: #bac2de; text-decoration: none; font-weight: bold; padding: 10px; border: 1px solid #45475a; border-radius: 8px; }
 
-        /* FORMULÁRIO DE CRIAÇÃO */
+        /* --- SISTEMA DE ABAS (TABS) --- */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn {
+            background: #313244; color: #bac2de; border: none; padding: 12px 20px;
+            border-radius: 8px 8px 0 0; cursor: pointer; font-weight: bold; flex-grow: 1;
+            transition: all 0.3s; border-bottom: 3px solid transparent;
+        }
+        .tab-btn:hover { background: #45475a; }
+        .tab-btn.ativo { 
+            background: #45475a; color: #a6e3a1; border-bottom: 3px solid #a6e3a1; 
+        }
+
+        /* CONTEÚDO DAS ABAS */
+        .tab-content { display: none; }
+        .tab-content.ativo { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ESTILOS GERAIS DE FORMULÁRIO */
         .admin-card {
-            background: #313244; padding: 25px; border-radius: 15px;
+            background: #313244; padding: 25px; border-radius: 0 0 15px 15px; /* Arredonda só embaixo */
             box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 30px;
         }
-        .card-titulo { 
-            font-size: 1.2rem; font-weight: bold; color: #a6e3a1; margin-bottom: 20px; 
-            display: flex; align-items: center; gap: 10px;
-        }
-
-        /* INPUTS ESTILIZADOS */
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #bac2de; }
-        input, textarea {
+        input, textarea, select {
             width: 100%; padding: 12px; background: #181825; border: 1px solid #45475a;
             border-radius: 8px; color: white; font-size: 1rem; outline: none;
-            transition: border 0.2s;
         }
-        input:focus, textarea:focus { border-color: #89b4fa; }
-        textarea { height: 120px; resize: vertical; }
-
-        /* BOTÕES DE AÇÃO */
+        input:focus { border-color: #89b4fa; }
+        
         .btn-salvar {
-            background: #a6e3a1; color: #1e1e2e; border: none; padding: 15px 30px;
+            background: #a6e3a1; color: #1e1e2e; border: none; padding: 15px;
             border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%;
-            font-size: 1rem; transition: transform 0.2s;
+            font-size: 1rem; margin-top: 10px;
         }
-        .btn-salvar:hover { transform: scale(1.02); background: #94e2d5; }
+        .btn-salvar:hover { background: #94e2d5; }
 
-        /* LISTA DE RECITATIVOS ANTERIORES */
-        .lista-historico { margin-top: 40px; }
-        .item-historico {
-            background: #45475a; padding: 15px; border-radius: 8px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center;
+        /* --- ESTILOS DA ESCALA (NOVO) --- */
+        .lista-escala { display: flex; flex-direction: column; gap: 10px; }
+        .item-escala {
+            background: #181825; padding: 15px; border-radius: 8px; border: 1px solid #45475a;
+            display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
         }
-        .tag-ativo { 
-            background: #a6e3a1; color: #1e1e2e; padding: 2px 8px; 
-            border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; 
+        .nome-irmao { flex-grow: 1; font-weight: bold; color: #cdd6f4; min-width: 200px; }
+        .input-curto { width: 100px; }
+        .info-recitativo-ativo {
+            background: #fab387; color: #1e1e2e; padding: 10px; border-radius: 8px;
+            text-align: center; margin-bottom: 20px; font-weight: bold;
         }
 
     </style>
@@ -74,38 +84,57 @@
             <a href="index.html" class="btn-voltar">Sair</a>
         </div>
 
-        <div class="admin-card">
-            <div class="card-titulo">Creating Novo Recitativo</div>
-            
-            <div class="form-group">
-                <label>Tema / Título</label>
-                <input type="text" id="tema" placeholder="Ex: A Grande Comissão">
-            </div>
-
-            <div class="form-group">
-                <label>Referência Bíblica</label>
-                <input type="text" id="ref" placeholder="Ex: Mateus 28:19">
-            </div>
-
-            <div class="form-group">
-                <label>Data da Apresentação</label>
-                <input type="date" id="data">
-            </div>
-
-            <div class="form-group">
-                <label>Texto Completo (Para leitura)</label>
-                <textarea id="texto" placeholder="Cole aqui o texto bíblico que aparecerá no topo do painel..."></textarea>
-            </div>
-
-            <button onclick="salvarRecitativo()" class="btn-salvar">PUBLICAR RECITATIVO</button>
+        <div class="tabs">
+            <button class="tab-btn ativo" onclick="abrirTab('recitativo')">1. Criar Recitativo</button>
+            <button class="tab-btn" onclick="abrirTab('escala')">2. Definir Escala & Grupos</button>
         </div>
 
-        <div class="lista-historico">
-            <h3 style="color:#bac2de">Últimos Lançamentos</h3>
-            <div id="lista-recitativos">
-                <p>Carregando...</p>
+        <div id="tab-recitativo" class="tab-content ativo">
+            <div class="admin-card">
+                <div class="form-group">
+                    <label>Tema / Título</label>
+                    <input type="text" id="tema" placeholder="Ex: A Caridade">
+                </div>
+                <div class="form-group">
+                    <label>Referência Bíblica</label>
+                    <input type="text" id="ref" placeholder="Ex: I Coríntios 13">
+                </div>
+                <div class="form-group">
+                    <label>Data da Apresentação</label>
+                    <input type="date" id="data">
+                </div>
+                <div class="form-group">
+                    <label>Texto Completo</label>
+                    <textarea id="texto" style="height:100px" placeholder="Cole o texto aqui..."></textarea>
+                </div>
+                <button onclick="salvarRecitativo()" class="btn-salvar">PUBLICAR RECITATIVO</button>
+
+                <div style="margin-top:30px; border-top:1px solid #45475a; padding-top:20px;">
+                    <h4 style="color:#bac2de; margin:0 0 10px 0;">Últimos Publicados:</h4>
+                    <div id="lista-historico"></div>
+                </div>
             </div>
         </div>
+
+        <div id="tab-escala" class="tab-content">
+            <div class="admin-card">
+                <div id="aviso-recitativo" class="info-recitativo-ativo">Carregando recitativo ativo...</div>
+                
+                <p style="font-size:0.9rem; color:#bac2de; margin-bottom:20px;">
+                    Defina abaixo o Grupo (A, B, C...) e os Versos (ex: 1 ao 5) para cada irmão. 
+                    Se deixar em branco, o irmão não participa deste recitativo.
+                </p>
+
+                <div id="lista-irmaos" class="lista-escala">
+                    <p style="text-align:center">Carregando irmãos...</p>
+                </div>
+
+                <button onclick="salvarEscala()" class="btn-salvar" style="background:#89b4fa; margin-top:20px;">
+                    SALVAR TODA A ESCALA
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -114,78 +143,181 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Carrega a lista ao abrir
-        carregarHistorico();
+        let recitativoAtivoId = null;
 
+        // --- SISTEMA DE ABAS ---
+        function abrirTab(nomeTab) {
+            // Esconde todas
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('ativo'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
+            
+            // Mostra a certa
+            document.getElementById('tab-' + nomeTab).classList.add('ativo');
+            // Ativa o botão certo (gambiarra simples para achar o botão pelo texto ou ordem)
+            const index = nomeTab === 'recitativo' ? 0 : 1;
+            document.querySelectorAll('.tab-btn')[index].classList.add('ativo');
+
+            if(nomeTab === 'escala') carregarEscala();
+        }
+
+        // --- LÓGICA DA ABA 1 (RECITATIVO) ---
         async function salvarRecitativo() {
             const tema = document.getElementById('tema').value;
             const ref = document.getElementById('ref').value;
             const data = document.getElementById('data').value;
             const texto = document.getElementById('texto').value;
 
-            if (!tema || !data) return alert("Preencha pelo menos o Tema e a Data!");
+            if (!tema || !data) return alert("Preencha Tema e Data!");
 
-            const btn = document.querySelector('.btn-salvar');
-            btn.innerText = "SALVANDO...";
-            btn.disabled = true;
+            const btn = document.querySelector('#tab-recitativo .btn-salvar');
+            btn.innerText = "SALVANDO..."; btn.disabled = true;
 
             try {
-                // 1. Desativa todos os anteriores (Só pode ter 1 ativo)
                 await clienteSupabase.from('recitativos').update({ ativo: false }).neq('id', 0);
-
-                // 2. Cria o novo
                 const { error } = await clienteSupabase.from('recitativos').insert({
-                    tema: tema,
-                    referencia_biblica: ref,
-                    data_apresentacao: data,
-                    conteudo_texto: texto,
-                    ativo: true
+                    tema, referencia_biblica: ref, data_apresentacao: data, conteudo_texto: texto, ativo: true
                 });
-
                 if (error) throw error;
-
-                alert("Recitativo Publicado com Sucesso!");
-                
-                // Limpa o formulário
-                document.getElementById('tema').value = '';
-                document.getElementById('ref').value = '';
-                document.getElementById('texto').value = '';
-                
+                alert("Recitativo Publicado!");
                 carregarHistorico();
-
-            } catch (erro) {
-                alert("Erro: " + erro.message);
-            } finally {
-                btn.innerText = "PUBLICAR RECITATIVO";
-                btn.disabled = false;
-            }
+            } catch (erro) { alert(erro.message); } 
+            finally { btn.innerText = "PUBLICAR RECITATIVO"; btn.disabled = false; }
         }
 
         async function carregarHistorico() {
-            const { data } = await clienteSupabase
-                .from('recitativos')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(5);
-
-            const div = document.getElementById('lista-recitativos');
+            const { data } = await clienteSupabase.from('recitativos').select('*').order('created_at', { ascending: false }).limit(3);
+            const div = document.getElementById('lista-historico');
             div.innerHTML = '';
-
             data.forEach(item => {
-                const dataFormatada = new Date(item.data_apresentacao + 'T12:00:00').toLocaleDateString('pt-BR');
-                const tag = item.ativo ? '<span class="tag-ativo">ATIVO</span>' : '';
-                
-                div.innerHTML += `
-                    <div class="item-historico" style="opacity: ${item.ativo ? 1 : 0.6}">
+                const ativo = item.ativo ? ' (ATIVO)' : '';
+                div.innerHTML += `<div style="padding:5px; border-bottom:1px solid #45475a; font-size:0.9rem;">${item.tema} - ${item.referencia_biblica} <span style="color:#a6e3a1">${ativo}</span></div>`;
+            });
+        }
+
+        // --- LÓGICA DA ABA 2 (ESCALA) ---
+        async function carregarEscala() {
+            // 1. Busca qual é o recitativo ativo
+            const { data: recs } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
+            if (!recs.length) {
+                document.getElementById('aviso-recitativo').innerText = "Nenhum Recitativo Ativo! Crie um na Aba 1 primeiro.";
+                return;
+            }
+            const rec = recs[0];
+            recitativoAtivoId = rec.id;
+            document.getElementById('aviso-recitativo').innerText = `Editando Escala para: ${rec.tema} (${rec.referencia_biblica})`;
+
+            // 2. Busca todos os irmãos (Profiles)
+            const { data: perfis } = await clienteSupabase.from('profiles').select('*').order('nome_completo');
+
+            // 3. Busca atribuições JÁ EXISTENTES para este recitativo
+            const { data: atribs } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', rec.id);
+
+            // 4. Monta a lista na tela
+            const divLista = document.getElementById('lista-irmaos');
+            divLista.innerHTML = '';
+
+            perfis.forEach(perfil => {
+                // Verifica se esse irmão já tem algo definido
+                const atribuicao = atribs.find(a => a.usuario_id === perfil.id) || {};
+                const grupoValor = atribuicao.grupo || '';
+                const versosValor = atribuicao.faixa_versos || '';
+
+                // Nome para exibir (Prioriza nome completo, senão email)
+                const nomeExibicao = perfil.nome_completo || perfil.email;
+
+                divLista.innerHTML += `
+                    <div class="item-escala">
+                        <div class="nome-irmao">${nomeExibicao}</div>
+                        
                         <div>
-                            <div style="font-weight:bold; color:white;">${item.tema}</div>
-                            <div style="font-size:0.8rem; color:#bac2de;">${dataFormatada} - ${item.referencia_biblica}</div>
+                            <label style="font-size:0.7rem;">Grupo (A, B...)</label>
+                            <input type="text" class="input-curto input-grupo" 
+                                data-userid="${perfil.id}" 
+                                value="${grupoValor}" placeholder="-">
                         </div>
-                        ${tag}
+
+                        <div>
+                            <label style="font-size:0.7rem;">Versos (Ex: 1-5)</label>
+                            <input type="text" class="input-curto input-versos" 
+                                data-userid="${perfil.id}" 
+                                value="${versosValor}" placeholder="-">
+                        </div>
                     </div>
                 `;
             });
         }
+
+        async function salvarEscala() {
+            if (!recitativoAtivoId) return alert("Erro: Nenhum recitativo ativo.");
+            
+            const btn = document.querySelector('#tab-escala .btn-salvar');
+            btn.innerText = "SALVANDO ESCALA..."; btn.disabled = true;
+
+            const inputsGrupo = document.querySelectorAll('.input-grupo');
+            const inputsVersos = document.querySelectorAll('.input-versos');
+            
+            // Vamos deletar tudo desse recitativo e recriar (jeito mais fácil de atualizar)
+            // Cuidado: isso reseta as confirmações de presença se fizermos brute force.
+            // MELHOR: Upsert (Atualizar se existe, criar se não existe).
+
+            const updates = [];
+
+            // Varre os inputs
+            for (let i = 0; i < inputsGrupo.length; i++) {
+                const userId = inputsGrupo[i].dataset.userid;
+                const grupo = inputsGrupo[i].value.trim().toUpperCase();
+                const versos = inputsVersos[i].value.trim();
+
+                // Se tiver Grupo E Versos preenchidos, a gente salva
+                if (grupo && versos) {
+                    updates.push({
+                        recitativo_id: recitativoAtivoId,
+                        usuario_id: userId,
+                        grupo: grupo,
+                        faixa_versos: versos,
+                        // Preserva a presença se já existir (Não vamos mexer nela aqui por enquanto, para simplificar)
+                    });
+                }
+            }
+
+            try {
+                // 1. Primeiro, precisamos saber quais JÁ existem para não perder o status de "presenca_confirmada"
+                // A estratégia mais segura agora: Deletar quem ficou vazio e Upsert quem tem dados.
+                
+                // Vamos fazer um loop simples de Upsert para cada um (pode ser lento se tiver 1000 pessoas, mas para 50 é rápido)
+                for (const item of updates) {
+                    // Tenta buscar se já existe
+                    const { data: existente } = await clienteSupabase
+                        .from('versoes_atribuidas')
+                        .select('id')
+                        .eq('recitativo_id', item.recitativo_id)
+                        .eq('usuario_id', item.usuario_id)
+                        .maybeSingle();
+
+                    if (existente) {
+                        // Atualiza (Update) mantendo a presença
+                        await clienteSupabase.from('versoes_atribuidas').update({
+                            grupo: item.grupo,
+                            faixa_versos: item.faixa_versos
+                        }).eq('id', existente.id);
+                    } else {
+                        // Cria novo (Insert)
+                        await clienteSupabase.from('versoes_atribuidas').insert(item);
+                    }
+                }
+
+                alert("Escala Salva com Sucesso!");
+
+            } catch (erro) {
+                console.error(erro);
+                alert("Erro ao salvar: " + erro.message);
+            } finally {
+                btn.innerText = "SALVAR TODA A ESCALA";
+                btn.disabled = false;
+            }
+        }
+
+        carregarHistorico();
     </script>
 </body>
 </html>
