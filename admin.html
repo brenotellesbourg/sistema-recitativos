@@ -3,95 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Gestão - CCB</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Administração - CCB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* CSS Otimizado */
-        body { background-color: #f0f2f5; display: block !important; height: auto !important; padding: 20px; overflow-y: auto !important; }
-        
-        .header-admin {
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { 
+            margin: 0; padding: 20px; 
+            background-color: #1e1e2e; /* Fundo escuro estilo Hacker/Admin */
+            color: #cdd6f4;
+            min-height: 100vh;
+        }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        /* CABEÇALHO */
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 30px; border-bottom: 1px solid #313244; padding-bottom: 20px;
+        }
+        .titulo { font-size: 1.8rem; font-weight: 800; color: #fab387; }
+        .btn-voltar { color: #bac2de; text-decoration: none; font-weight: bold; }
+
+        /* FORMULÁRIO DE CRIAÇÃO */
+        .admin-card {
+            background: #313244; padding: 25px; border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 30px;
+        }
+        .card-titulo { 
+            font-size: 1.2rem; font-weight: bold; color: #a6e3a1; margin-bottom: 20px; 
+            display: flex; align-items: center; gap: 10px;
+        }
+
+        /* INPUTS ESTILIZADOS */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #bac2de; }
+        input, textarea {
+            width: 100%; padding: 12px; background: #181825; border: 1px solid #45475a;
+            border-radius: 8px; color: white; font-size: 1rem; outline: none;
+            transition: border 0.2s;
+        }
+        input:focus, textarea:focus { border-color: #89b4fa; }
+        textarea { height: 120px; resize: vertical; }
+
+        /* BOTÕES DE AÇÃO */
+        .btn-salvar {
+            background: #a6e3a1; color: #1e1e2e; border: none; padding: 15px 30px;
+            border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%;
+            font-size: 1rem; transition: transform 0.2s;
+        }
+        .btn-salvar:hover { transform: scale(1.02); background: #94e2d5; }
+
+        /* LISTA DE RECITATIVOS ANTERIORES */
+        .lista-historico { margin-top: 40px; }
+        .item-historico {
+            background: #45475a; padding: 15px; border-radius: 8px; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center;
-            background: #0b1b3d; color: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px;
+        }
+        .tag-ativo { 
+            background: #a6e3a1; color: #1e1e2e; padding: 2px 8px; 
+            border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; 
         }
 
-        .secao-admin {
-            background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 20px; margin-bottom: 30px;
-        }
-
-        h2 { color: #0b1b3d; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; font-size: 1.2rem; }
-        label { font-weight: bold; color: #333; margin-top: 10px; display: block; font-size: 0.9rem; }
-        
-        input, textarea, select {
-            width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 15px;
-            border: 1px solid #ddd; border-radius: 5px; font-size: 16px; box-sizing: border-box;
-        }
-        textarea { height: 100px; resize: vertical; }
-
-        .btn-principal {
-            background-color: #28a745; color: white; font-weight: bold; border: none;
-            padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 16px;
-        }
-        .btn-pequeno {
-            background: #007bff; color: white; border: none; padding: 8px 12px; 
-            border-radius: 5px; cursor: pointer; font-size: 14px;
-        }
-
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background: #e9ecef; padding: 12px; text-align: left; color: #495057; font-size: 0.9rem; }
-        td { padding: 10px; border-bottom: 1px solid #dee2e6; vertical-align: middle; }
-        
-        .status-cheio { color: #dc3545; font-weight: bold; font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
-    <div class="header-admin">
-        <h3>Painel de Gestão</h3>
-        <button onclick="sair()" style="background:#dc3545; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">Sair</button>
-    </div>
+    <div class="container">
+        <div class="header">
+            <div class="titulo">Painel de Controle ⚙️</div>
+            <a href="index.html" class="btn-voltar">Sair</a>
+        </div>
 
-    <div class="secao-admin">
-        <h2>1. Novo Recitativo</h2>
-        
-        <label>Tema / Título</label>
-        <input type="text" id="tema" placeholder="Ex: A Grande Comissão">
+        <div class="admin-card">
+            <div class="card-titulo">Creating Novo Recitativo</div>
+            
+            <div class="form-group">
+                <label>Tema / Título</label>
+                <input type="text" id="tema" placeholder="Ex: A Grande Comissão">
+            </div>
 
-        <label>Referência Bíblica</label>
-        <input type="text" id="referencia" placeholder="Ex: Mateus 28:19">
+            <div class="form-group">
+                <label>Referência Bíblica</label>
+                <input type="text" id="ref" placeholder="Ex: Mateus 28:19">
+            </div>
 
-        <label>Texto Completo</label>
-        <textarea id="conteudo" placeholder="Digite o verso completo aqui..."></textarea>
+            <div class="form-group">
+                <label>Data da Apresentação</label>
+                <input type="date" id="data">
+            </div>
 
-        <label>Data da Apresentação</label>
-        <input type="date" id="data_apres">
+            <div class="form-group">
+                <label>Texto Completo (Para leitura)</label>
+                <textarea id="texto" placeholder="Cole aqui o texto bíblico que aparecerá no topo do painel..."></textarea>
+            </div>
 
-        <label>Público Alvo</label>
-        <select id="publico_alvo" disabled style="background-color: #e9ecef;">
-            <option>Carregando...</option>
-        </select>
+            <button onclick="salvarRecitativo()" class="btn-salvar">PUBLICAR RECITATIVO</button>
+        </div>
 
-        <button onclick="salvarRecitativo()" class="btn-principal">Salvar Recitativo Geral</button>
-    </div>
-
-    <div class="secao-admin">
-        <h2>2. Distribuição de Versos</h2>
-        <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">Selecione o grupo. O sistema controla o limite de 3 pessoas.</p>
-        
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Irmão</th>
-                        <th>Grupo / Versos</th>
-                        <th style="width: 80px;">Salvar</th>
-                    </tr>
-                </thead>
-                <tbody id="tabela-corpo">
-                    <tr><td colspan="3" style="text-align:center; padding: 20px;">Carregando planilha...</td></tr>
-                </tbody>
-            </table>
+        <div class="lista-historico">
+            <h3 style="color:#bac2de">Últimos Lançamentos</h3>
+            <div id="lista-recitativos">
+                <p>Carregando...</p>
+            </div>
         </div>
     </div>
 
@@ -101,159 +114,78 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const OPCOES_VERSOS = [
-            { grupo: 'A', versos: '1 ao 3' },
-            { grupo: 'B', versos: '4 ao 6' },
-            { grupo: 'C', versos: '7 ao 9' },
-            { grupo: 'D', versos: '10 ao 13' },
-            { grupo: 'E', versos: '14 ao 16' }
-        ];
-        const LIMITE_POR_GRUPO = 3;
-
-        // Verifica Admin
-        if (localStorage.getItem('usuario_funcao') !== 'ADMIN') {
-            window.location.href = 'index.html';
-        }
-
-        async function carregarDados() {
-            try {
-                // 1. Configurar Gênero
-                const generoAdmin = localStorage.getItem('usuario_genero') || 'MASCULINO';
-                const selectPublico = document.getElementById('publico_alvo');
-                selectPublico.innerHTML = (generoAdmin === 'MASCULINO') 
-                    ? '<option value="Irmãos">Irmãos (Masculino)</option>' 
-                    : '<option value="Irmãs">Irmãs (Feminino)</option>';
-
-                // 2. Carregar Planilha (COM PROTEÇÃO)
-                const corpo = document.getElementById('tabela-corpo');
-
-                const { data: perfis, error: errPerfis } = await clienteSupabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('funcao', 'MEMBRO')
-                    .order('nome_completo');
-                
-                if (errPerfis) throw errPerfis;
-                
-                // Busca Atribuições
-                const { data: atribuicoesData } = await clienteSupabase.from('versoes_atribuidas').select('*');
-                const atribuicoes = atribuicoesData || [];
-
-                // Conta Lotação
-                let contadorGrupos = {};
-                atribuicoes.forEach(a => { 
-                    if(a.grupo) contadorGrupos[a.grupo] = (contadorGrupos[a.grupo] || 0) + 1; 
-                });
-
-                let html = '';
-                perfis.forEach(perfil => {
-                    const tarefa = atribuicoes.find(a => a.usuario_id === perfil.id) || {};
-                    const grupoAtual = tarefa.grupo || '';
-                    
-                    let opcoesHtml = `<option value="">-- Selecione --</option>`;
-                    OPCOES_VERSOS.forEach(op => {
-                        const isSelected = (grupoAtual === op.grupo) ? 'selected' : '';
-                        let ocupados = contadorGrupos[op.grupo] || 0;
-                        let aviso = `(${ocupados}/${LIMITE_POR_GRUPO})`;
-                        let estilo = (ocupados >= LIMITE_POR_GRUPO && !isSelected) ? '🔴 CHEIO' : aviso;
-
-                        opcoesHtml += `<option value="${op.grupo}|${op.versos}" ${isSelected}>Gp ${op.grupo}: ${op.versos} ${estilo}</option>`;
-                    });
-
-                    // --- AQUI ESTAVA O ERRO ---
-                    // Antes: perfil.email.split('@')[0] (quebrava se email fosse vazio)
-                    // Agora: Verificamos se existe antes de tentar cortar
-                    let nomeExibicao = "Usuário sem Nome";
-                    if (perfil.nome_completo) {
-                        nomeExibicao = perfil.nome_completo;
-                    } else if (perfil.email) {
-                        nomeExibicao = perfil.email.split('@')[0];
-                    }
-
-                    html += `
-                        <tr>
-                            <td><strong>${nomeExibicao}</strong></td>
-                            <td>
-                                <select id="select-${perfil.id}" style="margin:0;">${opcoesHtml}</select>
-                            </td>
-                            <td>
-                                <button class="btn-pequeno" onclick="salvarLinha('${perfil.id}', '${tarefa.id || ''}', this)">💾</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                corpo.innerHTML = html;
-
-            } catch (erro) {
-                console.error(erro);
-                // Mostra o erro na tela sem travar
-                document.getElementById('tabela-corpo').innerHTML = 
-                    `<tr><td colspan="3" style="color:red; text-align:center;">Erro: ${erro.message}</td></tr>`;
-            }
-        }
+        // Carrega a lista ao abrir
+        carregarHistorico();
 
         async function salvarRecitativo() {
             const tema = document.getElementById('tema').value;
-            const ref = document.getElementById('referencia').value;
-            const texto = document.getElementById('conteudo').value;
-            const data = document.getElementById('data_apres').value;
-            const publico = document.getElementById('publico_alvo').value;
+            const ref = document.getElementById('ref').value;
+            const data = document.getElementById('data').value;
+            const texto = document.getElementById('texto').value;
 
-            if (!tema || !data) return alert("Preencha Tema e Data!");
+            if (!tema || !data) return alert("Preencha pelo menos o Tema e a Data!");
 
-            await clienteSupabase.from('recitativos').update({ ativo: false }).eq('publico_alvo', publico);
+            const btn = document.querySelector('.btn-salvar');
+            btn.innerText = "SALVANDO...";
+            btn.disabled = true;
 
-            const { error } = await clienteSupabase.from('recitativos').insert([{
-                tema: tema, referencia_biblica: ref, conteudo_texto: texto, 
-                data_apresentacao: data, publico_alvo: publico, ativo: true
-            }]);
+            try {
+                // 1. Desativa todos os anteriores (Só pode ter 1 ativo)
+                await clienteSupabase.from('recitativos').update({ ativo: false }).neq('id', 0);
 
-            if (error) alert("Erro: " + error.message);
-            else { alert("Recitativo Salvo!"); window.location.reload(); }
+                // 2. Cria o novo
+                const { error } = await clienteSupabase.from('recitativos').insert({
+                    tema: tema,
+                    referencia_biblica: ref,
+                    data_apresentacao: data,
+                    conteudo_texto: texto,
+                    ativo: true
+                });
+
+                if (error) throw error;
+
+                alert("Recitativo Publicado com Sucesso!");
+                
+                // Limpa o formulário
+                document.getElementById('tema').value = '';
+                document.getElementById('ref').value = '';
+                document.getElementById('texto').value = '';
+                
+                carregarHistorico();
+
+            } catch (erro) {
+                alert("Erro: " + erro.message);
+            } finally {
+                btn.innerText = "PUBLICAR RECITATIVO";
+                btn.disabled = false;
+            }
         }
 
-        async function salvarLinha(usuarioId, idAtribuicao, btn) {
-            const originalTexto = btn.innerText;
-            btn.innerText = "..."; 
-            
-            const select = document.getElementById(`select-${usuarioId}`);
-            const valor = select.value;
+        async function carregarHistorico() {
+            const { data } = await clienteSupabase
+                .from('recitativos')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(5);
 
-            // Se não selecionar nada, não faz nada
-            if (!valor) { btn.innerText = originalTexto; return; }
+            const div = document.getElementById('lista-recitativos');
+            div.innerHTML = '';
 
-            const [grupo, versos] = valor.split('|');
-
-            const { data: recitativos } = await clienteSupabase.from('recitativos').select('id').eq('ativo', true).limit(1);
-            if(!recitativos || !recitativos.length) {
-                alert("Crie um Recitativo primeiro!");
-                btn.innerText = originalTexto;
-                return;
-            }
-
-            const dados = {
-                usuario_id: usuarioId, recitativo_id: recitativos[0].id,
-                grupo: grupo, faixa_versos: versos
-            };
-
-            let erro;
-            if (idAtribuicao) {
-                const { error } = await clienteSupabase.from('versoes_atribuidas').update(dados).eq('id', idAtribuicao);
-                erro = error;
-            } else {
-                const { error } = await clienteSupabase.from('versoes_atribuidas').insert([dados]);
-                erro = error;
-            }
-
-            if (erro) alert("Erro: " + erro.message);
-            else carregarDados();
-            
-            btn.innerText = originalTexto;
+            data.forEach(item => {
+                const dataFormatada = new Date(item.data_apresentacao + 'T12:00:00').toLocaleDateString('pt-BR');
+                const tag = item.ativo ? '<span class="tag-ativo">ATIVO</span>' : '';
+                
+                div.innerHTML += `
+                    <div class="item-historico" style="opacity: ${item.ativo ? 1 : 0.6}">
+                        <div>
+                            <div style="font-weight:bold; color:white;">${item.tema}</div>
+                            <div style="font-size:0.8rem; color:#bac2de;">${dataFormatada} - ${item.referencia_biblica}</div>
+                        </div>
+                        ${tag}
+                    </div>
+                `;
+            });
         }
-
-        function sair() { localStorage.clear(); window.location.href = 'index.html'; }
-        
-        carregarDados();
     </script>
 </body>
 </html>
