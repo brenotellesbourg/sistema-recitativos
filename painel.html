@@ -6,15 +6,16 @@
     <title>Painel Pessoal - CCB</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* (MANTENDO O CSS BONITO DE SEMPRE) */
+        /* --- ESTILOS VISUAIS --- */
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; }
+
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         h2.saudacao-texto { color: #0b1b3d; margin: 0; font-weight: 800; font-size: 1.4rem; }
         .subtitulo-saudacao { color: #666; font-size: 0.9rem; }
         .btn-sair { padding: 8px 15px; border: 1px solid #ccc; background: transparent; border-radius: 20px; cursor: pointer; color: #555; font-weight: 600; }
 
-        /* O BOTÃO POST-IT (Portal) */
+        /* PORTAL */
         .btn-portal {
             display: block; width: 100%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -26,23 +27,24 @@
         }
         .btn-portal:hover { transform: translateY(-3px); }
 
-        /* CARTÕES e RESTO DO DESIGN */
+        /* CARDS */
         .recitativo-card { background-color: #fffde7; border-left: 5px solid #fbc02d; border-radius: 8px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .recitativo-titulo { font-weight: 800; color: #f57f17; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 5px; }
         .recitativo-texto { font-style: italic; color: #444; font-size: 1rem; }
 
         .dashboard-card { background: #eef2f8; border: 1px solid #ccd6e0; border-radius: 20px; padding: 15px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; position: relative; }
         .grupo-badge { background-color: #4a76c5; color: white; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; align-self: flex-start; }
+        
         .card-content { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
         .perfil-area { display: flex; align-items: center; gap: 10px; min-width: 140px; }
         .avatar { width: 45px; height: 45px; background: #e76f51; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border: 2px solid white; }
         .info-nome div { font-weight: 800; color: #333; font-size: 0.95rem; }
-        .info-nome span { font-size: 0.75rem; color: #666; }
 
+        /* QUADRADINHOS DE DEDICAÇÃO (Agora Reais) */
         .dedicacao-area { display: flex; gap: 4px; margin-top: 5px; }
         .dia-quadrado { width: 12px; height: 12px; background: #d0d0d0; border-radius: 3px; }
-        .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; }
-        .dia-quadrado.hoje { background: #ff9800; border: 1px solid #e65100; transform: scale(1.2); }
+        .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; } /* Estudou de verdade */
+        .dia-quadrado.hoje-vazio { border: 2px solid #ff9800; background: transparent; } /* É hoje e falta estudar */
 
         .verso-box { background: #4a76c5; color: white; padding: 10px 20px; border-radius: 8px; text-align: center; flex-grow: 1; min-width: 100px; }
         .verso-box small { font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
@@ -53,7 +55,14 @@
         .donut-hole { width: 28px; height: 28px; background: white; border-radius: 50%; }
         .porcentagem-texto { font-weight: bold; font-size: 0.8rem; color: #333; }
 
-        .btn-confirmar { background: #00b894; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; transition: transform 0.2s; }
+        /* BOTÕES DE AÇÃO */
+        .btn-acao { width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; margin-top: 5px; transition: transform 0.2s; }
+        .btn-acao:active { transform: scale(0.98); }
+        .btn-estudar { background: #ff9800; }
+        .btn-estudar.feito { background: #28a745; cursor: default; }
+        .btn-confirmar { background: #4a76c5; margin-top: 10px; }
+        .btn-confirmar.ok { background: #00b894; }
+
         .status-presenca { width: 15px; height: 15px; border-radius: 50%; background: #ccc; border: 2px solid white; position: absolute; top: 15px; right: 15px; }
         .status-presenca.ok { background: #00b894; box-shadow: 0 0 5px #00b894; }
         .section-label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 30px; margin-bottom: 10px; font-weight: bold; }
@@ -69,9 +78,7 @@
         <button onclick="sair()" class="btn-sair">Sair</button>
     </div>
 
-    <a href="status.html" class="btn-portal">
-        📊 Ver Progresso da Obra (Todos os Grupos)
-    </a>
+    <a href="status.html" class="btn-portal">📊 Ver Progresso da Obra (Todos os Grupos)</a>
 
     <div id="area-texto-biblico"></div>
     <div id="meu-painel"><p style="text-align:center">Carregando...</p></div>
@@ -87,29 +94,31 @@
         const meuId = localStorage.getItem('usuario_id');
         if (!meuId) window.location.href = 'index.html';
 
-        const hoje = new Date().getDay(); 
-        const diaSemanaIndex = hoje === 0 ? 6 : hoje - 1; 
-
-        function gerarQuadradinhos() {
-            let html = '';
-            const dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
-            dias.forEach((dia, index) => {
-                let classe = index < diaSemanaIndex ? 'verde' : (index === diaSemanaIndex ? 'hoje' : '');
-                html += `<div class="dia-quadrado ${classe}" title="${dia}"></div>`;
-            });
-            return html;
+        // LÓGICA DE DATAS (Segunda a Sábado)
+        function pegarDatasSemana() {
+            const hoje = new Date();
+            const diaSemana = hoje.getDay(); // 0=Dom, 1=Seg...
+            const diff = hoje.getDate() - diaSemana + (diaSemana == 0 ? -6 : 1); // Ajusta para Segunda ser o primeiro
+            
+            const datas = [];
+            for (let i = 0; i < 6; i++) { // 6 dias (Seg-Sab)
+                let d = new Date(hoje.setDate(diff + i));
+                datas.push(d.toISOString().split('T')[0]); // Formato YYYY-MM-DD
+            }
+            return datas; // Array com as datas dessa semana
         }
 
         async function carregarTudo() {
             try {
+                // 1. Perfil
                 const { data: perfis } = await clienteSupabase.from('profiles').select('*');
                 const meuPerfil = perfis.find(p => p.id === meuId);
                 if (meuPerfil) {
                     const nome = meuPerfil.nome_completo ? meuPerfil.nome_completo.split(' ')[0] : 'Irmão';
-                    const trat = (meuPerfil.genero === 'FEMININO') ? 'Irmã' : 'Irmão';
-                    document.getElementById('saudacao-titulo').innerText = `A Paz de Deus, ${trat} ${nome}!`;
+                    document.getElementById('saudacao-titulo').innerText = `A Paz de Deus, Irmão ${nome}!`;
                 }
 
+                // 2. Recitativo Ativo
                 const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
                 if (!recitativos.length) { document.getElementById('meu-painel').innerHTML = 'Sem recitativo.'; return; }
                 const recitativo = recitativos[0];
@@ -120,69 +129,131 @@
                         <div class="recitativo-texto">"${recitativo.conteudo_texto || '...'}"</div>
                     </div>`;
 
+                // 3. Atribuições
                 const { data: atribuicoes } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', recitativo.id);
                 
+                // 4. MEUS ESTUDOS (Dedicação Real)
+                // Pega todos os estudos meus desta semana
+                const datasSemana = pegarDatasSemana();
+                const hojeStr = new Date().toISOString().split('T')[0];
+                
+                const { data: estudos } = await clienteSupabase
+                    .from('historico_estudos')
+                    .select('data_estudo')
+                    .eq('usuario_id', meuId)
+                    .in('data_estudo', datasSemana); // Filtra só essa semana
+
+                const diasEstudados = estudos.map(e => e.data_estudo);
+                const estudeiHoje = diasEstudados.includes(hojeStr);
+
+                // Prepara Renderização
                 let participantes = atribuicoes.map(atrib => {
                     const perfil = perfis.find(p => p.id === atrib.usuario_id) || {};
                     return { ...atrib, profiles: perfil };
                 });
-                
                 participantes.sort((a, b) => (a.profiles.nome_completo || "").localeCompare(b.profiles.nome_completo || ""));
 
                 const eu = participantes.find(p => p.usuario_id === meuId);
                 const outros = participantes.filter(p => p.usuario_id !== meuId);
 
-                if (eu) renderizarCard(eu, 'meu-painel', true);
+                // Renderiza EU (Com botão de Estudo)
+                if (eu) renderizarMeuCard(eu, diasEstudados, estudeiHoje, datasSemana);
                 else document.getElementById('meu-painel').innerHTML = 'Não escalado.';
                 
+                // Renderiza OUTROS (Simples)
                 document.getElementById('lista-outros').innerHTML = '';
-                outros.forEach(p => renderizarCard(p, 'lista-outros', false));
+                outros.forEach(p => renderizarOutroCard(p));
 
             } catch (e) { console.error(e); }
         }
 
-        function renderizarCard(dados, containerId, souEu) {
-            let nome = dados.profiles.nome_completo || dados.profiles.email?.split('@')[0];
+        function renderizarMeuCard(dados, diasEstudados, estudeiHoje, datasSemana) {
+            const nome = dados.profiles.nome_completo || 'Eu';
             const inicial = nome.charAt(0).toUpperCase();
-            const confirmado = dados.presenca_confirmada;
-            const pctDedicao = Math.round(((diaSemanaIndex + 1) / 6) * 100);
-            const corGrafico = '#ff9800'; 
+            
+            // Lógica dos Quadradinhos REAIS
+            let htmlQuadradinhos = '';
+            let qtdEstudos = 0;
+            const hojeStr = new Date().toISOString().split('T')[0];
 
-            let btnHtml = '';
-            if (souEu) {
-                const txt = confirmado ? 'Presença Confirmada' : 'Confirmar Presença';
-                const cor = confirmado ? '#00b894' : '#4a76c5';
-                btnHtml = `<div style="width:100%; margin-top:10px;"><button class="btn-confirmar" style="background:${cor}" onclick="toggle('${dados.id}', ${confirmado})">${txt}</button></div>`;
-            }
+            datasSemana.forEach(data => {
+                let classe = '';
+                if (diasEstudados.includes(data)) {
+                    classe = 'verde'; // Estudou de verdade!
+                    qtdEstudos++;
+                } else if (data === hojeStr) {
+                    classe = 'hoje-vazio'; // É hoje e falta estudar
+                }
+                htmlQuadradinhos += `<div class="dia-quadrado ${classe}" title="${data}"></div>`;
+            });
+
+            // Gráfico REAL (Baseado em 6 dias)
+            const pctDedicao = Math.round((qtdEstudos / 6) * 100);
+            
+            // Botões
+            let btnEstudo = estudeiHoje 
+                ? `<button class="btn-acao btn-estudar feito">✅ Estudo de Hoje Registrado!</button>`
+                : `<button class="btn-acao btn-estudar" onclick="registrarEstudo()">📖 Registrar Estudo de Hoje</button>`;
+
+            let btnPresenca = `<button class="btn-acao btn-confirmar ${dados.presenca_confirmada ? 'ok' : ''}" onclick="togglePresenca('${dados.id}', ${dados.presenca_confirmada})">${dados.presenca_confirmada ? 'Presença Confirmada' : 'Confirmar Presença'}</button>`;
 
             const html = `
-                <div class="dashboard-card">
-                    <div class="status-presenca ${confirmado ? 'ok' : ''}"></div>
+                <div class="dashboard-card" style="border: 2px solid #89b4fa;">
+                    <div class="status-presenca ${dados.presenca_confirmada ? 'ok' : ''}"></div>
                     <span class="grupo-badge">GRUPO ${dados.grupo}</span>
                     <div class="card-content">
                         <div class="perfil-area">
                             <div class="avatar">${inicial}</div>
                             <div class="info-nome"><div>${nome}</div>
-                                <div class="dedicacao-area">${gerarQuadradinhos()}</div>
+                                <div class="dedicacao-area">${htmlQuadradinhos}</div>
                             </div>
                         </div>
                         <div class="verso-box"><small>Versos</small><strong>${dados.faixa_versos}</strong></div>
                         <div class="grafico-area">
-                            <div class="donut-chart" style="background: conic-gradient(${corGrafico} 0% ${pctDedicao}%, #e0e0e0 ${pctDedicao}%);">
+                            <div class="donut-chart" style="background: conic-gradient(#ff9800 0% ${pctDedicao}%, #e0e0e0 ${pctDedicao}%);">
                                 <div class="donut-hole"></div>
                             </div>
                             <span class="porcentagem-texto">${pctDedicao}%</span>
                         </div>
                     </div>
-                    ${btnHtml}
+                    <div style="width:100%">
+                        ${btnEstudo}
+                        ${btnPresenca}
+                    </div>
                 </div>`;
-            
-            if (souEu) document.getElementById(containerId).innerHTML = html;
-            else document.getElementById(containerId).innerHTML += html;
+            document.getElementById('meu-painel').innerHTML = html;
         }
 
-        async function toggle(id, estado) {
-            document.querySelector('.btn-confirmar').innerText = '...';
+        function renderizarOutroCard(dados) {
+            // Os outros ainda usam simulação visual simples ou ficam cinza, pois não vemos os estudos deles (privacidade)
+            let nome = dados.profiles.nome_completo || 'Irmão';
+            const html = `
+                <div class="dashboard-card">
+                    <div class="status-presenca ${dados.presenca_confirmada ? 'ok' : ''}"></div>
+                    <span class="grupo-badge">GRUPO ${dados.grupo}</span>
+                    <div class="card-content">
+                        <div class="perfil-area">
+                            <div class="avatar" style="background:#ccc; font-size:1rem;">${nome.charAt(0)}</div>
+                            <div class="info-nome"><div>${nome}</div><span style="font-size:0.7rem">Versos ${dados.faixa_versos}</span></div>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('lista-outros').innerHTML += html;
+        }
+
+        async function registrarEstudo() {
+            const btn = document.querySelector('.btn-estudar');
+            btn.innerText = "Registrando...";
+            
+            await clienteSupabase.from('historico_estudos').insert({ usuario_id: meuId }); // Data é automática (default now)
+            
+            // Efeito visual imediato
+            btn.innerText = "✅ Estudo Registrado!";
+            btn.classList.add('feito');
+            setTimeout(carregarTudo, 1000); // Recarrega para atualizar gráfico
+        }
+
+        async function togglePresenca(id, estado) {
             await clienteSupabase.from('versoes_atribuidas').update({ presenca_confirmada: !estado }).eq('id', id);
             carregarTudo();
         }
