@@ -7,83 +7,55 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { 
-            margin: 0; padding: 20px; 
-            background-color: #1e1e2e; color: #cdd6f4;
-            min-height: 100vh;
-        }
-
+        body { margin: 0; padding: 20px; background-color: #1e1e2e; color: #cdd6f4; min-height: 100vh; }
         .container { max-width: 900px; margin: 0 auto; }
 
         /* HEADER */
-        .header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 20px; border-bottom: 1px solid #313244; padding-bottom: 20px;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #313244; padding-bottom: 20px; }
         .titulo { font-size: 1.8rem; font-weight: 800; color: #fab387; }
         .btn-voltar { color: #bac2de; text-decoration: none; font-weight: bold; padding: 10px; border: 1px solid #45475a; border-radius: 8px; }
 
-        /* ABAS (TABS) */
+        /* ABAS */
         .tabs { display: flex; gap: 10px; margin-bottom: 0; }
-        .tab-btn {
-            background: #313244; color: #bac2de; border: none; padding: 15px 20px;
-            border-radius: 10px 10px 0 0; cursor: pointer; font-weight: bold; flex-grow: 1;
-            transition: all 0.2s; border-bottom: 3px solid transparent; opacity: 0.7;
-        }
-        .tab-btn:hover { opacity: 1; background: #45475a; }
-        .tab-btn.ativo { 
-            background: #313244; color: #a6e3a1; border-bottom: 3px solid #a6e3a1; opacity: 1;
-        }
+        .tab-btn { background: #313244; color: #bac2de; border: none; padding: 15px 20px; border-radius: 10px 10px 0 0; cursor: pointer; font-weight: bold; flex-grow: 1; opacity: 0.7; }
+        .tab-btn.ativo { background: #313244; color: #a6e3a1; border-bottom: 3px solid #a6e3a1; opacity: 1; }
 
-        /* CONTEÚDO DAS ABAS */
-        .admin-card {
-            background: #313244; padding: 25px; border-radius: 0 0 15px 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 30px; display: none;
-        }
+        .admin-card { background: #313244; padding: 25px; border-radius: 0 0 15px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); margin-bottom: 30px; display: none; }
         .admin-card.ativo { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* FORMULÁRIOS */
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 5px; font-size: 0.85rem; color: #bac2de; text-transform: uppercase; letter-spacing: 1px; }
-        input, textarea, select {
-            width: 100%; padding: 12px; background: #181825; border: 1px solid #45475a;
-            border-radius: 8px; color: white; font-size: 1rem; outline: none;
-        }
+        input, textarea { width: 100%; padding: 12px; background: #181825; border: 1px solid #45475a; border-radius: 8px; color: white; font-size: 1rem; outline: none; }
         input:focus { border-color: #89b4fa; }
         
-        .btn-salvar {
-            background: #a6e3a1; color: #1e1e2e; border: none; padding: 15px;
-            border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%;
-            font-size: 1rem; margin-top: 10px; transition: transform 0.2s;
-        }
+        .btn-salvar { background: #a6e3a1; color: #1e1e2e; border: none; padding: 15px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 10px; transition: transform 0.2s; }
         .btn-salvar:hover { transform: scale(1.02); background: #94e2d5; }
 
-        /* ÁREA DE PESQUISA (Histórico) */
-        .search-box {
-            background: #181825; padding: 10px; border-radius: 8px; 
-            border: 1px solid #45475a; margin-bottom: 15px; display: flex; gap: 10px;
+        /* DISTRIBUIDOR INTELIGENTE (ATUALIZADO) */
+        .distribuidor-box {
+            background: #181825; padding: 15px; border-radius: 10px; border: 1px solid #89b4fa;
+            margin-bottom: 20px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;
         }
+        .dist-group { flex-grow: 1; }
+        .btn-distribuir { background: #89b4fa; color: #1e1e2e; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; height: 45px; }
+        .btn-distribuir:hover { background: #b4befe; }
+
+        /* LISTA DE ESCALA */
+        .item-escala { background: #181825; padding: 10px 15px; border-radius: 8px; border: 1px solid #45475a; display: flex; align-items: center; margin-bottom: 8px; gap: 10px; transition: background 0.2s; }
+        .item-escala:hover { background: #242436; }
+        .item-escala.selecionado { border-color: #a6e3a1; background: #283038; }
+        .check-selecao { width: 20px; height: 20px; cursor: pointer; accent-color: #a6e3a1; }
+        .nome-irmao { flex-grow: 1; font-weight: bold; color: #cdd6f4; cursor: pointer; }
+        .badge-grupo { background: #45475a; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; min-width: 30px; text-align: center; }
+        .badge-verso { background: #313244; color: #fab387; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; min-width: 40px; text-align: center; }
+
+        /* Histórico */
+        .search-box { background: #181825; padding: 10px; border-radius: 8px; border: 1px solid #45475a; margin-bottom: 15px; display: flex; gap: 10px; }
         .search-input { border: none; background: transparent; color: white; flex-grow: 1; outline: none; }
-
-        .item-historico {
-            padding: 12px; border-bottom: 1px solid #45475a; 
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .item-historico { padding: 12px; border-bottom: 1px solid #45475a; display: flex; justify-content: space-between; align-items: center; }
         .tag-ativo { background: #a6e3a1; color: #1e1e2e; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
-
-        /* ÁREA DE ESCALA */
-        .item-escala {
-            background: #181825; padding: 15px; border-radius: 8px; border: 1px solid #45475a;
-            display: flex; flex-wrap: wrap; gap: 15px; align-items: center; margin-bottom: 10px;
-        }
-        .nome-irmao { flex-grow: 1; font-weight: bold; color: #cdd6f4; min-width: 150px; }
-        .input-curto { width: 80px; text-align: center; }
-        
-        .info-recitativo-ativo {
-            background: #fab387; color: #1e1e2e; padding: 10px; border-radius: 8px;
-            text-align: center; margin-bottom: 20px; font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -109,23 +81,35 @@
 
             <div style="margin-top:40px; border-top:2px dashed #45475a; padding-top:20px;">
                 <h3 style="color:#bac2de;">Histórico</h3>
-                
                 <div class="search-box">
                     <span style="font-size:1.2rem">🔍</span>
-                    <input type="text" id="searchHistory" class="search-input" placeholder="Pesquisar por tema ou data..." onkeyup="filtrarHistorico()">
+                    <input type="text" id="searchHistory" class="search-input" placeholder="Pesquisar..." onkeyup="filtrarHistorico()">
                 </div>
-
                 <div id="lista-historico">Carregando...</div>
             </div>
         </div>
 
         <div id="tab-escala" class="admin-card">
-            <div id="aviso-recitativo" class="info-recitativo-ativo">...</div>
-            <p style="color:#bac2de; font-size:0.9rem; margin-bottom:20px;">Defina abaixo o Grupo e os Versos para cada irmão neste recitativo.</p>
+            <div id="aviso-recitativo" style="background:#fab387; color:#1e1e2e; padding:10px; border-radius:8px; text-align:center; margin-bottom:20px; font-weight:bold;">...</div>
             
+            <div class="distribuidor-box">
+                <div class="dist-group">
+                    <label style="color:#89b4fa;">Criar Grupo (Letra)</label>
+                    <input type="text" id="dist-grupo" placeholder="Ex: A" maxlength="2" style="text-transform:uppercase;">
+                </div>
+                <div class="dist-group" style="flex-grow:2;">
+                    <label style="color:#89b4fa;">Faixa de Versos (Para Todos)</label>
+                    <input type="text" id="dist-faixa" placeholder="Ex: 1 a 3">
+                </div>
+                <button onclick="distribuirAutomatico()" class="btn-distribuir">⚡ Aplicar em Massa</button>
+            </div>
+
+            <p style="color:#bac2de; font-size:0.8rem; margin-bottom:10px;">
+                Selecione os 3 irmãos para formar o grupo. Todos receberão a mesma faixa de versos.
+            </p>
             <div id="lista-irmaos">Carregando...</div>
             
-            <button onclick="salvarEscala()" class="btn-salvar" style="background:#89b4fa; margin-top:20px;">SALVAR ESCALA</button>
+            <button onclick="salvarEscala()" class="btn-salvar" style="background:#89b4fa; margin-top:20px;">SALVAR ALTERAÇÕES</button>
         </div>
     </div>
 
@@ -135,122 +119,121 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let dadosHistorico = []; // Guarda os dados para pesquisa
+        let dadosHistorico = [];
         let recitativoAtivoId = null;
 
         function mudarTab(nome) {
             document.querySelectorAll('.admin-card').forEach(d => d.classList.remove('ativo'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
             document.getElementById('tab-'+nome).classList.add('ativo');
-            event.target.classList.add('ativo'); // Simples highlight
+            event.target.classList.add('ativo');
             if(nome === 'escala') carregarEscala();
         }
 
-        // --- ABA 1: RECITATIVOS ---
+        // --- ABA 1 ---
         async function salvarRecitativo() {
             const tema = document.getElementById('tema').value;
             const ref = document.getElementById('ref').value;
             const data = document.getElementById('data').value;
             const texto = document.getElementById('texto').value;
-
             if (!tema || !data) return alert("Preencha Tema e Data!");
-            
             try {
                 await clienteSupabase.from('recitativos').update({ ativo: false }).neq('id', 0);
                 await clienteSupabase.from('recitativos').insert({ tema, referencia_biblica: ref, data_apresentacao: data, conteudo_texto: texto, ativo: true });
-                alert("Publicado!");
-                carregarHistorico();
+                alert("Publicado!"); carregarHistorico();
             } catch (e) { alert(e.message); }
         }
-
         async function carregarHistorico() {
-            // Pega os últimos 20 para permitir pesquisa decente
             const { data } = await clienteSupabase.from('recitativos').select('*').order('created_at', { ascending: false }).limit(20);
-            dadosHistorico = data; // Salva na memória
-            renderizarHistorico(data);
+            dadosHistorico = data; renderizarHistorico(data);
         }
-
         function renderizarHistorico(lista) {
-            const div = document.getElementById('lista-historico');
-            div.innerHTML = '';
-            lista.forEach(item => {
-                const ativo = item.ativo ? '<span class="tag-ativo">ATIVO</span>' : '';
-                const dataFmt = new Date(item.data_apresentacao).toLocaleDateString('pt-BR');
-                div.innerHTML += `
-                    <div class="item-historico">
-                        <div>
-                            <div style="font-weight:bold; color:white;">${item.tema}</div>
-                            <div style="font-size:0.8rem; color:#bac2de;">${dataFmt} - ${item.referencia_biblica}</div>
-                        </div>
-                        ${ativo}
-                    </div>`;
-            });
+            const div = document.getElementById('lista-historico'); div.innerHTML = '';
+            lista.forEach(i => div.innerHTML += `<div class="item-historico"><div><div style="font-weight:bold; color:white;">${i.tema}</div></div>${i.ativo ? '<span class="tag-ativo">ATIVO</span>' : ''}</div>`);
         }
-
         function filtrarHistorico() {
             const termo = document.getElementById('searchHistory').value.toLowerCase();
-            const filtrados = dadosHistorico.filter(item => 
-                item.tema.toLowerCase().includes(termo) || 
-                item.referencia_biblica.toLowerCase().includes(termo) ||
-                item.data_apresentacao.includes(termo)
-            );
-            renderizarHistorico(filtrados);
+            renderizarHistorico(dadosHistorico.filter(i => i.tema.toLowerCase().includes(termo)));
         }
 
-        // --- ABA 2: ESCALA ---
+        // --- ABA 2 ---
         async function carregarEscala() {
             const { data: recs } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
             if (!recs.length) return document.getElementById('aviso-recitativo').innerText = "Crie um recitativo primeiro!";
-            
-            const rec = recs[0];
-            recitativoAtivoId = rec.id;
-            document.getElementById('aviso-recitativo').innerText = `Editando: ${rec.tema}`;
+            recitativoAtivoId = recs[0].id;
+            document.getElementById('aviso-recitativo').innerText = `Editando: ${recs[0].tema}`;
 
             const { data: perfis } = await clienteSupabase.from('profiles').select('*').order('nome_completo');
-            const { data: atribs } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', rec.id);
+            const { data: atribs } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', recitativoAtivoId);
 
-            const div = document.getElementById('lista-irmaos');
-            div.innerHTML = '';
-
+            const div = document.getElementById('lista-irmaos'); div.innerHTML = '';
             perfis.forEach(p => {
-                const atribuicao = atribs.find(a => a.usuario_id === p.id) || {};
+                const atrb = atribs.find(a => a.usuario_id === p.id) || {};
                 const nome = p.nome_completo || p.email;
                 div.innerHTML += `
-                    <div class="item-escala">
+                    <div class="item-escala" id="card-${p.id}" onclick="selecionarRow('${p.id}')">
+                        <input type="checkbox" class="check-selecao" id="chk-${p.id}" onclick="event.stopPropagation()">
                         <div class="nome-irmao">${nome}</div>
-                        <div><label>Grupo</label><input type="text" class="input-curto grp" data-uid="${p.id}" value="${atribuicao.grupo || ''}" placeholder="A"></div>
-                        <div><label>Versos</label><input type="text" class="input-curto vrs" data-uid="${p.id}" value="${atribuicao.faixa_versos || ''}" placeholder="1-5"></div>
+                        <div class="badge-grupo" id="lbl-grupo-${p.id}">${atrb.grupo || '-'}</div>
+                        <div class="badge-verso" id="lbl-verso-${p.id}">${atrb.faixa_versos || '-'}</div>
+                        <input type="hidden" class="input-grupo-real" data-uid="${p.id}" value="${atrb.grupo || ''}">
+                        <input type="hidden" class="input-verso-real" data-uid="${p.id}" value="${atrb.faixa_versos || ''}">
                     </div>`;
             });
+        }
+
+        function selecionarRow(id) {
+            const chk = document.getElementById('chk-' + id);
+            chk.checked = !chk.checked;
+            document.getElementById('card-' + id).classList.toggle('selecionado', chk.checked);
+        }
+
+        // --- DISTRIBUIDOR V2: REDUNDÂNCIA (Todos recebem o mesmo bloco) ---
+        function distribuirAutomatico() {
+            const grupoLetra = document.getElementById('dist-grupo').value.trim().toUpperCase();
+            const faixaTexto = document.getElementById('dist-faixa').value.trim(); // Agora é Texto Livre (Ex: "1 a 3")
+
+            if (!grupoLetra || !faixaTexto) return alert("Preencha a Letra do Grupo e a Faixa de Versos!");
+
+            const checks = document.querySelectorAll('.check-selecao:checked');
+            if (checks.length !== 3) return alert(`ATENÇÃO: Selecione EXATAMENTE 3 pessoas.\nVocê selecionou ${checks.length}.`);
+
+            checks.forEach(chk => {
+                const uid = chk.id.replace('chk-', '');
+                
+                // Visual
+                document.getElementById(`lbl-grupo-${uid}`).innerText = grupoLetra;
+                document.getElementById(`lbl-verso-${uid}`).innerText = faixaTexto; // Todo mundo igual
+                
+                // Dados para Salvar
+                document.querySelector(`.input-grupo-real[data-uid="${uid}"]`).value = grupoLetra;
+                document.querySelector(`.input-verso-real[data-uid="${uid}"]`).value = faixaTexto;
+
+                // Limpa
+                chk.checked = false;
+                document.getElementById('card-' + uid).classList.remove('selecionado');
+            });
+
+            alert(`Grupo ${grupoLetra} configurado!\nTodos os 3 membros receberam a faixa: "${faixaTexto}".`);
         }
 
         async function salvarEscala() {
             const btn = document.querySelector('#tab-escala .btn-salvar');
             btn.innerText = "Salvando...";
-            
-            const grupos = document.querySelectorAll('.grp');
-            const versos = document.querySelectorAll('.vrs');
+            const grupos = document.querySelectorAll('.input-grupo-real');
+            const versos = document.querySelectorAll('.input-verso-real');
             
             for (let i = 0; i < grupos.length; i++) {
                 const uid = grupos[i].dataset.uid;
-                const g = grupos[i].value.toUpperCase();
-                const v = versos[i].value;
-
+                const g = grupos[i].value; const v = versos[i].value;
                 if (g && v) {
-                    // Verifica se já existe para fazer Upsert (Update or Insert)
                     const { data: existe } = await clienteSupabase.from('versoes_atribuidas').select('id').eq('recitativo_id', recitativoAtivoId).eq('usuario_id', uid).maybeSingle();
-                    
-                    if (existe) {
-                        await clienteSupabase.from('versoes_atribuidas').update({ grupo: g, faixa_versos: v }).eq('id', existe.id);
-                    } else {
-                        await clienteSupabase.from('versoes_atribuidas').insert({ recitativo_id: recitativoAtivoId, usuario_id: uid, grupo: g, faixa_versos: v });
-                    }
+                    if (existe) await clienteSupabase.from('versoes_atribuidas').update({ grupo: g, faixa_versos: v }).eq('id', existe.id);
+                    else await clienteSupabase.from('versoes_atribuidas').insert({ recitativo_id: recitativoAtivoId, usuario_id: uid, grupo: g, faixa_versos: v });
                 }
             }
-            alert("Escala Atualizada!");
-            btn.innerText = "SALVAR ESCALA";
+            alert("Salvo!"); btn.innerText = "SALVAR ALTERAÇÕES";
         }
-
         carregarHistorico();
     </script>
 </body>
