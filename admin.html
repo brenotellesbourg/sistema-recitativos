@@ -33,29 +33,37 @@
         .btn-salvar { background: #a6e3a1; color: #1e1e2e; border: none; padding: 15px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 10px; transition: transform 0.2s; }
         .btn-salvar:hover { transform: scale(1.02); background: #94e2d5; }
 
-        /* DISTRIBUIDOR INTELIGENTE (ATUALIZADO) */
-        .distribuidor-box {
-            background: #181825; padding: 15px; border-radius: 10px; border: 1px solid #89b4fa;
-            margin-bottom: 20px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;
+        /* --- FILTRO DUPLO (PESQUISA + CALENDÁRIO) --- */
+        .filtros-container {
+            background: #181825; padding: 10px; border-radius: 8px; border: 1px solid #45475a; margin-bottom: 15px;
+            display: flex; gap: 10px; align-items: center;
         }
+        .search-input { border: none; background: transparent; color: white; flex-grow: 1; outline: none; }
+        
+        /* O Calendário Bonito */
+        .date-filter {
+            background: #313244; color: white; border: 1px solid #45475a; border-radius: 5px;
+            padding: 5px 10px; cursor: pointer; width: 140px;
+        }
+        /* Ícone de limpar data */
+        .btn-limpar-data { cursor: pointer; font-size: 1.2rem; color: #ff7675; display: none; }
+
+
+        .item-historico { padding: 12px; border-bottom: 1px solid #45475a; display: flex; justify-content: space-between; align-items: center; }
+        .tag-ativo { background: #a6e3a1; color: #1e1e2e; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+
+        /* DISTRIBUIDOR */
+        .distribuidor-box { background: #181825; padding: 15px; border-radius: 10px; border: 1px solid #89b4fa; margin-bottom: 20px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
         .dist-group { flex-grow: 1; }
         .btn-distribuir { background: #89b4fa; color: #1e1e2e; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; height: 45px; }
-        .btn-distribuir:hover { background: #b4befe; }
-
-        /* LISTA DE ESCALA */
+        
+        /* LISTA ESCALA */
         .item-escala { background: #181825; padding: 10px 15px; border-radius: 8px; border: 1px solid #45475a; display: flex; align-items: center; margin-bottom: 8px; gap: 10px; transition: background 0.2s; }
-        .item-escala:hover { background: #242436; }
         .item-escala.selecionado { border-color: #a6e3a1; background: #283038; }
         .check-selecao { width: 20px; height: 20px; cursor: pointer; accent-color: #a6e3a1; }
         .nome-irmao { flex-grow: 1; font-weight: bold; color: #cdd6f4; cursor: pointer; }
         .badge-grupo { background: #45475a; color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; min-width: 30px; text-align: center; }
         .badge-verso { background: #313244; color: #fab387; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; min-width: 40px; text-align: center; }
-
-        /* Histórico */
-        .search-box { background: #181825; padding: 10px; border-radius: 8px; border: 1px solid #45475a; margin-bottom: 15px; display: flex; gap: 10px; }
-        .search-input { border: none; background: transparent; color: white; flex-grow: 1; outline: none; }
-        .item-historico { padding: 12px; border-bottom: 1px solid #45475a; display: flex; justify-content: space-between; align-items: center; }
-        .tag-ativo { background: #a6e3a1; color: #1e1e2e; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -81,10 +89,15 @@
 
             <div style="margin-top:40px; border-top:2px dashed #45475a; padding-top:20px;">
                 <h3 style="color:#bac2de;">Histórico</h3>
-                <div class="search-box">
+                
+                <div class="filtros-container">
                     <span style="font-size:1.2rem">🔍</span>
-                    <input type="text" id="searchHistory" class="search-input" placeholder="Pesquisar..." onkeyup="filtrarHistorico()">
+                    <input type="text" id="searchHistory" class="search-input" placeholder="Pesquisar tema ou referência..." onkeyup="filtrarHistorico()">
+                    
+                    <input type="date" id="searchDate" class="date-filter" onchange="filtrarHistorico()">
+                    <span id="btnLimpar" class="btn-limpar-data" title="Limpar Data" onclick="limparData()">✖</span>
                 </div>
+
                 <div id="lista-historico">Carregando...</div>
             </div>
         </div>
@@ -103,12 +116,8 @@
                 </div>
                 <button onclick="distribuirAutomatico()" class="btn-distribuir">⚡ Aplicar em Massa</button>
             </div>
-
-            <p style="color:#bac2de; font-size:0.8rem; margin-bottom:10px;">
-                Selecione os 3 irmãos para formar o grupo. Todos receberão a mesma faixa de versos.
-            </p>
+            <p style="color:#bac2de; font-size:0.8rem; margin-bottom:10px;">Selecione os 3 irmãos para formar o grupo.</p>
             <div id="lista-irmaos">Carregando...</div>
-            
             <button onclick="salvarEscala()" class="btn-salvar" style="background:#89b4fa; margin-top:20px;">SALVAR ALTERAÇÕES</button>
         </div>
     </div>
@@ -118,24 +127,18 @@
         const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-        let dadosHistorico = [];
-        let recitativoAtivoId = null;
+        let dadosHistorico = []; let recitativoAtivoId = null;
 
         function mudarTab(nome) {
             document.querySelectorAll('.admin-card').forEach(d => d.classList.remove('ativo'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('ativo'));
-            document.getElementById('tab-'+nome).classList.add('ativo');
-            event.target.classList.add('ativo');
+            document.getElementById('tab-'+nome).classList.add('ativo'); event.target.classList.add('ativo');
             if(nome === 'escala') carregarEscala();
         }
 
-        // --- ABA 1 ---
         async function salvarRecitativo() {
-            const tema = document.getElementById('tema').value;
-            const ref = document.getElementById('ref').value;
-            const data = document.getElementById('data').value;
-            const texto = document.getElementById('texto').value;
+            const tema = document.getElementById('tema').value; const ref = document.getElementById('ref').value;
+            const data = document.getElementById('data').value; const texto = document.getElementById('texto').value;
             if (!tema || !data) return alert("Preencha Tema e Data!");
             try {
                 await clienteSupabase.from('recitativos').update({ ativo: false }).neq('id', 0);
@@ -143,96 +146,73 @@
                 alert("Publicado!"); carregarHistorico();
             } catch (e) { alert(e.message); }
         }
+
         async function carregarHistorico() {
-            const { data } = await clienteSupabase.from('recitativos').select('*').order('created_at', { ascending: false }).limit(20);
+            const { data } = await clienteSupabase.from('recitativos').select('*').order('created_at', { ascending: false }).limit(50);
             dadosHistorico = data; renderizarHistorico(data);
         }
+
         function renderizarHistorico(lista) {
             const div = document.getElementById('lista-historico'); div.innerHTML = '';
-            lista.forEach(i => div.innerHTML += `<div class="item-historico"><div><div style="font-weight:bold; color:white;">${i.tema}</div></div>${i.ativo ? '<span class="tag-ativo">ATIVO</span>' : ''}</div>`);
+            if(lista.length === 0) div.innerHTML = '<p style="text-align:center; color:#666">Nenhum resultado encontrado.</p>';
+            lista.forEach(i => div.innerHTML += `<div class="item-historico"><div><div style="font-weight:bold; color:white;">${i.tema}</div><div style="font-size:0.8rem; color:#bac2de;">${new Date(i.data_apresentacao + 'T12:00:00').toLocaleDateString('pt-BR')} - ${i.referencia_biblica}</div></div>${i.ativo ? '<span class="tag-ativo">ATIVO</span>' : ''}</div>`);
         }
+
         function filtrarHistorico() {
             const termo = document.getElementById('searchHistory').value.toLowerCase();
-            renderizarHistorico(dadosHistorico.filter(i => i.tema.toLowerCase().includes(termo)));
+            const dataFiltro = document.getElementById('searchDate').value; // Formato yyyy-mm-dd
+            const btnLimpar = document.getElementById('btnLimpar');
+
+            // Mostra/Esconde botão de limpar
+            if(dataFiltro) btnLimpar.style.display = 'block';
+            else btnLimpar.style.display = 'none';
+
+            const filtrados = dadosHistorico.filter(item => {
+                const matchTexto = item.tema.toLowerCase().includes(termo) || item.referencia_biblica.toLowerCase().includes(termo);
+                const matchData = dataFiltro ? item.data_apresentacao === dataFiltro : true;
+                return matchTexto && matchData;
+            });
+            renderizarHistorico(filtrados);
+        }
+
+        function limparData() {
+            document.getElementById('searchDate').value = '';
+            filtrarHistorico();
         }
 
         // --- ABA 2 ---
         async function carregarEscala() {
             const { data: recs } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
             if (!recs.length) return document.getElementById('aviso-recitativo').innerText = "Crie um recitativo primeiro!";
-            recitativoAtivoId = recs[0].id;
-            document.getElementById('aviso-recitativo').innerText = `Editando: ${recs[0].tema}`;
-
+            recitativoAtivoId = recs[0].id; document.getElementById('aviso-recitativo').innerText = `Editando: ${recs[0].tema}`;
             const { data: perfis } = await clienteSupabase.from('profiles').select('*').order('nome_completo');
             const { data: atribs } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', recitativoAtivoId);
-
             const div = document.getElementById('lista-irmaos'); div.innerHTML = '';
             perfis.forEach(p => {
                 const atrb = atribs.find(a => a.usuario_id === p.id) || {};
-                const nome = p.nome_completo || p.email;
-                div.innerHTML += `
-                    <div class="item-escala" id="card-${p.id}" onclick="selecionarRow('${p.id}')">
-                        <input type="checkbox" class="check-selecao" id="chk-${p.id}" onclick="event.stopPropagation()">
-                        <div class="nome-irmao">${nome}</div>
-                        <div class="badge-grupo" id="lbl-grupo-${p.id}">${atrb.grupo || '-'}</div>
-                        <div class="badge-verso" id="lbl-verso-${p.id}">${atrb.faixa_versos || '-'}</div>
-                        <input type="hidden" class="input-grupo-real" data-uid="${p.id}" value="${atrb.grupo || ''}">
-                        <input type="hidden" class="input-verso-real" data-uid="${p.id}" value="${atrb.faixa_versos || ''}">
-                    </div>`;
+                div.innerHTML += `<div class="item-escala" id="card-${p.id}" onclick="selecionarRow('${p.id}')"><input type="checkbox" class="check-selecao" id="chk-${p.id}" onclick="event.stopPropagation()"><div class="nome-irmao">${p.nome_completo || p.email}</div><div class="badge-grupo" id="lbl-grupo-${p.id}">${atrb.grupo || '-'}</div><div class="badge-verso" id="lbl-verso-${p.id}">${atrb.faixa_versos || '-'}</div><input type="hidden" class="input-grupo-real" data-uid="${p.id}" value="${atrb.grupo || ''}"><input type="hidden" class="input-verso-real" data-uid="${p.id}" value="${atrb.faixa_versos || ''}"></div>`;
             });
         }
-
-        function selecionarRow(id) {
-            const chk = document.getElementById('chk-' + id);
-            chk.checked = !chk.checked;
-            document.getElementById('card-' + id).classList.toggle('selecionado', chk.checked);
-        }
-
-        // --- DISTRIBUIDOR V2: REDUNDÂNCIA (Todos recebem o mesmo bloco) ---
+        function selecionarRow(id) { const chk = document.getElementById('chk-' + id); chk.checked = !chk.checked; document.getElementById('card-' + id).classList.toggle('selecionado', chk.checked); }
         function distribuirAutomatico() {
-            const grupoLetra = document.getElementById('dist-grupo').value.trim().toUpperCase();
-            const faixaTexto = document.getElementById('dist-faixa').value.trim(); // Agora é Texto Livre (Ex: "1 a 3")
-
-            if (!grupoLetra || !faixaTexto) return alert("Preencha a Letra do Grupo e a Faixa de Versos!");
-
+            const grupoLetra = document.getElementById('dist-grupo').value.trim().toUpperCase(); const faixaTexto = document.getElementById('dist-faixa').value.trim();
+            if (!grupoLetra || !faixaTexto) return alert("Preencha Letra e Faixa!");
             const checks = document.querySelectorAll('.check-selecao:checked');
-            if (checks.length !== 3) return alert(`ATENÇÃO: Selecione EXATAMENTE 3 pessoas.\nVocê selecionou ${checks.length}.`);
-
-            checks.forEach(chk => {
-                const uid = chk.id.replace('chk-', '');
-                
-                // Visual
-                document.getElementById(`lbl-grupo-${uid}`).innerText = grupoLetra;
-                document.getElementById(`lbl-verso-${uid}`).innerText = faixaTexto; // Todo mundo igual
-                
-                // Dados para Salvar
-                document.querySelector(`.input-grupo-real[data-uid="${uid}"]`).value = grupoLetra;
-                document.querySelector(`.input-verso-real[data-uid="${uid}"]`).value = faixaTexto;
-
-                // Limpa
-                chk.checked = false;
-                document.getElementById('card-' + uid).classList.remove('selecionado');
-            });
-
-            alert(`Grupo ${grupoLetra} configurado!\nTodos os 3 membros receberam a faixa: "${faixaTexto}".`);
+            if (checks.length !== 3) return alert("Selecione 3 pessoas!");
+            checks.forEach(chk => { const uid = chk.id.replace('chk-', ''); document.getElementById(`lbl-grupo-${uid}`).innerText = grupoLetra; document.getElementById(`lbl-verso-${uid}`).innerText = faixaTexto; document.querySelector(`.input-grupo-real[data-uid="${uid}"]`).value = grupoLetra; document.querySelector(`.input-verso-real[data-uid="${uid}"]`).value = faixaTexto; chk.checked = false; document.getElementById('card-' + uid).classList.remove('selecionado'); });
+            alert(`Grupo ${grupoLetra} configurado!`);
         }
-
         async function salvarEscala() {
-            const btn = document.querySelector('#tab-escala .btn-salvar');
-            btn.innerText = "Salvando...";
-            const grupos = document.querySelectorAll('.input-grupo-real');
-            const versos = document.querySelectorAll('.input-verso-real');
-            
+            const btn = document.querySelector('#tab-escala .btn-salvar'); btn.innerText = "Salvando...";
+            const grupos = document.querySelectorAll('.input-grupo-real'); const versos = document.querySelectorAll('.input-verso-real');
             for (let i = 0; i < grupos.length; i++) {
-                const uid = grupos[i].dataset.uid;
-                const g = grupos[i].value; const v = versos[i].value;
+                const uid = grupos[i].dataset.uid; const g = grupos[i].value; const v = versos[i].value;
                 if (g && v) {
                     const { data: existe } = await clienteSupabase.from('versoes_atribuidas').select('id').eq('recitativo_id', recitativoAtivoId).eq('usuario_id', uid).maybeSingle();
                     if (existe) await clienteSupabase.from('versoes_atribuidas').update({ grupo: g, faixa_versos: v }).eq('id', existe.id);
                     else await clienteSupabase.from('versoes_atribuidas').insert({ recitativo_id: recitativoAtivoId, usuario_id: uid, grupo: g, faixa_versos: v });
                 }
-            }
-            alert("Salvo!"); btn.innerText = "SALVAR ALTERAÇÕES";
+            } alert("Salvo!"); btn.innerText = "SALVAR ALTERAÇÕES";
         }
         carregarHistorico();
     </script>
