@@ -1,3 +1,16 @@
+Sem problema nenhum, Breno! Às vezes procurar uma linha específica no meio de tanto código é como procurar agulha no palheiro. 🪡🌾
+
+Para garantir que não fique nenhum erro de digitação ou chave aberta, aqui está o **código COMPLETO do `painel.html**`.
+
+Ele já inclui:
+
+1. O link para o **Meu Perfil**.
+2. O **Gráfico de Dedicação** funcionando.
+3. A **Nova Lógica de Presença** (Confirmar / Não Vou).
+
+Pode copiar tudo e substituir o arquivo inteiro:
+
+```html
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -40,11 +53,11 @@
         .avatar { width: 45px; height: 45px; background: #e76f51; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border: 2px solid white; }
         .info-nome div { font-weight: 800; color: #333; font-size: 0.95rem; }
 
-        /* QUADRADINHOS DE DEDICAÇÃO (Agora Reais) */
+        /* QUADRADINHOS DE DEDICAÇÃO (Reais) */
         .dedicacao-area { display: flex; gap: 4px; margin-top: 5px; }
         .dia-quadrado { width: 12px; height: 12px; background: #d0d0d0; border-radius: 3px; }
-        .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; } /* Estudou de verdade */
-        .dia-quadrado.hoje-vazio { border: 2px solid #ff9800; background: transparent; } /* É hoje e falta estudar */
+        .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; } 
+        .dia-quadrado.hoje-vazio { border: 2px solid #ff9800; background: transparent; }
 
         .verso-box { background: #4a76c5; color: white; padding: 10px 20px; border-radius: 8px; text-align: center; flex-grow: 1; min-width: 100px; }
         .verso-box small { font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
@@ -60,11 +73,17 @@
         .btn-acao:active { transform: scale(0.98); }
         .btn-estudar { background: #ff9800; }
         .btn-estudar.feito { background: #28a745; cursor: default; }
-        .btn-confirmar { background: #4a76c5; margin-top: 10px; }
-        .btn-confirmar.ok { background: #00b894; }
+        
+        /* NOVOS BOTÕES DE PRESENÇA */
+        .status-box { padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 10px; border: 1px solid transparent; }
+        .status-box.verde { background: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .status-box.vermelho { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+        .btn-link { font-size: 0.7rem; text-decoration: underline; border: none; background: none; cursor: pointer; margin-left: 5px; }
 
         .status-presenca { width: 15px; height: 15px; border-radius: 50%; background: #ccc; border: 2px solid white; position: absolute; top: 15px; right: 15px; }
         .status-presenca.ok { background: #00b894; box-shadow: 0 0 5px #00b894; }
+        .status-presenca.no { background: #d63031; box-shadow: 0 0 5px #d63031; }
+        
         .section-label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 30px; margin-bottom: 10px; font-weight: bold; }
     </style>
 </head>
@@ -75,8 +94,10 @@
             <h2 id="saudacao-titulo" class="saudacao-texto">A Paz de Deus!</h2>
             <div class="subtitulo-saudacao">Foque na sua parte.</div>
         </div>
-        <a href="perfil.html" style="margin-right:10px; text-decoration:none; color:#4a76c5; font-weight:bold;">👤 Meu Perfil</a>
-        <button onclick="sair()" class="btn-sair">Sair</button>
+        <div>
+            <a href="perfil.html" style="margin-right:10px; text-decoration:none; color:#4a76c5; font-weight:bold;">👤 Meu Perfil</a>
+            <button onclick="sair()" class="btn-sair">Sair</button>
+        </div>
     </div>
 
     <a href="status.html" class="btn-portal">📊 Ver Progresso da Obra (Todos os Grupos)</a>
@@ -95,23 +116,20 @@
         const meuId = localStorage.getItem('usuario_id');
         if (!meuId) window.location.href = 'index.html';
 
-        // LÓGICA DE DATAS (Segunda a Sábado)
         function pegarDatasSemana() {
             const hoje = new Date();
-            const diaSemana = hoje.getDay(); // 0=Dom, 1=Seg...
-            const diff = hoje.getDate() - diaSemana + (diaSemana == 0 ? -6 : 1); // Ajusta para Segunda ser o primeiro
-            
+            const diaSemana = hoje.getDay(); 
+            const diff = hoje.getDate() - diaSemana + (diaSemana == 0 ? -6 : 1); 
             const datas = [];
-            for (let i = 0; i < 6; i++) { // 6 dias (Seg-Sab)
+            for (let i = 0; i < 6; i++) { 
                 let d = new Date(hoje.setDate(diff + i));
-                datas.push(d.toISOString().split('T')[0]); // Formato YYYY-MM-DD
+                datas.push(d.toISOString().split('T')[0]);
             }
-            return datas; // Array com as datas dessa semana
+            return datas; 
         }
 
         async function carregarTudo() {
             try {
-                // 1. Perfil
                 const { data: perfis } = await clienteSupabase.from('profiles').select('*');
                 const meuPerfil = perfis.find(p => p.id === meuId);
                 if (meuPerfil) {
@@ -119,7 +137,6 @@
                     document.getElementById('saudacao-titulo').innerText = `A Paz de Deus, Irmão ${nome}!`;
                 }
 
-                // 2. Recitativo Ativo
                 const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
                 if (!recitativos.length) { document.getElementById('meu-painel').innerHTML = 'Sem recitativo.'; return; }
                 const recitativo = recitativos[0];
@@ -130,11 +147,8 @@
                         <div class="recitativo-texto">"${recitativo.conteudo_texto || '...'}"</div>
                     </div>`;
 
-                // 3. Atribuições
                 const { data: atribuicoes } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', recitativo.id);
                 
-                // 4. MEUS ESTUDOS (Dedicação Real)
-                // Pega todos os estudos meus desta semana
                 const datasSemana = pegarDatasSemana();
                 const hojeStr = new Date().toISOString().split('T')[0];
                 
@@ -142,12 +156,11 @@
                     .from('historico_estudos')
                     .select('data_estudo')
                     .eq('usuario_id', meuId)
-                    .in('data_estudo', datasSemana); // Filtra só essa semana
+                    .in('data_estudo', datasSemana);
 
                 const diasEstudados = estudos.map(e => e.data_estudo);
                 const estudeiHoje = diasEstudados.includes(hojeStr);
 
-                // Prepara Renderização
                 let participantes = atribuicoes.map(atrib => {
                     const perfil = perfis.find(p => p.id === atrib.usuario_id) || {};
                     return { ...atrib, profiles: perfil };
@@ -157,11 +170,9 @@
                 const eu = participantes.find(p => p.usuario_id === meuId);
                 const outros = participantes.filter(p => p.usuario_id !== meuId);
 
-                // Renderiza EU (Com botão de Estudo)
                 if (eu) renderizarMeuCard(eu, diasEstudados, estudeiHoje, datasSemana);
                 else document.getElementById('meu-painel').innerHTML = 'Não escalado.';
                 
-                // Renderiza OUTROS (Simples)
                 document.getElementById('lista-outros').innerHTML = '';
                 outros.forEach(p => renderizarOutroCard(p));
 
@@ -172,35 +183,58 @@
             const nome = dados.profiles.nome_completo || 'Eu';
             const inicial = nome.charAt(0).toUpperCase();
             
-            // Lógica dos Quadradinhos REAIS
             let htmlQuadradinhos = '';
             let qtdEstudos = 0;
             const hojeStr = new Date().toISOString().split('T')[0];
 
             datasSemana.forEach(data => {
                 let classe = '';
-                if (diasEstudados.includes(data)) {
-                    classe = 'verde'; // Estudou de verdade!
-                    qtdEstudos++;
-                } else if (data === hojeStr) {
-                    classe = 'hoje-vazio'; // É hoje e falta estudar
-                }
+                if (diasEstudados.includes(data)) { classe = 'verde'; qtdEstudos++; }
+                else if (data === hojeStr) { classe = 'hoje-vazio'; }
                 htmlQuadradinhos += `<div class="dia-quadrado ${classe}" title="${data}"></div>`;
             });
 
-            // Gráfico REAL (Baseado em 6 dias)
             const pctDedicao = Math.round((qtdEstudos / 6) * 100);
             
-            // Botões
             let btnEstudo = estudeiHoje 
                 ? `<button class="btn-acao btn-estudar feito">✅ Estudo de Hoje Registrado!</button>`
                 : `<button class="btn-acao btn-estudar" onclick="registrarEstudo()">📖 Registrar Estudo de Hoje</button>`;
 
-            let btnPresenca = `<button class="btn-acao btn-confirmar ${dados.presenca_confirmada ? 'ok' : ''}" onclick="togglePresenca('${dados.id}', ${dados.presenca_confirmada})">${dados.presenca_confirmada ? 'Presença Confirmada' : 'Confirmar Presença'}</button>`;
+            // --- AQUI ESTÁ A NOVA LÓGICA DE PRESENÇA (3 ESTADOS) ---
+            let status = dados.status_presenca || 'pendente';
+            let botoesPresenca = '';
+
+            if (status === 'confirmado') {
+                botoesPresenca = `
+                    <div class="status-box verde">
+                        ✅ Presença Confirmada!
+                        <button onclick="alterarStatus('${dados.id}', 'pendente')" class="btn-link" style="color:#155724">(Desfazer)</button>
+                    </div>`;
+            } else if (status === 'nao_vou') {
+                botoesPresenca = `
+                    <div class="status-box vermelho">
+                        ❌ Você informou que não irá.
+                        <button onclick="alterarStatus('${dados.id}', 'pendente')" class="btn-link" style="color:#721c24">(Mudei de ideia)</button>
+                    </div>`;
+            } else {
+                // PENDENTE: Mostra os dois botões
+                botoesPresenca = `
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button onclick="alterarStatus('${dados.id}', 'confirmado')" class="btn-acao" style="background:#28a745; flex:1;">✅ Confirmar</button>
+                        <button onclick="alterarStatus('${dados.id}', 'nao_vou')" class="btn-acao" style="background:#dc3545; flex:1;">❌ Não irei</button>
+                    </div>
+                    <p style="font-size:0.7rem; color:#666; text-align:center; margin-top:5px;">Por favor, confirme até Sábado de manhã.</p>
+                `;
+            }
+
+            // Define a bolinha de status no canto do card
+            let statusClass = '';
+            if(status === 'confirmado') statusClass = 'ok';
+            if(status === 'nao_vou') statusClass = 'no';
 
             const html = `
                 <div class="dashboard-card" style="border: 2px solid #89b4fa;">
-                    <div class="status-presenca ${dados.presenca_confirmada ? 'ok' : ''}"></div>
+                    <div class="status-presenca ${statusClass}"></div>
                     <span class="grupo-badge">GRUPO ${dados.grupo}</span>
                     <div class="card-content">
                         <div class="perfil-area">
@@ -219,18 +253,22 @@
                     </div>
                     <div style="width:100%">
                         ${btnEstudo}
-                        ${btnPresenca}
+                        ${botoesPresenca}
                     </div>
                 </div>`;
             document.getElementById('meu-painel').innerHTML = html;
         }
 
         function renderizarOutroCard(dados) {
-            // Os outros ainda usam simulação visual simples ou ficam cinza, pois não vemos os estudos deles (privacidade)
             let nome = dados.profiles.nome_completo || 'Irmão';
+            let status = dados.status_presenca || 'pendente';
+            let statusClass = '';
+            if(status === 'confirmado') statusClass = 'ok';
+            if(status === 'nao_vou') statusClass = 'no';
+
             const html = `
                 <div class="dashboard-card">
-                    <div class="status-presenca ${dados.presenca_confirmada ? 'ok' : ''}"></div>
+                    <div class="status-presenca ${statusClass}"></div>
                     <span class="grupo-badge">GRUPO ${dados.grupo}</span>
                     <div class="card-content">
                         <div class="perfil-area">
@@ -245,22 +283,22 @@
         async function registrarEstudo() {
             const btn = document.querySelector('.btn-estudar');
             btn.innerText = "Registrando...";
-            
-            await clienteSupabase.from('historico_estudos').insert({ usuario_id: meuId }); // Data é automática (default now)
-            
-            // Efeito visual imediato
+            await clienteSupabase.from('historico_estudos').insert({ usuario_id: meuId });
             btn.innerText = "✅ Estudo Registrado!";
             btn.classList.add('feito');
-            setTimeout(carregarTudo, 1000); // Recarrega para atualizar gráfico
+            setTimeout(carregarTudo, 1000); 
         }
 
-        async function togglePresenca(id, estado) {
-            await clienteSupabase.from('versoes_atribuidas').update({ presenca_confirmada: !estado }).eq('id', id);
+        // NOVA FUNÇÃO PARA GERENCIAR OS 3 ESTADOS
+        async function alterarStatus(id, novoStatus) {
+            await clienteSupabase.from('versoes_atribuidas').update({ status_presenca: novoStatus }).eq('id', id);
             carregarTudo();
         }
+
         function sair() { localStorage.clear(); window.location.href = 'index.html'; }
         carregarTudo();
     </script>
 </body>
 </html>
 
+```
