@@ -3,184 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Progresso da Obra - Dashboard</title>
+    <title>Progresso da Obra 📊</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { margin: 0; padding: 20px; background: #f0f2f5; }
-        .container { max-width: 800px; margin: 0 auto; }
+        body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; }
+        .container { max-width: 600px; margin: 0 auto; }
         
-        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
-        .btn-voltar { text-decoration: none; color: #333; font-weight: bold; background: white; padding: 8px 15px; border-radius: 20px; }
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .btn-voltar { background: white; border: 1px solid #ddd; padding: 8px 15px; border-radius: 20px; text-decoration: none; color: #333; font-weight: bold; font-size: 0.9rem; }
 
-        /* CARDS DE MÉTRICAS */
-        .kpi-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
-        .kpi-card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .kpi-numero { font-size: 2rem; font-weight: 900; }
-        .kpi-label { font-size: 0.8rem; color: #666; text-transform: uppercase; font-weight: bold; }
+        /* CARD PRINCIPAL (BIG NUMBER) */
+        .big-card { background: #0b1b3d; color: white; padding: 40px 20px; border-radius: 20px; text-align: center; margin-bottom: 30px; box-shadow: 0 10px 30px rgba(11, 27, 61, 0.3); }
+        .big-number { font-size: 4rem; font-weight: 800; line-height: 1; margin-bottom: 10px; }
+        .big-label { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; opacity: 0.8; }
+        .sub-text { font-size: 1rem; color: #a0aec0; margin-top: 5px; }
+
+        /* LISTA DE GRUPOS */
+        .section-title { font-weight: 800; color: #4a5568; margin-bottom: 15px; font-size: 1.1rem; }
         
-        /* CORES DE STATUS */
-        .status-verde { color: #28a745; }
-        .status-vermelho { color: #dc3545; }
-        .status-amarelo { color: #ffc107; }
-
-        /* LISTA DETALHADA */
-        .grupo-card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .grupo-titulo { font-weight: 800; color: #4a76c5; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .grupo-item { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .grupo-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 800; color: #2d3748; }
         
-        .membro-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .badge { padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: bold; }
-        .bg-verde { background: #d4edda; color: #155724; }
-        .bg-vermelho { background: #f8d7da; color: #721c24; }
-        .bg-amarelo { background: #fff3cd; color: #856404; }
-
-        /* GRÁFICO DE BARRA GERAL */
-        .barra-progresso { height: 20px; background: #e9ecef; border-radius: 10px; overflow: hidden; display: flex; margin-bottom: 30px; }
-        .parte-verde { background: #28a745; height: 100%; }
-        .parte-vermelha { background: #dc3545; height: 100%; }
-        .parte-amarela { background: #ffc107; height: 100%; }
+        .progress-bg { background: #edf2f7; height: 12px; border-radius: 6px; overflow: hidden; }
+        .progress-bar { height: 100%; background: #4a76c5; border-radius: 6px; transition: width 1s ease; }
+        .missing-text { font-size: 0.8rem; color: #718096; margin-top: 8px; }
     </style>
 </head>
 <body>
+
     <div class="container">
         <div class="header">
             <a href="painel.html" class="btn-voltar">⬅ Voltar</a>
-            <h2>Compromisso da Mocidade 📊</h2>
+            <h2 style="margin:0; color:#333;">Progresso da Obra</h2>
         </div>
 
-        <div class="barra-progresso">
-            <div id="bar-verde" class="parte-verde" style="width:0%"></div>
-            <div id="bar-vermelha" class="parte-vermelha" style="width:0%"></div>
-            <div id="bar-amarela" class="parte-amarela" style="width:100%"></div>
+        <div class="big-card">
+            <div class="big-label">Confirmação Geral</div>
+            <div class="big-number" id="total-pct">0%</div>
+            <div class="sub-text" id="total-desc">Carregando dados...</div>
         </div>
 
-        <div class="kpi-container">
-            <div class="kpi-card">
-                <div id="kpi-conf" class="kpi-numero status-verde">0</div>
-                <div class="kpi-label">Confirmados</div>
-            </div>
-            <div class="kpi-card">
-                <div id="kpi-pend" class="kpi-numero status-amarelo">0</div>
-                <div class="kpi-label">Pendentes</div>
-            </div>
-            <div class="kpi-card">
-                <div id="kpi-rec" class="kpi-numero status-vermelho">0</div>
-                <div class="kpi-label">Não irão</div>
-            </div>
-        </div>
-
-        <div id="lista-grupos">Carregando dados...</div>
+        <div class="section-title">Detalhes por Grupo</div>
+        <div id="lista-grupos"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-       const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
-    const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
+        const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    async function carregarDashboard() {
-        try {
-            // 1. BUSCA SEGURA DO RECITATIVO ATIVO
-            // Usamos 'maybeSingle' em vez de 'single' para não dar erro se estiver vazio
-            const { data: recs, error: errRec } = await clienteSupabase
-                .from('recitativos')
-                .select('id')
-                .eq('ativo', true)
-                .limit(1);
+        async function carregarStatus() {
+            // Pega o recitativo ativo
+            const { data: recs } = await clienteSupabase.from('recitativos').select('id').eq('ativo', true).limit(1);
+            if (!recs.length) return document.getElementById('total-desc').innerText = "Sem recitativo ativo.";
 
-            // Verificação de Segurança Dupla
-            if (errRec || !recs || recs.length === 0) {
-                document.getElementById('lista-grupos').innerHTML = '<p style="text-align:center; margin-top:20px;">Nenhum recitativo ativo no momento.</p>';
-                zerarKPIs();
-                return;
-            }
-
-            const idAtivo = recs[0].id; // Agora temos certeza que o ID existe!
-
-            // 2. BUSCA AS ATRIBUIÇÕES
-            const { data: lista, error: errList } = await clienteSupabase
+            // Pega todas as atribuições
+            const { data: lista } = await clienteSupabase
                 .from('versoes_atribuidas')
-                .select(`*, profiles(nome_completo)`)
-                .eq('recitativo_id', idAtivo)
-                .order('grupo');
+                .select('grupo, status_presenca') // ATENÇÃO: Mudou para status_presenca
+                .eq('recitativo_id', recs[0].id);
 
-            if (errList) throw errList;
+            // CÁLCULOS GERAIS
+            const total = lista.length;
+            const confirmados = lista.filter(i => i.status_presenca === 'confirmado').length;
+            const pctGeral = total === 0 ? 0 : Math.round((confirmados / total) * 100);
 
-            // CÁLCULOS
-            let total = lista.length;
-            if (total === 0) {
-                document.getElementById('lista-grupos').innerHTML = '<p style="text-align:center">Ninguém escalado ainda.</p>';
-                zerarKPIs();
-                return;
-            }
+            document.getElementById('total-pct').innerText = pctGeral + "%";
+            document.getElementById('total-desc').innerText = `${confirmados} de ${total} irmãos confirmados`;
 
-            let confirmados = lista.filter(i => i.status_presenca === 'confirmado').length;
-            let naoVao = lista.filter(i => i.status_presenca === 'nao_vou').length;
-            let pendentes = total - confirmados - naoVao;
-
-            // ATUALIZA KPIs
-            document.getElementById('kpi-conf').innerText = confirmados;
-            document.getElementById('kpi-pend').innerText = pendentes;
-            document.getElementById('kpi-rec').innerText = naoVao;
-
-            // ATUALIZA BARRA DE PROGRESSO
-            document.getElementById('bar-verde').style.width = (confirmados / total * 100) + '%';
-            document.getElementById('bar-vermelha').style.width = (naoVao / total * 100) + '%';
-            document.getElementById('bar-amarela').style.width = (pendentes / total * 100) + '%';
-
-            // RENDERIZA GRUPOS
-            const container = document.getElementById('lista-grupos');
-            container.innerHTML = '';
-            
+            // CÁLCULOS POR GRUPO
             const grupos = {};
-            lista.forEach(item => {
-                const g = item.grupo || 'SEM GRUPO';
-                if (!grupos[g]) grupos[g] = [];
-                grupos[g].push(item);
+            lista.forEach(i => {
+                if (!grupos[i.grupo]) grupos[i.grupo] = { total: 0, confirmados: 0 };
+                grupos[i.grupo].total++;
+                if (i.status_presenca === 'confirmado') grupos[i.grupo].confirmados++;
             });
 
-            Object.keys(grupos).forEach(letra => {
-                let htmlMembros = '';
-                grupos[letra].forEach(m => {
-                    let badge = '';
-                    if (m.status_presenca === 'confirmado') badge = '<span class="badge bg-verde">CONFIRMADO</span>';
-                    else if (m.status_presenca === 'nao_vou') badge = '<span class="badge bg-vermelho">NÃO VAI</span>';
-                    else badge = '<span class="badge bg-amarelo">PENDENTE</span>';
+            // RENDERIZAR
+            const div = document.getElementById('lista-grupos'); div.innerHTML = '';
+            
+            // Ordenar chaves (Grupo A, B, C...)
+            Object.keys(grupos).sort().forEach(letra => {
+                const g = grupos[letra];
+                const pct = g.total === 0 ? 0 : Math.round((g.confirmados / g.total) * 100);
+                const faltam = g.total - g.confirmados;
 
-                    // Tratamento para caso o perfil tenha sido apagado
-                    const nomeMembro = m.profiles ? m.profiles.nome_completo : 'Usuário Removido';
-
-                    htmlMembros += `
-                    <div class="membro-row">
-                        <span>${nomeMembro} <small style="color:#999">(${m.faixa_versos})</small></span>
-                        ${badge}
-                    </div>`;
-                });
-
-                container.innerHTML += `
-                <div class="grupo-card">
-                    <div class="grupo-titulo">GRUPO ${letra}</div>
-                    ${htmlMembros}
+                div.innerHTML += `
+                <div class="grupo-item">
+                    <div class="grupo-header">
+                        <span>GRUPO ${letra}</span>
+                        <span>${pct}%</span>
+                    </div>
+                    <div class="progress-bg">
+                        <div class="progress-bar" style="width: ${pct}%"></div>
+                    </div>
+                    <div class="missing-text">Faltam ${faltam} pessoas confirmarem.</div>
                 </div>`;
             });
-
-        } catch (erro) {
-            console.error(erro);
-            document.getElementById('lista-grupos').innerText = "Erro ao carregar dados. Veja o console.";
         }
-    }
-
-    function zerarKPIs() {
-        document.getElementById('kpi-conf').innerText = '0';
-        document.getElementById('kpi-pend').innerText = '0';
-        document.getElementById('kpi-rec').innerText = '0';
-        document.getElementById('bar-verde').style.width = '0%';
-        document.getElementById('bar-vermelha').style.width = '0%';
-        document.getElementById('bar-amarela').style.width = '100%';
-    }
-
-    carregarDashboard();
+        carregarStatus();
     </script>
 </body>
 </html>
-
