@@ -40,47 +40,34 @@
         .avatar { width: 45px; height: 45px; background: #e76f51; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border: 2px solid white; }
         .info-nome div { font-weight: 800; color: #333; font-size: 0.95rem; }
 
-        /* QUADRADINHOS DE DEDICAÇÃO (Reais) */
         .dedicacao-area { display: flex; gap: 4px; margin-top: 5px; }
         .dia-quadrado { width: 12px; height: 12px; background: #d0d0d0; border-radius: 3px; }
         .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; } 
         .dia-quadrado.hoje-vazio { border: 2px solid #ff9800; background: transparent; }
 
         .verso-box { background: #4a76c5; color: white; padding: 10px 20px; border-radius: 8px; text-align: center; flex-grow: 1; min-width: 100px; }
-        .verso-box small { font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; }
+        .verso-box small { font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; display:block; }
         .verso-box strong { display: block; font-size: 1.1rem; }
 
-        /* O Efeito de Mistério */
-.misterio {
-    filter: blur(6px);
-    user-select: none; /* Não deixa selecionar o texto */
-    cursor: pointer;
-    transition: 0.5s;
-}
-.misterio:hover {
-    filter: blur(4px); /* Dá uma leve clareada se passar o mouse */
-}
-.revelado {
-    filter: none;
-    animation: brilha 1s ease;
-}
-@keyframes brilha {
-    0% { background-color: #fff; color: #333; }
-    100% { background-color: #4a76c5; color: white; }
-}
+        /* O EFEITO MISTÉRIO */
+        .misterio { filter: blur(6px); user-select: none; cursor: pointer; transition: 0.5s; }
+        .misterio:hover { filter: blur(4px); }
+        .revelado { filter: none; animation: brilha 1s ease; }
+        @keyframes brilha {
+            0% { background-color: #fff; color: #333; }
+            100% { background-color: #4a76c5; color: white; }
+        }
 
         .grafico-area { display: flex; align-items: center; gap: 10px; background: white; padding: 5px 10px; border-radius: 50px; border: 1px solid #ddd; }
         .donut-chart { width: 40px; height: 40px; border-radius: 50%; background: conic-gradient(#3d5a80 0% 0%, #e0e0e0 0% 100%); display: flex; align-items: center; justify-content: center; }
         .donut-hole { width: 28px; height: 28px; background: white; border-radius: 50%; }
         .porcentagem-texto { font-weight: bold; font-size: 0.8rem; color: #333; }
 
-        /* BOTÕES DE AÇÃO */
         .btn-acao { width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; margin-top: 5px; transition: transform 0.2s; }
         .btn-acao:active { transform: scale(0.98); }
         .btn-estudar { background: #ff9800; }
         .btn-estudar.feito { background: #28a745; cursor: default; }
         
-        /* NOVOS BOTÕES DE PRESENÇA */
         .status-box { padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 10px; border: 1px solid transparent; }
         .status-box.verde { background: #d4edda; color: #155724; border-color: #c3e6cb; }
         .status-box.vermelho { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
@@ -136,6 +123,7 @@
 
         async function carregarTudo() {
             try {
+                // 1. Perfis
                 const { data: perfis } = await clienteSupabase.from('profiles').select('*');
                 const meuPerfil = perfis.find(p => p.id === meuId);
                 if (meuPerfil) {
@@ -143,6 +131,7 @@
                     document.getElementById('saudacao-titulo').innerText = `A Paz de Deus, Irmão ${nome}!`;
                 }
 
+                // 2. Recitativo Ativo
                 const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
                 if (!recitativos.length) { document.getElementById('meu-painel').innerHTML = 'Sem recitativo.'; return; }
                 const recitativo = recitativos[0];
@@ -153,20 +142,17 @@
                         <div class="recitativo-texto">"${recitativo.conteudo_texto || '...'}"</div>
                     </div>`;
 
+                // 3. Atribuições
                 const { data: atribuicoes } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', recitativo.id);
                 
+                // 4. Estudos
                 const datasSemana = pegarDatasSemana();
                 const hojeStr = new Date().toISOString().split('T')[0];
-                
-                const { data: estudos } = await clienteSupabase
-                    .from('historico_estudos')
-                    .select('data_estudo')
-                    .eq('usuario_id', meuId)
-                    .in('data_estudo', datasSemana);
-
+                const { data: estudos } = await clienteSupabase.from('historico_estudos').select('data_estudo').eq('usuario_id', meuId).in('data_estudo', datasSemana);
                 const diasEstudados = estudos.map(e => e.data_estudo);
                 const estudeiHoje = diasEstudados.includes(hojeStr);
 
+                // 5. Monta Lista de Participantes
                 let participantes = atribuicoes.map(atrib => {
                     const perfil = perfis.find(p => p.id === atrib.usuario_id) || {};
                     return { ...atrib, profiles: perfil };
@@ -176,7 +162,7 @@
                 const eu = participantes.find(p => p.usuario_id === meuId);
                 const outros = participantes.filter(p => p.usuario_id !== meuId);
 
-                if (eu) renderizarMeuCard(eu, diasEstudados, estudeiHoje, datasSemana);
+                if (eu) renderizarMeuCard(eu, diasEstudados, estudeiHoje, datasSemana, participantes);
                 else document.getElementById('meu-painel').innerHTML = 'Não escalado.';
                 
                 document.getElementById('lista-outros').innerHTML = '';
@@ -185,242 +171,91 @@
             } catch (e) { console.error(e); }
         }
 
-       // --- NOVO ALGORITMO DE DISTRIBUIÇÃO ---
-function calcularVersosDinamicos(eu, todosDoGrupo, faixaGeralStr) {
-    // 1. Quem já confirmou?
-    // Filtramos apenas quem está 'confirmado'
-    const confirmados = todosDoGrupo.filter(p => p.status_presenca === 'confirmado');
-    
-    // Se ninguém confirmou ainda (nem eu), ou se eu não confirmei:
-    // A regra é: mostra a faixa geral borrada.
-    if (eu.status_presenca !== 'confirmado') {
-        return { texto: faixaGeralStr, detalhe: "Confirme para revelar", classe: "misterio" };
-    }
+        // --- ALGORITMO DE DISTRIBUIÇÃO E MISTÉRIO ---
+        function calcularVersosDinamicos(eu, todosDoGrupo, faixaGeralStr) {
+            const confirmados = todosDoGrupo.filter(p => p.status_presenca === 'confirmado');
+            
+            // Regra: Se eu não confirmei, tudo fica borrado
+            if (eu.status_presenca !== 'confirmado') {
+                return { texto: faixaGeralStr, detalhe: "Confirme para revelar", classe: "misterio" };
+            }
 
-    // Se só eu confirmei ou se sou o único do grupo
-    if (confirmados.length === 0) return { texto: faixaGeralStr, detalhe: "Você fará tudo (por enquanto)", classe: "revelado" };
+            // Se só tem eu confirmado ou sou o único do grupo
+            if (confirmados.length === 0) return { texto: faixaGeralStr, detalhe: "Você fará tudo (por enquanto)", classe: "revelado" };
 
-    // 2. Ordenar alfabeticamente (Regra do João < Lucas)
-    confirmados.sort((a, b) => {
-        const nomeA = a.profiles.nome_completo || "";
-        const nomeB = b.profiles.nome_completo || "";
-        return nomeA.localeCompare(nomeB);
-    });
+            // Ordena alfabeticamente
+            confirmados.sort((a, b) => {
+                const nomeA = a.profiles.nome_completo || "";
+                const nomeB = b.profiles.nome_completo || "";
+                return nomeA.localeCompare(nomeB);
+            });
 
-    // 3. Entender os Versos (Ex: "1 ao 3")
-    // Vamos tentar extrair os números. Se não conseguir, devolve o texto original.
-    const numeros = faixaGeralStr.match(/\d+/g);
-    if (!numeros || numeros.length < 2) {
-        return { texto: faixaGeralStr, detalhe: "Verso Especial", classe: "revelado" };
-    }
+            // Tenta extrair numeros "1 ao 3"
+            const numeros = faixaGeralStr.match(/\d+/g);
+            if (!numeros || numeros.length < 2) {
+                return { texto: faixaGeralStr, detalhe: "Verso Especial", classe: "revelado" };
+            }
 
-    const inicio = parseInt(numeros[0]);
-    const fim = parseInt(numeros[1]);
-    const totalVersos = fim - inicio + 1;
-    const qtdPessoas = confirmados.length;
+            const inicio = parseInt(numeros[0]);
+            const fim = parseInt(numeros[1]);
+            const totalVersos = fim - inicio + 1;
+            const qtdPessoas = confirmados.length;
 
-    // 4. A Matemática da Divisão
-    const versosPorPessoa = Math.floor(totalVersos / qtdPessoas);
-    const sobra = totalVersos % qtdPessoas; // O resto da divisão vai para os primeiros da lista
+            // Matemática da Divisão
+            const versosPorPessoa = Math.floor(totalVersos / qtdPessoas);
+            const sobra = totalVersos % qtdPessoas;
+            const meuIndice = confirmados.findIndex(p => p.usuario_id === eu.usuario_id);
+            
+            if (meuIndice === -1) return { texto: faixaGeralStr, detalhe: "Aguardando...", classe: "misterio" };
 
-    // Descobrir minha posição na fila
-    const meuIndice = confirmados.findIndex(p => p.usuario_id === eu.usuario_id);
-    
-    // Se eu não estiver na lista de confirmados (erro de segurança), retorna geral
-    if (meuIndice === -1) return { texto: faixaGeralStr, detalhe: "Aguardando...", classe: "misterio" };
+            let meuInicio = inicio;
+            for (let i = 0; i < meuIndice; i++) {
+                let qtdDesseIrmao = versosPorPessoa + (i < sobra ? 1 : 0);
+                meuInicio += qtdDesseIrmao;
+            }
 
-    // 5. Calcular meus versos específicos
-    // Logica: Quem tem indice menor que a sobra, ganha 1 a mais.
-    let meuInicio = inicio;
-    
-    // Pula os versos dos irmãos que vêm antes de mim
-    for (let i = 0; i < meuIndice; i++) {
-        let qtdDesseIrmao = versosPorPessoa + (i < sobra ? 1 : 0);
-        meuInicio += qtdDesseIrmao;
-    }
+            let minhaQtd = versosPorPessoa + (meuIndice < sobra ? 1 : 0);
+            let meuFim = meuInicio + minhaQtd - 1;
 
-    let minhaQtd = versosPorPessoa + (meuIndice < sobra ? 1 : 0);
-    let meuFim = meuInicio + minhaQtd - 1;
+            let textoFinal = "";
+            if (minhaQtd === 1) textoFinal = `Verso ${meuInicio}`;
+            else textoFinal = `Versos ${meuInicio} ao ${meuFim}`;
 
-    let textoFinal = "";
-    if (minhaQtd === 1) textoFinal = `Verso ${meuInicio}`;
-    else textoFinal = `Versos ${meuInicio} ao ${meuFim}`;
-
-    return { texto: textoFinal, detalhe: "Sua parte específica", classe: "revelado" };
-}
-
-
-// --- ATUALIZE ESTA FUNÇÃO EXISTENTE ---
-function renderizarMeuCard(dados, diasEstudados, estudeiHoje, datasSemana, todosParticipantes) {
-    const nome = dados.profiles.nome_completo || 'Eu';
-    const inicial = nome.charAt(0).toUpperCase();
-    
-    // ... (Quadradinhos de dias continuam iguais) ...
-    let htmlQuadradinhos = '';
-    let qtdEstudos = 0;
-    const hojeStr = new Date().toISOString().split('T')[0];
-    const diaSemanaHoje = new Date().getDay(); // 0 = Domingo, 6 = Sabado
-
-    datasSemana.forEach(data => {
-        let classe = '';
-        if (diasEstudados.includes(data)) { classe = 'verde'; qtdEstudos++; }
-        else if (data === hojeStr) { classe = 'hoje-vazio'; }
-        htmlQuadradinhos += `<div class="dia-quadrado ${classe}" title="${data}"></div>`;
-    });
-    const pctDedicao = Math.round((qtdEstudos / 6) * 100);
-    
-    let btnEstudo = estudeiHoje 
-        ? `<button class="btn-acao btn-estudar feito">✅ Estudo de Hoje Registrado!</button>`
-        : `<button class="btn-acao btn-estudar" onclick="registrarEstudo()">📖 Registrar Estudo de Hoje</button>`;
-
-    // --- LÓGICA DE PRESENÇA ---
-    let status = dados.status_presenca || 'pendente';
-    let botoesPresenca = '';
-
-    // Filtra apenas o meu grupo para o cálculo
-    const meuGrupo = todosParticipantes.filter(p => p.grupo === dados.grupo);
-
-    // CHAMA O MISTÉRIO!
-    // Se for Sábado (6) ou Domingo (0), revela tudo independente da confirmação
-    let versosCalculados;
-    if (diaSemanaHoje === 6 || diaSemanaHoje === 0) {
-        // Fim de semana: Mostra a divisão real baseada em quem confirmou
-        versosCalculados = calcularVersosDinamicos({ ...dados, status_presenca: 'confirmado' }, meuGrupo, dados.faixa_versos);
-        versosCalculados.classe = "revelado"; // Força revelar
-    } else {
-        // Dia de semana: Segue a regra do "Confirma pra ver"
-        versosCalculados = calcularVersosDinamicos(dados, meuGrupo, dados.faixa_versos);
-    }
-
-
-    if (status === 'confirmado') {
-        botoesPresenca = `
-            <div class="status-box verde">
-                ✅ Presença Confirmada!
-                <button onclick="alterarStatus('${dados.id}', 'pendente')" class="btn-link" style="color:#155724">(Desfazer)</button>
-            </div>`;
-    } else if (status === 'nao_vou') {
-        botoesPresenca = `
-            <div class="status-box vermelho">
-                ❌ Você informou que não irá.
-                <button onclick="alterarStatus('${dados.id}', 'pendente')" class="btn-link" style="color:#721c24">(Mudei de ideia)</button>
-            </div>`;
-    } else {
-        botoesPresenca = `
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <button onclick="alterarStatus('${dados.id}', 'confirmado')" class="btn-acao" style="background:#28a745; flex:1;">✅ Confirmar</button>
-                <button onclick="alterarStatus('${dados.id}', 'nao_vou')" class="btn-acao" style="background:#dc3545; flex:1;">❌ Não irei</button>
-            </div>
-            <p style="font-size:0.7rem; color:#666; text-align:center; margin-top:5px;">Confirme para ver seus versos exatos.</p>
-        `;
-    }
-
-    let statusClass = '';
-    if(status === 'confirmado') statusClass = 'ok';
-    if(status === 'nao_vou') statusClass = 'no';
-
-    const html = `
-        <div class="dashboard-card" style="border: 2px solid #89b4fa;">
-            <div class="status-presenca ${statusClass}"></div>
-            <span class="grupo-badge">GRUPO ${dados.grupo}</span>
-            <div class="card-content">
-                <div class="perfil-area">
-                    <div class="avatar">${inicial}</div>
-                    <div class="info-nome"><div>${nome}</div>
-                        <div class="dedicacao-area">${htmlQuadradinhos}</div>
-                    </div>
-                </div>
-                
-                <div class="verso-box ${versosCalculados.classe}">
-                    <small>${versosCalculados.detalhe}</small>
-                    <strong>${versosCalculados.texto}</strong>
-                </div>
-
-                <div class="grafico-area">
-                    <div class="donut-chart" style="background: conic-gradient(#ff9800 0% ${pctDedicao}%, #e0e0e0 ${pctDedicao}%);">
-                        <div class="donut-hole"></div>
-                    </div>
-                    <span class="porcentagem-texto">${pctDedicao}%</span>
-                </div>
-            </div>
-            <div style="width:100%">
-                ${btnEstudo}
-                ${botoesPresenca}
-            </div>
-        </div>`;
-    document.getElementById('meu-painel').innerHTML = html;
-}
-            // Define a bolinha de status no canto do card
-            let statusClass = '';
-            if(status === 'confirmado') statusClass = 'ok';
-            if(status === 'nao_vou') statusClass = 'no';
-
-            const html = `
-                <div class="dashboard-card" style="border: 2px solid #89b4fa;">
-                    <div class="status-presenca ${statusClass}"></div>
-                    <span class="grupo-badge">GRUPO ${dados.grupo}</span>
-                    <div class="card-content">
-                        <div class="perfil-area">
-                            <div class="avatar">${inicial}</div>
-                            <div class="info-nome"><div>${nome}</div>
-                                <div class="dedicacao-area">${htmlQuadradinhos}</div>
-                            </div>
-                        </div>
-                        <div class="verso-box"><small>Versos</small><strong>${dados.faixa_versos}</strong></div>
-                        <div class="grafico-area">
-                            <div class="donut-chart" style="background: conic-gradient(#ff9800 0% ${pctDedicao}%, #e0e0e0 ${pctDedicao}%);">
-                                <div class="donut-hole"></div>
-                            </div>
-                            <span class="porcentagem-texto">${pctDedicao}%</span>
-                        </div>
-                    </div>
-                    <div style="width:100%">
-                        ${btnEstudo}
-                        ${botoesPresenca}
-                    </div>
-                </div>`;
-            document.getElementById('meu-painel').innerHTML = html;
+            return { texto: textoFinal, detalhe: "Sua parte específica", classe: "revelado" };
         }
 
-        function renderizarOutroCard(dados) {
-            let nome = dados.profiles.nome_completo || 'Irmão';
+        function renderizarMeuCard(dados, diasEstudados, estudeiHoje, datasSemana, todosParticipantes) {
+            const nome = dados.profiles.nome_completo || 'Eu';
+            const inicial = nome.charAt(0).toUpperCase();
+            
+            let htmlQuadradinhos = '';
+            let qtdEstudos = 0;
+            const hojeStr = new Date().toISOString().split('T')[0];
+            const diaSemanaHoje = new Date().getDay(); // 0=Dom, 6=Sab
+
+            datasSemana.forEach(data => {
+                let classe = '';
+                if (diasEstudados.includes(data)) { classe = 'verde'; qtdEstudos++; }
+                else if (data === hojeStr) { classe = 'hoje-vazio'; }
+                htmlQuadradinhos += `<div class="dia-quadrado ${classe}" title="${data}"></div>`;
+            });
+
+            const pctDedicao = Math.round((qtdEstudos / 6) * 100);
+            
+            let btnEstudo = estudeiHoje 
+                ? `<button class="btn-acao btn-estudar feito">✅ Estudo de Hoje Registrado!</button>`
+                : `<button class="btn-acao btn-estudar" onclick="registrarEstudo()">📖 Registrar Estudo de Hoje</button>`;
+
             let status = dados.status_presenca || 'pendente';
-            let statusClass = '';
-            if(status === 'confirmado') statusClass = 'ok';
-            if(status === 'nao_vou') statusClass = 'no';
+            let botoesPresenca = '';
 
-            const html = `
-                <div class="dashboard-card">
-                    <div class="status-presenca ${statusClass}"></div>
-                    <span class="grupo-badge">GRUPO ${dados.grupo}</span>
-                    <div class="card-content">
-                        <div class="perfil-area">
-                            <div class="avatar" style="background:#ccc; font-size:1rem;">${nome.charAt(0)}</div>
-                            <div class="info-nome"><div>${nome}</div><span style="font-size:0.7rem">Versos ${dados.faixa_versos}</span></div>
-                        </div>
-                    </div>
-                </div>`;
-            document.getElementById('lista-outros').innerHTML += html;
-        }
+            // CALCULA O MISTÉRIO
+            const meuGrupo = todosParticipantes.filter(p => p.grupo === dados.grupo);
+            let versosCalculados;
 
-        async function registrarEstudo() {
-            const btn = document.querySelector('.btn-estudar');
-            btn.innerText = "Registrando...";
-            await clienteSupabase.from('historico_estudos').insert({ usuario_id: meuId });
-            btn.innerText = "✅ Estudo Registrado!";
-            btn.classList.add('feito');
-            setTimeout(carregarTudo, 1000); 
-        }
-
-        // NOVA FUNÇÃO PARA GERENCIAR OS 3 ESTADOS
-        async function alterarStatus(id, novoStatus) {
-            await clienteSupabase.from('versoes_atribuidas').update({ status_presenca: novoStatus }).eq('id', id);
-            carregarTudo();
-        }
-
-        function sair() { localStorage.clear(); window.location.href = 'index.html'; }
-        carregarTudo();
-    </script>
-</body>
-</html>
-
+            // Se for Sábado ou Domingo, revela tudo
+            if (diaSemanaHoje === 6 || diaSemanaHoje === 0) {
+                versosCalculados = calcularVersosDinamicos({ ...dados, status_presenca: 'confirmado' }, meuGrupo, dados.faixa_versos);
+                versosCalculados.classe = "revelado";
+            } else {
+                versosCalculados =
