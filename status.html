@@ -74,24 +74,46 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
-        const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+       const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
+    const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function carregarDashboard() {
-            // Pega o recitativo ativo
-            const { data: recs } = await clienteSupabase.from('recitativos').select('id').eq('ativo', true).single();
-            if (!recs) return document.getElementById('lista-grupos').innerText = "Nenhum recitativo ativo.";
+    async function carregarDashboard() {
+        try {
+            // 1. BUSCA SEGURA DO RECITATIVO ATIVO
+            // Usamos 'maybeSingle' em vez de 'single' para não dar erro se estiver vazio
+            const { data: recs, error: errRec } = await clienteSupabase
+                .from('recitativos')
+                .select('id')
+                .eq('ativo', true)
+                .limit(1);
 
-            // Pega todas as atribuições + nomes
-            const { data: lista } = await clienteSupabase
+            // Verificação de Segurança Dupla
+            if (errRec || !recs || recs.length === 0) {
+                document.getElementById('lista-grupos').innerHTML = '<p style="text-align:center; margin-top:20px;">Nenhum recitativo ativo no momento.</p>';
+                zerarKPIs();
+                return;
+            }
+
+            const idAtivo = recs[0].id; // Agora temos certeza que o ID existe!
+
+            // 2. BUSCA AS ATRIBUIÇÕES
+            const { data: lista, error: errList } = await clienteSupabase
                 .from('versoes_atribuidas')
                 .select(`*, profiles(nome_completo)`)
-                .eq('recitativo_id', recs.id)
+                .eq('recitativo_id', idAtivo)
                 .order('grupo');
+
+            if (errList) throw errList;
 
             // CÁLCULOS
             let total = lista.length;
+            if (total === 0) {
+                document.getElementById('lista-grupos').innerHTML = '<p style="text-align:center">Ninguém escalado ainda.</p>';
+                zerarKPIs();
+                return;
+            }
+
             let confirmados = lista.filter(i => i.status_presenca === 'confirmado').length;
             let naoVao = lista.filter(i => i.status_presenca === 'nao_vou').length;
             let pendentes = total - confirmados - naoVao;
@@ -110,7 +132,6 @@
             const container = document.getElementById('lista-grupos');
             container.innerHTML = '';
             
-            // Agrupar por Letra (A, B, C...)
             const grupos = {};
             lista.forEach(item => {
                 const g = item.grupo || 'SEM GRUPO';
@@ -118,7 +139,6 @@
                 grupos[g].push(item);
             });
 
-            // Cria os Cards
             Object.keys(grupos).forEach(letra => {
                 let htmlMembros = '';
                 grupos[letra].forEach(m => {
@@ -127,9 +147,12 @@
                     else if (m.status_presenca === 'nao_vou') badge = '<span class="badge bg-vermelho">NÃO VAI</span>';
                     else badge = '<span class="badge bg-amarelo">PENDENTE</span>';
 
+                    // Tratamento para caso o perfil tenha sido apagado
+                    const nomeMembro = m.profiles ? m.profiles.nome_completo : 'Usuário Removido';
+
                     htmlMembros += `
                     <div class="membro-row">
-                        <span>${m.profiles.nome_completo || 'Irmão'} <small style="color:#999">(${m.faixa_versos})</small></span>
+                        <span>${nomeMembro} <small style="color:#999">(${m.faixa_versos})</small></span>
                         ${badge}
                     </div>`;
                 });
@@ -140,8 +163,24 @@
                     ${htmlMembros}
                 </div>`;
             });
+
+        } catch (erro) {
+            console.error(erro);
+            document.getElementById('lista-grupos').innerText = "Erro ao carregar dados. Veja o console.";
         }
-        carregarDashboard();
+    }
+
+    function zerarKPIs() {
+        document.getElementById('kpi-conf').innerText = '0';
+        document.getElementById('kpi-pend').innerText = '0';
+        document.getElementById('kpi-rec').innerText = '0';
+        document.getElementById('bar-verde').style.width = '0%';
+        document.getElementById('bar-vermelha').style.width = '0%';
+        document.getElementById('bar-amarela').style.width = '100%';
+    }
+
+    carregarDashboard();
     </script>
 </body>
 </html>
+
