@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - CCB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; padding-bottom: 80px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        
+        /* CABEÇALHO */
+        .header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .btn-voltar { text-decoration: none; color: #333; font-weight: bold; background: white; padding: 8px 15px; border-radius: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        /* EDIÇÃO DE PERFIL */
+        .perfil-card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.8rem; color: #666; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+        .btn-salvar { width: 100%; background: #4a76c5; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+
+        /* --- CARTÕES (FLIP CARD) --- */
+        .titulo-secao { font-size: 1.2rem; font-weight: 800; color: #333; margin-bottom: 15px; border-left: 5px solid #fbc02d; padding-left: 10px; }
+        .colecao-grid { display: grid; gap: 20px; }
+
+        .flip-card {
+            background-color: transparent;
+            width: 100%; height: 220px; perspective: 1000px; cursor: pointer;
+        }
+        .flip-card-inner {
+            position: relative; width: 100%; height: 100%; text-align: center;
+            transition: transform 0.6s; transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 10px;
+        }
+        .flip-card.virado .flip-card-inner { transform: rotateY(180deg); }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: 10px; padding: 20px; display: flex;
+            flex-direction: column; justify-content: space-between;
+        }
+
+        /* FRENTE (Estilo CCB) */
+        .flip-card-front {
+            background-color: #fff; color: black; border: 1px solid #ddd;
+            background-image: url('https://www.transparenttextures.com/patterns/cream-paper.png');
+        }
+        .card-header { border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 10px; }
+        .card-congregacao { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #555; }
+        .card-tema { font-family: "Times New Roman", serif; font-size: 1.2rem; font-weight: bold; color: #000; margin-top: 5px; }
+        
+        .card-body { text-align: left; font-size: 0.9rem; font-family: "Courier New", monospace; }
+        .linha-pautada { border-bottom: 1px solid #999; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .assinatura { font-family: "Brush Script MT", cursive; font-size: 1.3rem; color: #000080; transform: rotate(-5deg); margin-top: 10px; }
+
+        /* VERSO (Anotações) */
+        .flip-card-back {
+            background-color: #fffde7; color: #333; transform: rotateY(180deg);
+            border: 1px dashed #fbc02d;
+        }
+        textarea.anotacao-input {
+            width: 100%; height: 100%; border: none; background: transparent;
+            font-family: cursive; font-size: 1rem; color: #555; resize: none; outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="painel.html" class="btn-voltar">⬅ Voltar</a>
+            <h2>Meu Perfil</h2>
+        </div>
+
+        <div class="perfil-card">
+            <div class="form-group">
+                <label>Nome Completo (Como aparece na escala)</label>
+                <input type="text" id="nome" placeholder="Seu nome...">
+            </div>
+            <button onclick="salvarPerfil()" class="btn-salvar">Salvar Alterações</button>
+        </div>
+
+        <div class="titulo-secao">Minha Coleção de Recitativos 🎻</div>
+        <p style="font-size:0.8rem; color:#666; margin-bottom:20px;">Clique no cartão para virar e escrever uma lembrança.</p>
+
+        <div id="lista-cartoes" class="colecao-grid">
+            <p style="text-align:center">Carregando...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
+        const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const meuId = localStorage.getItem('usuario_id');
+        if (!meuId) window.location.href = 'index.html';
+
+        async function carregarDados() {
+            const { data: perfil } = await clienteSupabase.from('profiles').select('*').eq('id', meuId).single();
+            document.getElementById('nome').value = perfil.nome_completo || '';
+
+            const { data: historico } = await clienteSupabase.from('versoes_atribuidas')
+                .select(`*, recitativos ( tema, referencia_biblica, data_apresentacao )`)
+                .eq('usuario_id', meuId).order('created_at', { ascending: false });
+
+            const container = document.getElementById('lista-cartoes');
+            container.innerHTML = '';
+            if (historico.length === 0) { container.innerHTML = '<p>Você ainda não participou de nenhum recitativo.</p>'; return; }
+
+            historico.forEach(item => {
+                const rec = item.recitativos;
+                const dataFmt = new Date(rec.data_apresentacao).toLocaleDateString('pt-BR');
+                
+                container.innerHTML += `
+                <div class="flip-card" onclick="this.classList.toggle('virado')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="card-header"><div class="card-congregacao">Congregação Cristã no Brasil</div><div class="card-tema">${rec.tema}</div></div>
+                            <div class="card-body">
+                                <div class="linha-pautada"><span>Nome:</span> <b>${perfil.nome_completo || 'Irmão'}</b></div>
+                                <div class="linha-pautada"><span>Versos:</span> <b>${item.faixa_versos}</b></div>
+                                <div class="linha-pautada"><span>Ref:</span> <span>${rec.referencia_biblica}</span></div>
+                                <div class="linha-pautada"><span>Data:</span> <span>${dataFmt}</span></div>
+                                <div class="assinatura">Deus te abençoe!</div>
+                            </div>
+                            <small style="color:#999; font-size:0.6rem; margin-top:5px;">(Clique para virar)</small>
+                        </div>
+                        <div class="flip-card-back">
+                            <div style="text-align:left; font-weight:bold; color:#fbc02d; margin-bottom:5px;">Minhas Anotações:</div>
+                            <textarea class="anotacao-input" placeholder="O que tocou seu coração neste dia?" onblur="salvarAnotacao('${item.id}', this.value)" onclick="event.stopPropagation()">${item.anotacoes_pessoais || ''}</textarea>
+                        </div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        async function salvarPerfil() {
+            const nome = document.getElementById('nome').value;
+            await clienteSupabase.from('profiles').update({ nome_completo: nome }).eq('id', meuId);
+            alert("Perfil salvo! O nome será atualizado nos cartões.");
+            carregarDados();
+        }
+
+        async function salvarAnotacao(id, texto) {
+            await clienteSupabase.from('versoes_atribuidas').update({ anotacoes_pessoais: texto }).eq('id', id);
+        }
+        carregarDados();
+    </script>
+</body>
+</html>
