@@ -258,4 +258,102 @@
                 versosCalculados = calcularVersosDinamicos({ ...dados, status_presenca: 'confirmado' }, meuGrupo, dados.faixa_versos);
                 versosCalculados.classe = "revelado";
             } else {
-                versosCalculados =
+                versosCalculados = calcularVersosDinamicos(dados, meuGrupo, dados.faixa_versos);
+            }
+
+            if (status === 'confirmado') {
+                botoesPresenca = `
+                    <div class="status-box verde">
+                        ✅ Presença Confirmada!
+                        <button onclick="alterarStatus('${dados.id}', 'pendente')" class="btn-link" style="color:#155724">(Desfazer)</button>
+                    </div>`;
+            } else if (status === 'nao_vou') {
+                botoesPresenca = `
+                    <div class="status-box vermelho">
+                        ❌ Você informou que não irá.
+                        <button onclick="alterarStatus('${dados.id}', 'pendente')" class="btn-link" style="color:#721c24">(Mudei de ideia)</button>
+                    </div>`;
+            } else {
+                botoesPresenca = `
+                    <div style="display:flex; gap:10px; margin-top:10px;">
+                        <button onclick="alterarStatus('${dados.id}', 'confirmado')" class="btn-acao" style="background:#28a745; flex:1;">✅ Confirmar</button>
+                        <button onclick="alterarStatus('${dados.id}', 'nao_vou')" class="btn-acao" style="background:#dc3545; flex:1;">❌ Não irei</button>
+                    </div>
+                    <p style="font-size:0.7rem; color:#666; text-align:center; margin-top:5px;">Confirme para ver seus versos exatos.</p>
+                `;
+            }
+
+            let statusClass = '';
+            if(status === 'confirmado') statusClass = 'ok';
+            if(status === 'nao_vou') statusClass = 'no';
+
+            const html = `
+                <div class="dashboard-card" style="border: 2px solid #89b4fa;">
+                    <div class="status-presenca ${statusClass}"></div>
+                    <span class="grupo-badge">GRUPO ${dados.grupo}</span>
+                    <div class="card-content">
+                        <div class="perfil-area">
+                            <div class="avatar">${inicial}</div>
+                            <div class="info-nome"><div>${nome}</div>
+                                <div class="dedicacao-area">${htmlQuadradinhos}</div>
+                            </div>
+                        </div>
+                        <div class="verso-box ${versosCalculados.classe}">
+                            <small>${versosCalculados.detalhe}</small>
+                            <strong>${versosCalculados.texto}</strong>
+                        </div>
+                        <div class="grafico-area">
+                            <div class="donut-chart" style="background: conic-gradient(#ff9800 0% ${pctDedicao}%, #e0e0e0 ${pctDedicao}%);">
+                                <div class="donut-hole"></div>
+                            </div>
+                            <span class="porcentagem-texto">${pctDedicao}%</span>
+                        </div>
+                    </div>
+                    <div style="width:100%">
+                        ${btnEstudo}
+                        ${botoesPresenca}
+                    </div>
+                </div>`;
+            document.getElementById('meu-painel').innerHTML = html;
+        }
+
+        function renderizarOutroCard(dados) {
+            let nome = dados.profiles.nome_completo || 'Irmão';
+            let status = dados.status_presenca || 'pendente';
+            let statusClass = '';
+            if(status === 'confirmado') statusClass = 'ok';
+            if(status === 'nao_vou') statusClass = 'no';
+
+            const html = `
+                <div class="dashboard-card">
+                    <div class="status-presenca ${statusClass}"></div>
+                    <span class="grupo-badge">GRUPO ${dados.grupo}</span>
+                    <div class="card-content">
+                        <div class="perfil-area">
+                            <div class="avatar" style="background:#ccc; font-size:1rem;">${nome.charAt(0)}</div>
+                            <div class="info-nome"><div>${nome}</div><span style="font-size:0.7rem">Versos ${dados.faixa_versos}</span></div>
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('lista-outros').innerHTML += html;
+        }
+
+        async function registrarEstudo() {
+            const btn = document.querySelector('.btn-estudar');
+            btn.innerText = "Registrando...";
+            await clienteSupabase.from('historico_estudos').insert({ usuario_id: meuId });
+            btn.innerText = "✅ Estudo Registrado!";
+            btn.classList.add('feito');
+            setTimeout(carregarTudo, 1000); 
+        }
+
+        async function alterarStatus(id, novoStatus) {
+            await clienteSupabase.from('versoes_atribuidas').update({ status_presenca: novoStatus }).eq('id', id);
+            carregarTudo();
+        }
+
+        function sair() { localStorage.clear(); window.location.href = 'index.html'; }
+        carregarTudo();
+    </script>
+</body>
+</html>
