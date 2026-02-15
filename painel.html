@@ -3,62 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel CCB - Oficial</title>
+    <title>Painel - CCB</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* ESTILOS VISUAIS COMPLETOS */
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; color: #333; }
+        body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; }
 
+        /* CABEÇALHO */
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .btn-sair { padding: 8px 15px; border: 1px solid #ff4757; background: white; border-radius: 20px; cursor: pointer; color: #ff4757; font-weight: 600; }
-        
-        .btn-portal { display: block; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 15px; border-radius: 15px; text-decoration: none; font-weight: bold; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .saudacao-texto { color: #0b1b3d; margin: 0; font-weight: 800; font-size: 1.4rem; }
+        .btn-sair { padding: 8px 15px; border: 1px solid #ccc; background: white; border-radius: 20px; cursor: pointer; color: #555; font-weight: 600; }
 
-        .recitativo-card { background-color: #fffde7; border-left: 5px solid #fbc02d; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .recitativo-titulo { font-weight: 800; color: #f57f17; font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; }
+        /* BOTÃO DO PORTAL */
+        .btn-portal {
+            display: block; width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; text-align: center; padding: 18px;
+            border-radius: 15px; text-decoration: none;
+            font-weight: bold; font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+            margin-bottom: 30px;
+        }
 
-        .dashboard-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; }
+        /* CARD DO RECITATIVO */
+        .recitativo-card { background-color: #fffde7; border-left: 5px solid #fbc02d; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        .recitativo-titulo { font-weight: 800; color: #f57f17; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 5px; }
+
+        /* CARD DE CADA IRMÃO */
+        .dashboard-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; }
         
-        /* FOTO / AVATAR */
-        .perfil-area { display: flex; align-items: center; gap: 15px; }
-        .avatar { width: 55px; height: 55px; background: #4a76c5; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .card-content { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .perfil-area { display: flex; align-items: center; gap: 12px; }
+
+        /* AVATAR/FOTO */
+        .avatar { width: 50px; height: 50px; background: #4a76c5; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; overflow: hidden; }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* GRÁFICO ROSQUINHA */
-        .grafico-area { display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 8px 15px; border-radius: 50px; }
-        .donut-chart { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .donut-hole { width: 32px; height: 32px; background: #f8f9fa; border-radius: 50%; }
-        .porcentagem-texto { font-weight: 800; font-size: 0.85rem; }
+        /* GRÁFICO DE ROSQUINHA */
+        .grafico-area { display: flex; align-items: center; gap: 8px; background: #f8f9fa; padding: 5px 12px; border-radius: 50px; }
+        .donut-chart { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .donut-hole { width: 28px; height: 28px; background: #f8f9fa; border-radius: 50%; }
+        .porcentagem-texto { font-weight: bold; font-size: 0.8rem; }
 
-        /* VERSOS E MISTÉRIO */
-        .verso-box { background: #4a76c5; color: white; padding: 15px; border-radius: 12px; text-align: center; margin: 15px 0; font-weight: bold; font-size: 1.1rem; }
-        .misterio { filter: blur(8px); cursor: pointer; transition: 0.3s; }
+        /* ÁREA DO VERSO */
+        .verso-box { background: #4a76c5; color: white; padding: 12px; border-radius: 12px; text-align: center; margin-top: 15px; font-weight: bold; }
+        .misterio { filter: blur(6px); }
 
-        /* BOTÕES */
-        .btn-acao { width: 100%; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn-estudar { background: #ff9800; color: white; }
-        .btn-estudar.feito { background: #28a745; cursor: default; }
-        .btn-confirmar { background: #28a745; color: white; flex: 1; }
-        .btn-recusar { background: #dc3545; color: white; flex: 1; }
-        .btn-link { background: none; border: none; color: #666; text-decoration: underline; font-size: 0.75rem; cursor: pointer; width: 100%; margin-top: 8px; }
-
-        .status-presenca { width: 14px; height: 14px; border-radius: 50%; position: absolute; top: 15px; right: 15px; border: 2px solid white; background: #ccc; }
-        .status-presenca.ok { background: #28a745; box-shadow: 0 0 5px #28a745; }
-        .status-presenca.no { background: #dc3545; }
+        /* STATUS */
+        .status-presenca { width: 12px; height: 12px; border-radius: 50%; position: absolute; top: 15px; right: 15px; background: #ccc; }
+        .status-presenca.ok { background: #28a745; }
     </style>
 </head>
 <body>
 
     <div class="header-top">
-        <h2 id="saudacao-titulo">Carregando...</h2>
+        <h2 id="saudacao-titulo" class="saudacao-texto">A Paz de Deus!</h2>
         <div>
-            <a href="perfil.html" style="text-decoration:none; margin-right:10px; font-weight:bold; color:#4a76c5">👤 Perfil</a>
+            <a href="perfil.html" style="text-decoration:none; margin-right:10px; font-weight:bold; color:#4a76c5;">👤 Perfil</a>
             <button onclick="sair()" class="btn-sair">Sair</button>
         </div>
     </div>
 
-    <a href="status.html" class="btn-portal">📊 Progresso da Obra (Geral)</a>
+    <a href="status.html" class="btn-portal">📊 Ver Progresso da Obra</a>
 
     <div id="area-recitativo"></div>
     <div id="meu-painel"></div>
@@ -71,122 +77,74 @@
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const meuId = localStorage.getItem('usuario_id');
 
-        async function carregarTudo() {
+        async function carregar() {
             if (!meuId) { window.location.href = 'index.html'; return; }
 
-            // 1. RECITATIVO
-            const { data: recs } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
+            // 1. Recitativo
+            const { data: recs } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true);
             if (recs && recs.length > 0) {
                 document.getElementById('area-recitativo').innerHTML = `
                     <div class="recitativo-card">
                         <div class="recitativo-titulo">📖 TEMA: ${recs[0].tema}</div>
-                        <div>"${recs[0].conteudo_texto}"</div>
+                        <div>${recs[0].conteudo_texto}</div>
                     </div>`;
             }
 
-            // 2. DADOS, ESTUDOS E PERCENTUAL
+            // 2. Perfis e Atribuições
             const { data: perfis } = await clienteSupabase.from('profiles').select('*');
             const { data: atrs } = await clienteSupabase.from('versoes_atribuidas').select('*');
-            
-            const hoje = new Date().toISOString().split('T')[0];
-            const { data: estudos } = await clienteSupabase.from('historico_estudos').select('*').eq('usuario_id', meuId);
-            
-            const jaEstudouHoje = estudos.some(e => e.data_estudo === hoje);
-            const numEstudosSemana = estudos.filter(e => {
-                const d = new Date(e.data_estudo);
-                const hojeD = new Date();
-                const diff = (hojeD - d) / (1000 * 60 * 60 * 24);
-                return diff <= 7;
-            }).length;
 
-            const pct = Math.min(Math.round((numEstudosSemana / 6) * 100), 100);
+            const eu = perfis.find(p => p.id === meuId);
+            const minhaAtr = atrs.find(a => a.usuario_id === meuId);
 
-            const euPerfil = perfis.find(p => p.id === meuId);
-            const euAtr = atrs.find(a => a.usuario_id === meuId);
-
-            if (euPerfil) {
-                document.getElementById('saudacao-titulo').innerText = "A Paz de Deus, " + euPerfil.nome_completo.split(' ')[0];
-                renderizarMeuCard(euPerfil, euAtr, pct, jaEstudouHoje);
+            if (eu) {
+                document.getElementById('saudacao-titulo').innerText = "A Paz de Deus, " + eu.nome_completo.split(' ')[0];
+                renderizarCard(eu, minhaAtr, true);
             }
 
-            // 3. IRMANDADE
-            document.getElementById('lista-outros').innerHTML = "<p style='color:#888; font-size:0.8rem; margin:15px 5px;'>IRMANDADE ATIVA</p>";
+            // Outros irmãos
+            document.getElementById('lista-outros').innerHTML = "<p style='font-size:0.8rem; color:#888; margin:10px;'>OUTROS INTEGRANTES</p>";
             atrs.filter(a => a.usuario_id !== meuId).forEach(at => {
                 const p = perfis.find(prof => prof.id === at.usuario_id);
-                if (p) renderizarOutroCard(p, at);
+                if (p) renderizarCard(p, at, false);
             });
         }
 
-        function renderizarMeuCard(perfil, atr, pct, jaEstudou) {
-            const foto = perfil.foto_url;
+        function renderizarCard(perfil, atr, ehMeu) {
+            const container = ehMeu ? document.getElementById('meu-painel') : document.getElementById('lista-outros');
             const status = atr ? atr.status_presenca : 'pendente';
-            const avatarHtml = foto ? `<img src="${foto}">` : perfil.nome_completo.charAt(0);
-            
-            let botoesPresenca = '';
-            if (status === 'pendente') {
-                botoesPresenca = `
-                    <div style="display:flex; gap:10px;">
-                        <button class="btn-acao btn-confirmar" onclick="mudarStatus('${atr.id}', 'confirmado')">Confirmar</button>
-                        <button class="btn-acao btn-recusar" onclick="mudarStatus('${atr.id}', 'nao_vou')">Não vou</button>
-                    </div>`;
-            } else {
-                botoesPresenca = `<button class="btn-link" onclick="mudarStatus('${atr.id}', 'pendente')">Mudar presença (Desfazer)</button>`;
-            }
+            const pct = 60; // Estático por enquanto, voltaremos a ele no passo 4
 
-            document.getElementById('meu-painel').innerHTML = `
-                <div class="dashboard-card" style="border: 2px solid #4a76c5;">
-                    <div class="status-presenca ${status === 'confirmado' ? 'ok' : (status === 'nao_vou' ? 'no' : '')}"></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
+            const avatarHtml = perfil.foto_url 
+                ? `<img src="${perfil.foto_url}">` 
+                : perfil.nome_completo.charAt(0);
+
+            const html = `
+                <div class="dashboard-card">
+                    <div class="status-presenca ${status === 'confirmado' ? 'ok' : ''}"></div>
+                    <div class="card-content">
                         <div class="perfil-area">
                             <div class="avatar">${avatarHtml}</div>
                             <div><strong>${perfil.nome_completo}</strong><br><small>${perfil.instrumento || 'Escalado'}</small></div>
                         </div>
                         <div class="grafico-area">
-                            <div class="donut-chart" style="background: conic-gradient(#28a745 ${pct}%, #e0e0e0 ${pct}% 100%);">
+                            <div class="donut-chart" style="background: conic-gradient(#28a745 0% ${pct}%, #e0e0e0 ${pct}% 100%);">
                                 <div class="donut-hole"></div>
                             </div>
                             <span class="porcentagem-texto">${pct}%</span>
                         </div>
                     </div>
-
-                    <div class="verso-box ${status !== 'confirmado' ? 'misterio' : ''}">
-                        ${status !== 'confirmado' ? 'CONFIRME PARA VER SEUS VERSOS' : (atr ? atr.faixa_versos : 'Aguardando')}
-                    </div>
-
-                    <button class="btn-acao btn-estudar ${jaEstudou ? 'feito' : ''}" 
-                            onclick="${jaEstudou ? '' : 'registrarEstudo()'}">
-                        ${jaEstudou ? '✅ Estudo de Hoje Registrado' : '📖 Registrar Estudo de Hoje'}
-                    </button>
-                    ${botoesPresenca}
-                </div>`;
-        }
-
-        function renderizarOutroCard(perfil, atr) {
-            const foto = perfil.foto_url;
-            const avatarHtml = foto ? `<img src="${foto}">` : perfil.nome_completo.charAt(0);
-            document.getElementById('lista-outros').innerHTML += `
-                <div class="dashboard-card">
-                    <div class="status-presenca ${atr.status_presenca === 'confirmado' ? 'ok' : (atr.status_presenca === 'nao_vou' ? 'no' : '')}"></div>
-                    <div class="perfil-area">
-                        <div class="avatar" style="width:40px; height:40px; font-size:0.9rem;">${avatarHtml}</div>
-                        <div><strong>${perfil.nome_completo}</strong><br><small>Grupo ${atr.grupo}</small></div>
+                    <div class="verso-box ${ehMeu && status !== 'confirmado' ? 'misterio' : ''}">
+                        ${ehMeu && status !== 'confirmado' ? 'Confirme a presença para ver' : (atr ? atr.faixa_versos : '---')}
                     </div>
                 </div>`;
-        }
-
-        async function registrarEstudo() {
-            const hoje = new Date().toISOString().split('T')[0];
-            await clienteSupabase.from('historico_estudos').insert({ usuario_id: meuId, data_estudo: hoje });
-            carregarTudo();
-        }
-
-        async function mudarStatus(id, novoStatus) {
-            await clienteSupabase.from('versoes_atribuidas').update({ status_presenca: novoStatus }).eq('id', id);
-            carregarTudo();
+            
+            if (ehMeu) container.innerHTML = html;
+            else container.innerHTML += html;
         }
 
         function sair() { localStorage.clear(); window.location.href = 'index.html'; }
-        carregarTudo();
+        carregar();
     </script>
 </body>
 </html>
