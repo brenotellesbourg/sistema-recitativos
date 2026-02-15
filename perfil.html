@@ -3,38 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Perfil - CCB</title>
+    <title>Painel - CCB</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        .avatar-preview { width: 100px; height: 100px; border-radius: 50%; background: #e0e0e0; margin: 0 auto 20px; overflow: hidden; border: 3px solid #4a76c5; display: flex; align-items: center; justify-content: center; }
-        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        label { display: block; text-align: left; margin-bottom: 5px; font-weight: 600; color: #333; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; }
-        button { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-salvar { background: #4a76c5; color: white; margin-bottom: 10px; }
-        .btn-voltar { background: transparent; color: #666; border: 1px solid #ccc; }
+        body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; color: #333; }
+
+        /* HEADER E BOTÃO SAIR */
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .btn-sair { padding: 8px 15px; border: 1px solid #ff4757; background: white; border-radius: 20px; cursor: pointer; color: #ff4757; font-weight: 600; }
+
+        /* PORTAL E STATUS */
+        .btn-portal { display: block; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 15px; border-radius: 15px; text-decoration: none; font-weight: bold; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+
+        /* RECITATIVO (TEXTO ATUALIZADO) */
+        .recitativo-card { background-color: #fffde7; border-left: 5px solid #fbc02d; border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        .recitativo-titulo { font-weight: 800; color: #f57f17; font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; }
+
+        /* DASHBOARD CARDS */
+        .dashboard-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .perfil-area { display: flex; align-items: center; gap: 15px; }
+        
+        /* FOTO DE PERFIL */
+        .avatar { width: 55px; height: 55px; background: #4a76c5; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* GRÁFICO DE ROSQUINHA */
+        .grafico-area { display: flex; align-items: center; gap: 10px; background: #f1f3f5; padding: 8px 15px; border-radius: 50px; }
+        .donut-chart { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .donut-hole { width: 32px; height: 32px; background: #f1f3f5; border-radius: 50%; }
+        .porcentagem-texto { font-weight: 800; font-size: 0.85rem; }
+
+        /* VERSOS E MISTÉRIO */
+        .verso-box { background: #4a76c5; color: white; padding: 15px; border-radius: 12px; text-align: center; margin: 15px 0; font-weight: bold; }
+        .misterio { filter: blur(6px); cursor: pointer; }
+
+        /* BOTÕES DE AÇÃO */
+        .btn-acao { width: 100%; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-estudar { background: #ff9800; color: white; }
+        .btn-estudar.feito { background: #28a745; cursor: default; }
+        .btn-confirmar { background: #28a745; color: white; }
+        .btn-recusar { background: #dc3545; color: white; }
+        .btn-link { background: none; border: none; color: #666; text-decoration: underline; font-size: 0.8rem; cursor: pointer; width: 100%; margin-top: 10px; }
+
+        .status-presenca { width: 15px; height: 15px; border-radius: 50%; position: absolute; top: 20px; right: 20px; border: 2px solid white; background: #ccc; }
+        .status-presenca.ok { background: #28a745; box-shadow: 0 0 8px #28a745; }
+        .status-presenca.no { background: #dc3545; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Meu Perfil</h2>
-        <div class="avatar-preview" id="preview-area"><span>?</span></div>
-        
-        <label>Link da Foto (URL)</label>
-        <input type="text" id="foto-url" placeholder="https://..." oninput="atualizarPreview()">
-        
-        <label>Nome Completo</label>
-        <input type="text" id="nome">
 
-        <label>Instrumento</label>
-        <input type="text" id="instrumento">
-
-        <button class="btn-salvar" onclick="salvarPerfil()">💾 Salvar Alterações</button>
-        <button class="btn-voltar" onclick="window.location.href='painel.html'">Voltar</button>
+    <div class="header-top">
+        <h2 id="saudacao-titulo">A Paz de Deus!</h2>
+        <div>
+            <a href="perfil.html" style="text-decoration:none; margin-right:10px; font-weight:bold; color:#4a76c5">👤 Perfil</a>
+            <button onclick="sair()" class="btn-sair">Sair</button>
+        </div>
     </div>
+
+    <a href="status.html" class="btn-portal">📊 Progresso da Obra (Geral)</a>
+
+    <div id="area-recitativo"></div>
+    <div id="meu-painel"></div>
+    <div id="lista-outros"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -43,48 +74,114 @@
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const meuId = localStorage.getItem('usuario_id');
 
-        async function carregar() {
-            if (!meuId) return;
-            const { data } = await clienteSupabase.from('profiles').select('*').eq('id', meuId).single();
-            if (data) {
-                document.getElementById('nome').value = data.nome_completo || '';
-                document.getElementById('instrumento').value = data.instrumento || '';
-                document.getElementById('foto-url').value = data.foto_url || '';
-                atualizarPreview();
-            }
-        }
+        async function carregarTudo() {
+            if (!meuId) { window.location.href = 'index.html'; return; }
 
-        function atualizarPreview() {
-            const url = document.getElementById('foto-url').value;
-            const area = document.getElementById('preview-area');
-            if (url && url.length > 10) {
-                area.innerHTML = `<img src="${url}">`;
-            } else {
-                area.innerHTML = `<span>?</span>`;
+            // 1. RECITATIVO (Pega o último ativo)
+            const { data: recs } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).order('created_at', { ascending: false }).limit(1);
+            if (recs && recs.length > 0) {
+                document.getElementById('area-recitativo').innerHTML = `
+                    <div class="recitativo-card">
+                        <div class="recitativo-titulo">📖 Tema da Semana: ${recs[0].tema}</div>
+                        <div>"${recs[0].conteudo_texto}"</div>
+                    </div>`;
             }
-        }
 
-        async function salvarPerfil() {
-            const btn = document.querySelector('.btn-salvar');
-            btn.innerText = "Salvando...";
+            // 2. DADOS DO USUÁRIO E ESTUDOS
+            const { data: perfis } = await clienteSupabase.from('profiles').select('*');
+            const { data: atrs } = await clienteSupabase.from('versoes_atribuidas').select('*');
             
-            const dados = {
-                nome_completo: document.getElementById('nome').value,
-                instrumento: document.getElementById('instrumento').value,
-                foto_url: document.getElementById('foto-url').value
-            };
+            // Cálculo de estudos (Rosquinha)
+            const hoje = new Date().toISOString().split('T')[0];
+            const { data: estudos } = await clienteSupabase.from('historico_estudos').select('data_estudo').eq('usuario_id', meuId);
+            const jaEstudouHoje = estudos.some(e => e.data_estudo === hoje);
+            const pctEstudo = Math.min(Math.round((estudos.length / 6) * 100), 100);
 
-            const { error } = await clienteSupabase.from('profiles').update(dados).eq('id', meuId);
+            const euPerfil = perfis.find(p => p.id === meuId);
+            const euAtr = atrs.find(a => a.usuario_id === meuId);
 
-            if (error) {
-                alert("Erro ao salvar: " + error.message);
-                btn.innerText = "Tentar Novamente";
-            } else {
-                alert("Perfil atualizado com sucesso!");
-                window.location.href = 'painel.html';
+            if (euPerfil) {
+                document.getElementById('saudacao-titulo').innerText = "A Paz de Deus, " + (euPerfil.nome_completo ? euPerfil.nome_completo.split(' ')[0] : 'Irmão');
+                renderizarMeuCard(euPerfil, euAtr, pctEstudo, jaEstudouHoje);
             }
+
+            // 3. OUTROS MEMBROS
+            document.getElementById('lista-outros').innerHTML = "<p style='margin: 20px 5px 10px; font-weight:bold; color:#888; font-size:0.8rem;'>IRMANDADE DO GRUPO</p>";
+            atrs.filter(a => a.usuario_id !== meuId).forEach(at => {
+                const p = perfis.find(prof => prof.id === at.usuario_id);
+                if (p) renderizarOutroCard(p, at);
+            });
         }
-        carregar();
+
+        function renderizarMeuCard(perfil, atr, pct, jaEstudou) {
+            const foto = perfil.foto_url;
+            const status = atr ? atr.status_presenca : 'pendente';
+            const avatarHtml = foto ? `<img src="${foto}">` : perfil.nome_completo.charAt(0);
+            
+            let acoesHtml = '';
+            if (status === 'pendente') {
+                acoesHtml = `
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-acao btn-confirmar" onclick="mudarStatus('${atr.id}', 'confirmado')">Confirmar</button>
+                        <button class="btn-acao btn-recusar" onclick="mudarStatus('${atr.id}', 'nao_vou')">Não vou</button>
+                    </div>`;
+            } else {
+                acoesHtml = `<button class="btn-link" onclick="mudarStatus('${atr.id}', 'pendente')">Alterar presença (Desfazer)</button>`;
+            }
+
+            document.getElementById('meu-painel').innerHTML = `
+                <div class="dashboard-card" style="border: 2px solid #4a76c5;">
+                    <div class="status-presenca ${status === 'confirmado' ? 'ok' : (status === 'nao_vou' ? 'no' : '')}"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div class="perfil-area">
+                            <div class="avatar">${avatarHtml}</div>
+                            <div><strong>${perfil.nome_completo}</strong><br><small>${perfil.instrumento || 'Escalado'}</small></div>
+                        </div>
+                        <div class="grafico-area">
+                            <div class="donut-chart" style="background: conic-gradient(#28a745 ${pct}%, #e0e0e0 ${pct}% 100%);">
+                                <div class="donut-hole"></div>
+                            </div>
+                            <span class="porcentagem-texto">${pct}%</span>
+                        </div>
+                    </div>
+
+                    <div class="verso-box ${status !== 'confirmado' ? 'misterio' : ''}">
+                        ${status !== 'confirmado' ? 'CONFIRME PARA REVELAR' : atr.faixa_versos}
+                    </div>
+
+                    <button class="btn-acao btn-estudar ${jaEstudou ? 'feito' : ''}" 
+                            onclick="${jaEstudou ? '' : 'registrarEstudo()'}">
+                        ${jaEstudou ? '✅ Estudo de Hoje Concluído' : '📖 Registrar Estudo de Hoje'}
+                    </button>
+                    ${acoesHtml}
+                </div>`;
+        }
+
+        function renderizarOutroCard(perfil, atr) {
+            const foto = perfil.foto_url;
+            const avatarHtml = foto ? `<img src="${foto}">` : perfil.nome_completo.charAt(0);
+            document.getElementById('lista-outros').innerHTML += `
+                <div class="dashboard-card">
+                    <div class="status-presenca ${atr.status_presenca === 'confirmado' ? 'ok' : ''}"></div>
+                    <div class="perfil-area">
+                        <div class="avatar" style="width:40px; height:40px; font-size:0.9rem;">${avatarHtml}</div>
+                        <div><strong>${perfil.nome_completo}</strong><br><small>Grupo ${atr.grupo}</small></div>
+                    </div>
+                </div>`;
+        }
+
+        async function registrarEstudo() {
+            await clienteSupabase.from('historico_estudos').insert({ usuario_id: meuId, data_estudo: new Date().toISOString().split('T')[0] });
+            carregarTudo();
+        }
+
+        async function mudarStatus(id, novoStatus) {
+            await clienteSupabase.from('versoes_atribuidas').update({ status_presenca: novoStatus }).eq('id', id);
+            carregarTudo();
+        }
+
+        function sair() { localStorage.clear(); window.location.href = 'index.html'; }
+        carregarTudo();
     </script>
 </body>
 </html>
