@@ -8,74 +8,32 @@
     <style>
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: #f0f2f5; padding: 20px; display: flex; justify-content: center; }
-
-        .container {
-            background: white; width: 100%; max-width: 400px;
-            padding: 30px; border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        h2 { color: #0b1b3d; margin-bottom: 5px; }
-        p { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
-
-        /* ÁREA DA FOTO */
-        .avatar-preview {
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            margin: 0 auto 20px;
-            overflow: hidden;
-            border: 3px solid #4a76c5;
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-        }
+        .container { background: white; width: 100%; max-width: 400px; padding: 30px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        .avatar-preview { width: 100px; height: 100px; border-radius: 50%; background: #e0e0e0; margin: 0 auto 20px; overflow: hidden; border: 3px solid #4a76c5; display: flex; align-items: center; justify-content: center; }
         .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .avatar-preview span { font-size: 2rem; font-weight: bold; color: #555; }
-
         label { display: block; text-align: left; margin-bottom: 5px; font-weight: 600; color: #333; }
-        input, select {
-            width: 100%; padding: 12px; margin-bottom: 15px;
-            border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;
-        }
-
-        .dica { font-size: 0.75rem; color: #888; text-align: left; margin-top: -10px; margin-bottom: 15px; }
-
-        button {
-            width: 100%; padding: 15px; border: none; border-radius: 10px;
-            font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s;
-        }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        button { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-salvar { background: #4a76c5; color: white; margin-bottom: 10px; }
-        .btn-salvar:hover { background: #3a65b0; }
         .btn-voltar { background: transparent; color: #666; border: 1px solid #ccc; }
-
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h2>Editar Perfil</h2>
-        <p>Mantenha seus dados atualizados.</p>
-
-        <div class="avatar-preview" id="preview-area">
-            <span>?</span>
-        </div>
-
-        <label>Link da Sua Foto (URL)</label>
-        <input type="text" id="foto-url" placeholder="Cole o link aqui (https://...)" oninput="atualizarPreview()">
-        <div class="dica">💡 Dica: Copie o link da sua foto do Facebook, LinkedIn ou WhatsApp Web. Se deixar vazio, usaremos sua inicial.</div>
-
+        <h2>Meu Perfil</h2>
+        <div class="avatar-preview" id="preview-area"><span>?</span></div>
+        
+        <label>Link da Foto (URL)</label>
+        <input type="text" id="foto-url" placeholder="https://..." oninput="atualizarPreview()">
+        
         <label>Nome Completo</label>
         <input type="text" id="nome">
 
         <label>Instrumento</label>
         <input type="text" id="instrumento">
 
-        <label>Comum Congregação</label>
-        <input type="text" id="comum">
-
         <button class="btn-salvar" onclick="salvarPerfil()">💾 Salvar Alterações</button>
-        <button class="btn-voltar" onclick="voltar()">Cancelar</button>
+        <button class="btn-voltar" onclick="window.location.href='painel.html'">Voltar</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -83,71 +41,50 @@
         const SUPABASE_URL = 'https://yyktessyxnloyjwmydoj.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        
         const meuId = localStorage.getItem('usuario_id');
-        if (!meuId) window.location.href = 'index.html';
 
-        async function carregarDados() {
-            const { data, error } = await clienteSupabase
-                .from('profiles')
-                .select('*')
-                .eq('id', meuId)
-                .single();
-
+        async function carregar() {
+            if (!meuId) return;
+            const { data } = await clienteSupabase.from('profiles').select('*').eq('id', meuId).single();
             if (data) {
                 document.getElementById('nome').value = data.nome_completo || '';
                 document.getElementById('instrumento').value = data.instrumento || '';
-                document.getElementById('comum').value = data.comum_congregacao || '';
                 document.getElementById('foto-url').value = data.foto_url || '';
-                atualizarPreview(data.nome_completo);
+                atualizarPreview();
             }
         }
 
-        function atualizarPreview(nomeSalvo) {
+        function atualizarPreview() {
             const url = document.getElementById('foto-url').value;
             const area = document.getElementById('preview-area');
-            const nomeInput = document.getElementById('nome').value || nomeSalvo || 'User';
-            
             if (url && url.length > 10) {
-                // Tenta mostrar a imagem
-                area.innerHTML = `<img src="${url}" onerror="this.onerror=null; this.parentNode.innerHTML='<span>❌</span>';">`;
+                area.innerHTML = `<img src="${url}">`;
             } else {
-                // Mostra a inicial
-                const inicial = nomeInput.charAt(0).toUpperCase();
-                area.innerHTML = `<span>${inicial}</span>`;
+                area.innerHTML = `<span>?</span>`;
             }
         }
 
         async function salvarPerfil() {
             const btn = document.querySelector('.btn-salvar');
             btn.innerText = "Salvando...";
-
-            const atualizacoes = {
+            
+            const dados = {
                 nome_completo: document.getElementById('nome').value,
                 instrumento: document.getElementById('instrumento').value,
-                comum_congregacao: document.getElementById('comum').value,
-                foto_url: document.getElementById('foto-url').value // Salvando a URL
+                foto_url: document.getElementById('foto-url').value
             };
 
-            const { error } = await clienteSupabase
-                .from('profiles')
-                .update(atualizacoes)
-                .eq('id', meuId);
+            const { error } = await clienteSupabase.from('profiles').update(dados).eq('id', meuId);
 
             if (error) {
-                alert('Erro ao salvar: ' + error.message);
+                alert("Erro ao salvar: " + error.message);
                 btn.innerText = "Tentar Novamente";
             } else {
-                alert('Perfil atualizado com sucesso!');
+                alert("Perfil atualizado com sucesso!");
                 window.location.href = 'painel.html';
             }
         }
-
-        function voltar() {
-            window.location.href = 'painel.html';
-        }
-
-        carregarDados();
+        carregar();
     </script>
 </body>
 </html>
