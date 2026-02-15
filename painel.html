@@ -3,106 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Pessoal - CCB</title>
+    <title>Painel CCB - Oficial</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* --- ESTILOS VISUAIS --- */
+        /* ESTILOS VISUAIS COMPLETOS */
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; }
+        body { margin: 0; padding: 20px; background: #f0f2f5; min-height: 100vh; color: #333; }
 
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        h2.saudacao-texto { color: #0b1b3d; margin: 0; font-weight: 800; font-size: 1.4rem; }
-        .subtitulo-saudacao { color: #666; font-size: 0.9rem; }
-        .btn-sair { padding: 8px 15px; border: 1px solid #ccc; background: transparent; border-radius: 20px; cursor: pointer; color: #555; font-weight: 600; }
-
-        /* PORTAL */
-        .btn-portal {
-            display: block; width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; text-align: center; padding: 15px;
-            border-radius: 15px; text-decoration: none;
-            font-weight: bold; font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
-            margin-bottom: 30px; transition: transform 0.2s;
-        }
-        .btn-portal:hover { transform: translateY(-3px); }
-
-        /* CARDS */
-        .recitativo-card { background-color: #fffde7; border-left: 5px solid #fbc02d; border-radius: 8px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .recitativo-titulo { font-weight: 800; color: #f57f17; text-transform: uppercase; font-size: 0.9rem; margin-bottom: 5px; }
-        .recitativo-texto { font-style: italic; color: #444; font-size: 1rem; }
-
-        .dashboard-card { background: #eef2f8; border: 1px solid #ccd6e0; border-radius: 20px; padding: 15px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px; position: relative; }
-        .grupo-badge { background-color: #4a76c5; color: white; padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; align-self: flex-start; }
+        .btn-sair { padding: 8px 15px; border: 1px solid #ff4757; background: white; border-radius: 20px; cursor: pointer; color: #ff4757; font-weight: 600; }
         
-        .card-content { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
-        .perfil-area { display: flex; align-items: center; gap: 10px; min-width: 140px; }
+        .btn-portal { display: block; width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-align: center; padding: 15px; border-radius: 15px; text-decoration: none; font-weight: bold; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+
+        .recitativo-card { background-color: #fffde7; border-left: 5px solid #fbc02d; border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .recitativo-titulo { font-weight: 800; color: #f57f17; font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; }
+
+        .dashboard-card { background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee; }
         
-        /* NOVO ESTILO DA FOTO */
-        .avatar { width: 45px; height: 45px; background: #e76f51; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; border: 2px solid white; overflow: hidden; }
+        /* FOTO / AVATAR */
+        .perfil-area { display: flex; align-items: center; gap: 15px; }
+        .avatar { width: 55px; height: 55px; background: #4a76c5; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .avatar img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .info-nome div { font-weight: 800; color: #333; font-size: 0.95rem; }
 
-        .dedicacao-area { display: flex; gap: 4px; margin-top: 5px; }
-        .dia-quadrado { width: 12px; height: 12px; background: #d0d0d0; border-radius: 3px; }
-        .dia-quadrado.verde { background: #28a745; border: 1px solid #1e7e34; } 
-        .dia-quadrado.hoje-vazio { border: 2px solid #ff9800; background: transparent; }
+        /* GRÁFICO ROSQUINHA */
+        .grafico-area { display: flex; align-items: center; gap: 10px; background: #f8f9fa; padding: 8px 15px; border-radius: 50px; }
+        .donut-chart { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .donut-hole { width: 32px; height: 32px; background: #f8f9fa; border-radius: 50%; }
+        .porcentagem-texto { font-weight: 800; font-size: 0.85rem; }
 
-        .verso-box { background: #4a76c5; color: white; padding: 10px 20px; border-radius: 8px; text-align: center; flex-grow: 1; min-width: 100px; }
-        .verso-box small { font-size: 0.7rem; opacity: 0.8; text-transform: uppercase; letter-spacing: 1px; display:block; }
-        .verso-box strong { display: block; font-size: 1.1rem; }
+        /* VERSOS E MISTÉRIO */
+        .verso-box { background: #4a76c5; color: white; padding: 15px; border-radius: 12px; text-align: center; margin: 15px 0; font-weight: bold; font-size: 1.1rem; }
+        .misterio { filter: blur(8px); cursor: pointer; transition: 0.3s; }
 
-        /* O EFEITO MISTÉRIO */
-        .misterio { filter: blur(6px); user-select: none; cursor: pointer; transition: 0.5s; }
-        .misterio:hover { filter: blur(4px); }
-        .revelado { filter: none; animation: brilha 1s ease; }
-        @keyframes brilha {
-            0% { background-color: #fff; color: #333; }
-            100% { background-color: #4a76c5; color: white; }
-        }
-
-        .grafico-area { display: flex; align-items: center; gap: 10px; background: white; padding: 5px 10px; border-radius: 50px; border: 1px solid #ddd; }
-        .donut-chart { width: 40px; height: 40px; border-radius: 50%; background: conic-gradient(#3d5a80 0% 0%, #e0e0e0 0% 100%); display: flex; align-items: center; justify-content: center; }
-        .donut-hole { width: 28px; height: 28px; background: white; border-radius: 50%; }
-        .porcentagem-texto { font-weight: bold; font-size: 0.8rem; color: #333; }
-
-        .btn-acao { width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; margin-top: 5px; transition: transform 0.2s; }
-        .btn-acao:active { transform: scale(0.98); }
-        .btn-estudar { background: #ff9800; }
+        /* BOTÕES */
+        .btn-acao { width: 100%; border: none; padding: 14px; border-radius: 12px; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-estudar { background: #ff9800; color: white; }
         .btn-estudar.feito { background: #28a745; cursor: default; }
-        
-        .status-box { padding: 10px; border-radius: 8px; text-align: center; font-weight: bold; margin-top: 10px; border: 1px solid transparent; }
-        .status-box.verde { background: #d4edda; color: #155724; border-color: #c3e6cb; }
-        .status-box.vermelho { background: #f8d7da; color: #721c24; border-color: #f5c6cb; }
-        .btn-link { font-size: 0.7rem; text-decoration: underline; border: none; background: none; cursor: pointer; margin-left: 5px; }
+        .btn-confirmar { background: #28a745; color: white; flex: 1; }
+        .btn-recusar { background: #dc3545; color: white; flex: 1; }
+        .btn-link { background: none; border: none; color: #666; text-decoration: underline; font-size: 0.75rem; cursor: pointer; width: 100%; margin-top: 8px; }
 
-        .status-presenca { width: 15px; height: 15px; border-radius: 50%; background: #ccc; border: 2px solid white; position: absolute; top: 15px; right: 15px; }
-        .status-presenca.ok { background: #00b894; box-shadow: 0 0 5px #00b894; }
-        .status-presenca.no { background: #d63031; box-shadow: 0 0 5px #d63031; }
-        
-        .section-label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 30px; margin-bottom: 10px; font-weight: bold; }
+        .status-presenca { width: 14px; height: 14px; border-radius: 50%; position: absolute; top: 15px; right: 15px; border: 2px solid white; background: #ccc; }
+        .status-presenca.ok { background: #28a745; box-shadow: 0 0 5px #28a745; }
+        .status-presenca.no { background: #dc3545; }
     </style>
 </head>
 <body>
 
     <div class="header-top">
+        <h2 id="saudacao-titulo">Carregando...</h2>
         <div>
-            <h2 id="saudacao-titulo" class="saudacao-texto">A Paz de Deus!</h2>
-            <div class="subtitulo-saudacao">Foque na sua parte.</div>
-        </div>
-        <div>
-            <a href="perfil.html" style="margin-right:10px; text-decoration:none; color:#4a76c5; font-weight:bold;">👤 Meu Perfil</a>
+            <a href="perfil.html" style="text-decoration:none; margin-right:10px; font-weight:bold; color:#4a76c5">👤 Perfil</a>
             <button onclick="sair()" class="btn-sair">Sair</button>
         </div>
     </div>
 
-    <a href="status.html" class="btn-portal">📊 Ver Progresso da Obra (Todos os Grupos)</a>
+    <a href="status.html" class="btn-portal">📊 Progresso da Obra (Geral)</a>
 
-    <div id="area-texto-biblico"></div>
-    <div id="meu-painel"><p style="text-align:center">Carregando...</p></div>
-    
-    <div class="section-label">Irmandade Ativa</div>
+    <div id="area-recitativo"></div>
+    <div id="meu-painel"></div>
     <div id="lista-outros"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -111,260 +70,117 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5a3Rlc3N5eG5sb3lqd215ZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzNDQ1NzUsImV4cCI6MjA4NTkyMDU3NX0.bvktQ_DFH-CIszOlL0j1vrlIRM5sW3DIamjUy2fT__g';
         const clienteSupabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const meuId = localStorage.getItem('usuario_id');
-        if (!meuId) window.location.href = 'index.html';
-
-        function pegarDatasSemana() {
-            const hoje = new Date();
-            const diaSemana = hoje.getDay(); 
-            const diff = hoje.getDate() - diaSemana + (diaSemana == 0 ? -6 : 1); 
-            const datas = [];
-            for (let i = 0; i < 6; i++) { 
-                let d = new Date(hoje.setDate(diff + i));
-                datas.push(d.toISOString().split('T')[0]);
-            }
-            return datas; 
-        }
 
         async function carregarTudo() {
-            try {
-                // 1. Perfis
-                const { data: perfis } = await clienteSupabase.from('profiles').select('*');
-                const meuPerfil = perfis.find(p => p.id === meuId);
-                if (meuPerfil) {
-                    const nome = meuPerfil.nome_completo ? meuPerfil.nome_completo.split(' ')[0] : 'Irmão';
-                    document.getElementById('saudacao-titulo').innerText = `A Paz de Deus, Irmão ${nome}!`;
-                }
+            if (!meuId) { window.location.href = 'index.html'; return; }
 
-                // 2. Recitativo Ativo
-                const { data: recitativos } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
-                if (!recitativos.length) { document.getElementById('meu-painel').innerHTML = 'Sem recitativo.'; return; }
-                const recitativo = recitativos[0];
-
-                document.getElementById('area-texto-biblico').innerHTML = `
+            // 1. RECITATIVO
+            const { data: recs } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true).limit(1);
+            if (recs && recs.length > 0) {
+                document.getElementById('area-recitativo').innerHTML = `
                     <div class="recitativo-card">
-                        <div class="recitativo-titulo">📖 ${recitativo.tema}</div>
-                        <div class="recitativo-texto">"${recitativo.conteudo_texto || '...'}"</div>
+                        <div class="recitativo-titulo">📖 TEMA: ${recs[0].tema}</div>
+                        <div>"${recs[0].conteudo_texto}"</div>
                     </div>`;
+            }
 
-                // 3. Atribuições
-                const { data: atribuicoes } = await clienteSupabase.from('versoes_atribuidas').select('*').eq('recitativo_id', recitativo.id);
-                
-                // 4. Estudos
-                const datasSemana = pegarDatasSemana();
-                const hojeStr = new Date().toISOString().split('T')[0];
-                const { data: estudos } = await clienteSupabase.from('historico_estudos').select('data_estudo').eq('usuario_id', meuId).in('data_estudo', datasSemana);
-                const diasEstudados = estudos.map(e => e.data_estudo);
-                const estudeiHoje = diasEstudados.includes(hojeStr);
+            // 2. DADOS, ESTUDOS E PERCENTUAL
+            const { data: perfis } = await clienteSupabase.from('profiles').select('*');
+            const { data: atrs } = await clienteSupabase.from('versoes_atribuidas').select('*');
+            
+            const hoje = new Date().toISOString().split('T')[0];
+            const { data: estudos } = await clienteSupabase.from('historico_estudos').select('*').eq('usuario_id', meuId);
+            
+            const jaEstudouHoje = estudos.some(e => e.data_estudo === hoje);
+            const numEstudosSemana = estudos.filter(e => {
+                const d = new Date(e.data_estudo);
+                const hojeD = new Date();
+                const diff = (hojeD - d) / (1000 * 60 * 60 * 24);
+                return diff <= 7;
+            }).length;
 
-                // 5. Monta Lista de Participantes
-                let participantes = atribuicoes.map(atrib => {
-                    const perfil = perfis.find(p => p.id === atrib.usuario_id) || {};
-                    return { ...atrib, profiles: perfil };
-                });
-                participantes.sort((a, b) => (a.profiles.nome_completo || "").localeCompare(b.profiles.nome_completo || ""));
+            const pct = Math.min(Math.round((numEstudosSemana / 6) * 100), 100);
 
-                const eu = participantes.find(p => p.usuario_id === meuId);
-                const outros = participantes.filter(p => p.usuario_id !== meuId);
+            const euPerfil = perfis.find(p => p.id === meuId);
+            const euAtr = atrs.find(a => a.usuario_id === meuId);
 
-                if (eu) renderizarMeuCard(eu, diasEstudados, estudeiHoje, datasSemana, participantes);
-                else document.getElementById('meu-painel').innerHTML = 'Não escalado.';
-                
-                document.getElementById('lista-outros').innerHTML = '';
-                outros.forEach(p => renderizarOutroCard(p));
+            if (euPerfil) {
+                document.getElementById('saudacao-titulo').innerText = "A Paz de Deus, " + euPerfil.nome_completo.split(' ')[0];
+                renderizarMeuCard(euPerfil, euAtr, pct, jaEstudouHoje);
+            }
 
-            } catch (e) { console.error(e); }
+            // 3. IRMANDADE
+            document.getElementById('lista-outros').innerHTML = "<p style='color:#888; font-size:0.8rem; margin:15px 5px;'>IRMANDADE ATIVA</p>";
+            atrs.filter(a => a.usuario_id !== meuId).forEach(at => {
+                const p = perfis.find(prof => prof.id === at.usuario_id);
+                if (p) renderizarOutroCard(p, at);
+            });
         }
 
-        // --- ALGORITMO DE DISTRIBUIÇÃO E MISTÉRIO ---
-        function calcularVersosDinamicos(eu, todosDoGrupo, faixaGeralStr) {
-            const confirmados = todosDoGrupo.filter(p => p.status_presenca === 'confirmado');
+        function renderizarMeuCard(perfil, atr, pct, jaEstudou) {
+            const foto = perfil.foto_url;
+            const status = atr ? atr.status_presenca : 'pendente';
+            const avatarHtml = foto ? `<img src="${foto}">` : perfil.nome_completo.charAt(0);
             
-            if (eu.status_presenca !== 'confirmado') {
-                return { texto: faixaGeralStr, detalhe: "Confirme para revelar", classe: "misterio" };
-            }
-
-            if (confirmados.length === 0) return { texto: faixaGeralStr, detalhe: "Você fará tudo (por enquanto)", classe: "revelado" };
-
-            confirmados.sort((a, b) => {
-                const nomeA = a.profiles.nome_completo || "";
-                const nomeB = b.profiles.nome_completo || "";
-                return nomeA.localeCompare(nomeB);
-            });
-
-            const numeros = faixaGeralStr.match(/\d+/g);
-            if (!numeros || numeros.length < 2) {
-                return { texto: faixaGeralStr, detalhe: "Verso Especial", classe: "revelado" };
-            }
-
-            const inicio = parseInt(numeros[0]);
-            const fim = parseInt(numeros[1]);
-            const totalVersos = fim - inicio + 1;
-            const qtdPessoas = confirmados.length;
-
-            const versosPorPessoa = Math.floor(totalVersos / qtdPessoas);
-            const sobra = totalVersos % qtdPessoas;
-            const meuIndice = confirmados.findIndex(p => p.usuario_id === eu.usuario_id);
-            
-            if (meuIndice === -1) return { texto: faixaGeralStr, detalhe: "Aguardando...", classe: "misterio" };
-
-            let meuInicio = inicio;
-            for (let i = 0; i < meuIndice; i++) {
-                let qtdDesseIrmao = versosPorPessoa + (i < sobra ? 1 : 0);
-                meuInicio += qtdDesseIrmao;
-            }
-
-            let minhaQtd = versosPorPessoa + (meuIndice < sobra ? 1 : 0);
-            let meuFim = meuInicio + minhaQtd - 1;
-
-            let textoFinal = "";
-            if (minhaQtd === 1) textoFinal = `Verso ${meuInicio}`;
-            else textoFinal = `Versos ${meuInicio} ao ${meuFim}`;
-
-            return { texto: textoFinal, detalhe: "Sua parte específica", classe: "revelado" };
-        }
-
-        function renderizarMeuCard(dados, diasEstudados, estudeiHoje, datasSemana, todosParticipantes) {
-            const nome = dados.profiles.nome_completo || 'Eu';
-            
-            // --- LÓGICA DA FOTO ---
-            const foto = dados.profiles.foto_url;
-            let avatarHtml = '';
-            if (foto && foto.length > 10) {
-                avatarHtml = `<div class="avatar"><img src="${foto}" alt="Foto"></div>`;
-            } else {
-                const inicial = nome.charAt(0).toUpperCase();
-                avatarHtml = `<div class="avatar">${inicial}</div>`;
-            }
-            // ---------------------
-
-            let htmlQuadradinhos = '';
-            let qtdEstudos = 0;
-            const hojeStr = new Date().toISOString().split('T')[0];
-            const diaSemanaHoje = new Date().getDay();
-
-            datasSemana.forEach(data => {
-                let classe = '';
-                if (diasEstudados.includes(data)) { classe = 'verde'; qtdEstudos++; }
-                else if (data === hojeStr) { classe = 'hoje-vazio'; }
-                htmlQuadradinhos += `<div class="dia-quadrado ${classe}" title="${data}"></div>`;
-            });
-
-            const pctDedicao = Math.round((qtdEstudos / 6) * 100);
-            
-            let btnEstudo = estudeiHoje 
-                ? `<button class="btn-acao btn-estudar feito">✅ Estudo de Hoje Registrado!</button>`
-                : `<button class="btn-acao btn-estudar" onclick="registrarEstudo()">📖 Registrar Estudo de Hoje</button>`;
-
-            let status = dados.status_presenca || 'pendente';
             let botoesPresenca = '';
-
-            const meuGrupo = todosParticipantes.filter(p => p.grupo === dados.grupo);
-            let versosCalculados;
-
-            if (diaSemanaHoje === 6 || diaSemanaHoje === 0) {
-                versosCalculados = calcularVersosDinamicos({ ...dados, status_presenca: 'confirmado' }, meuGrupo, dados.faixa_versos);
-                versosCalculados.classe = "revelado";
-            } else {
-                versosCalculados = calcularVersosDinamicos(dados, meuGrupo, dados.faixa_versos);
-            }
-
-            if (status === 'confirmado') {
+            if (status === 'pendente') {
                 botoesPresenca = `
-                    <div class="status-box verde">
-                        ✅ Presença Confirmada!
-                        <button onclick="alterarStatus('${dados.id}', 'pendente')" class="btn-link" style="color:#155724">(Desfazer)</button>
-                    </div>`;
-            } else if (status === 'nao_vou') {
-                botoesPresenca = `
-                    <div class="status-box vermelho">
-                        ❌ Você informou que não irá.
-                        <button onclick="alterarStatus('${dados.id}', 'pendente')" class="btn-link" style="color:#721c24">(Mudei de ideia)</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-acao btn-confirmar" onclick="mudarStatus('${atr.id}', 'confirmado')">Confirmar</button>
+                        <button class="btn-acao btn-recusar" onclick="mudarStatus('${atr.id}', 'nao_vou')">Não vou</button>
                     </div>`;
             } else {
-                botoesPresenca = `
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button onclick="alterarStatus('${dados.id}', 'confirmado')" class="btn-acao" style="background:#28a745; flex:1;">✅ Confirmar</button>
-                        <button onclick="alterarStatus('${dados.id}', 'nao_vou')" class="btn-acao" style="background:#dc3545; flex:1;">❌ Não irei</button>
-                    </div>
-                    <p style="font-size:0.7rem; color:#666; text-align:center; margin-top:5px;">Confirme para ver seus versos exatos.</p>
-                `;
+                botoesPresenca = `<button class="btn-link" onclick="mudarStatus('${atr.id}', 'pendente')">Mudar presença (Desfazer)</button>`;
             }
 
-            let statusClass = '';
-            if(status === 'confirmado') statusClass = 'ok';
-            if(status === 'nao_vou') statusClass = 'no';
-
-            const html = `
-                <div class="dashboard-card" style="border: 2px solid #89b4fa;">
-                    <div class="status-presenca ${statusClass}"></div>
-                    <span class="grupo-badge">GRUPO ${dados.grupo}</span>
-                    <div class="card-content">
+            document.getElementById('meu-painel').innerHTML = `
+                <div class="dashboard-card" style="border: 2px solid #4a76c5;">
+                    <div class="status-presenca ${status === 'confirmado' ? 'ok' : (status === 'nao_vou' ? 'no' : '')}"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div class="perfil-area">
-                            ${avatarHtml}
-                            <div class="info-nome"><div>${nome}</div>
-                                <div class="dedicacao-area">${htmlQuadradinhos}</div>
-                            </div>
-                        </div>
-                        <div class="verso-box ${versosCalculados.classe}">
-                            <small>${versosCalculados.detalhe}</small>
-                            <strong>${versosCalculados.texto}</strong>
+                            <div class="avatar">${avatarHtml}</div>
+                            <div><strong>${perfil.nome_completo}</strong><br><small>${perfil.instrumento || 'Escalado'}</small></div>
                         </div>
                         <div class="grafico-area">
-                            <div class="donut-chart" style="background: conic-gradient(#ff9800 0% ${pctDedicao}%, #e0e0e0 ${pctDedicao}%);">
+                            <div class="donut-chart" style="background: conic-gradient(#28a745 ${pct}%, #e0e0e0 ${pct}% 100%);">
                                 <div class="donut-hole"></div>
                             </div>
-                            <span class="porcentagem-texto">${pctDedicao}%</span>
+                            <span class="porcentagem-texto">${pct}%</span>
                         </div>
                     </div>
-                    <div style="width:100%">
-                        ${btnEstudo}
-                        ${botoesPresenca}
+
+                    <div class="verso-box ${status !== 'confirmado' ? 'misterio' : ''}">
+                        ${status !== 'confirmado' ? 'CONFIRME PARA VER SEUS VERSOS' : (atr ? atr.faixa_versos : 'Aguardando')}
                     </div>
+
+                    <button class="btn-acao btn-estudar ${jaEstudou ? 'feito' : ''}" 
+                            onclick="${jaEstudou ? '' : 'registrarEstudo()'}">
+                        ${jaEstudou ? '✅ Estudo de Hoje Registrado' : '📖 Registrar Estudo de Hoje'}
+                    </button>
+                    ${botoesPresenca}
                 </div>`;
-            document.getElementById('meu-painel').innerHTML = html;
         }
 
-        function renderizarOutroCard(dados) {
-            let nome = dados.profiles.nome_completo || 'Irmão';
-            let status = dados.status_presenca || 'pendente';
-            
-            // --- LÓGICA DA FOTO (CARD OUTROS) ---
-            const foto = dados.profiles.foto_url;
-            let avatarHtml = '';
-            if (foto && foto.length > 10) {
-                avatarHtml = `<div class="avatar" style="background:none;"><img src="${foto}"></div>`;
-            } else {
-                avatarHtml = `<div class="avatar" style="background:#ccc; font-size:1rem;">${nome.charAt(0)}</div>`;
-            }
-
-            let statusClass = '';
-            if(status === 'confirmado') statusClass = 'ok';
-            if(status === 'nao_vou') statusClass = 'no';
-
-            const html = `
+        function renderizarOutroCard(perfil, atr) {
+            const foto = perfil.foto_url;
+            const avatarHtml = foto ? `<img src="${foto}">` : perfil.nome_completo.charAt(0);
+            document.getElementById('lista-outros').innerHTML += `
                 <div class="dashboard-card">
-                    <div class="status-presenca ${statusClass}"></div>
-                    <span class="grupo-badge">GRUPO ${dados.grupo}</span>
-                    <div class="card-content">
-                        <div class="perfil-area">
-                            ${avatarHtml}
-                            <div class="info-nome"><div>${nome}</div><span style="font-size:0.7rem">Versos ${dados.faixa_versos}</span></div>
-                        </div>
+                    <div class="status-presenca ${atr.status_presenca === 'confirmado' ? 'ok' : (atr.status_presenca === 'nao_vou' ? 'no' : '')}"></div>
+                    <div class="perfil-area">
+                        <div class="avatar" style="width:40px; height:40px; font-size:0.9rem;">${avatarHtml}</div>
+                        <div><strong>${perfil.nome_completo}</strong><br><small>Grupo ${atr.grupo}</small></div>
                     </div>
                 </div>`;
-            document.getElementById('lista-outros').innerHTML += html;
         }
 
         async function registrarEstudo() {
-            const btn = document.querySelector('.btn-estudar');
-            btn.innerText = "Registrando...";
-            await clienteSupabase.from('historico_estudos').insert({ usuario_id: meuId });
-            btn.innerText = "✅ Estudo Registrado!";
-            btn.classList.add('feito');
-            setTimeout(carregarTudo, 1000); 
+            const hoje = new Date().toISOString().split('T')[0];
+            await clienteSupabase.from('historico_estudos').insert({ usuario_id: meuId, data_estudo: hoje });
+            carregarTudo();
         }
 
-        async function alterarStatus(id, novoStatus) {
+        async function mudarStatus(id, novoStatus) {
             await clienteSupabase.from('versoes_atribuidas').update({ status_presenca: novoStatus }).eq('id', id);
             carregarTudo();
         }
