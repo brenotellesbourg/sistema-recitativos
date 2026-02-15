@@ -232,7 +232,15 @@
 
         function renderizarMeuCard(dados, diasEstudados, estudeiHoje, datasSemana, todosParticipantes) {
             const nome = dados.profiles.nome_completo || 'Eu';
-            const inicial = nome.charAt(0).toUpperCase();
+            const foto = dados.profiles.foto_url;
+let avatarHtml = '';
+
+if (foto) {
+    avatarHtml = `<div class="avatar"><img src="${foto}" alt="Foto"></div>`;
+} else {
+    const inicial = nome.charAt(0).toUpperCase();
+    avatarHtml = `<div class="avatar">${inicial}</div>`;
+}
             
             let htmlQuadradinhos = '';
             let qtdEstudos = 0;
@@ -326,6 +334,13 @@
         function renderizarOutroCard(dados) {
             let nome = dados.profiles.nome_completo || 'Irmão';
             let status = dados.status_presenca || 'pendente';
+            const foto = dados.profiles.foto_url;
+            let avatarHtml = '';
+            if (foto && foto.length > 10) {
+                avatarHtml = `<div class="avatar" style="background:none;"><img src="${foto}"></div>`;
+            } else {
+                avatarHtml = `<div class="avatar" style="background:#ccc; font-size:1rem;">${nome.charAt(0)}</div>`;
+            }
             let statusClass = '';
             if(status === 'confirmado') statusClass = 'ok';
             if(status === 'nao_vou') statusClass = 'no';
@@ -363,4 +378,5 @@
     </script>
 </body>
 </html>
+
 
