@@ -68,28 +68,42 @@
             }
         }
 
-        async function salvarPerfil() {
-            const btn = document.querySelector('.btn-salvar');
-            btn.innerText = "Salvando...";
+    async function salvarAlteracoes() {
+        const btn = document.getElementById('btn-salvar');
+        btn.innerText = "Salvando...";
+        
+        const nome = document.getElementById('nome_completo').value;
+        const foto = document.getElementById('foto_url').value;
+        const inst = document.getElementById('instrumento').value;
+        const comum = document.getElementById('comum').value;
 
-            const dados = {
-                nome_completo: document.getElementById('nome').value,
-                instrumento: document.getElementById('instrumento').value,
-                foto_url: document.getElementById('foto-url').value
-            };
+        // A Lógica: Salva apenas no contêiner de Perfil
+        const { data, error } = await clienteSupabase
+            .from('profiles')
+            .update({ 
+                nome_completo: nome,
+                foto_url: foto,
+                instrumento: inst,
+                comum_congregacao: comum 
+            })
+            .eq('id', meuId)
+            .select();
 
-            const { error } = await clienteSupabase.from('profiles').update(dados).eq('id', meuId);
+        if (error) {
+            console.error(error);
+            alert("Erro ao salvar: " + error.message);
+        } else {
+            alert("Perfil atualizado com sucesso!");
+            window.location.href = 'painel.html'; // Volta para o painel com a foto nova
+        }
+        btn.innerText = "Salvar Alterações";
+    }
 
-            if (error) {
-                alert("Erro ao salvar: " + error.message);
-                btn.innerText = "💾 Salvar Alterações";
-            } else {
-                alert("Perfil atualizado com sucesso!");
-                window.location.href = 'painel.html';
-            }
+       
         }
 
         carregarDados();
     </script>
 </body>
 </html>
+
