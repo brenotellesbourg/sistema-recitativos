@@ -80,15 +80,32 @@
         async function carregar() {
             if (!meuId) { window.location.href = 'index.html'; return; }
 
-            // 1. Recitativo
-            const { data: recs } = await clienteSupabase.from('recitativos').select('*').eq('ativo', true);
-            if (recs && recs.length > 0) {
-                document.getElementById('area-recitativo').innerHTML = `
-                    <div class="recitativo-card">
-                        <div class="recitativo-titulo">📖 TEMA: ${recs[0].tema}</div>
-                        <div>${recs[0].conteudo_texto}</div>
-                    </div>`;
-            }
+           
+// 1. Recitativo (Busca o mais recente que estiver ATIVO)
+const { data: recs, error: erroRec } = await clienteSupabase
+    .from('recitativos')
+    .select('*')
+    .eq('ativo', true)
+    .order('created_at', { ascending: false }) // Organiza do mais novo para o mais velho
+    .limit(1); // Pega apenas o primeiro (o mais recente)
+
+if (recs && recs.length > 0) {
+    document.getElementById('area-recitativo').innerHTML = `
+        <div class="recitativo-card">
+            <div class="recitativo-titulo">📖 TEMA ATUAL: ${recs[0].tema}</div>
+            <div style="font-style: italic; color: #444;">"${recs[0].conteudo_texto}"</div>
+            <small style="display:block; margin-top:10px; color:#999; font-size:0.7rem;">
+                Atualizado em: ${new Date(recs[0].created_at).toLocaleDateString('pt-BR')}
+            </small>
+        </div>`;
+} else {
+    document.getElementById('area-recitativo').innerHTML = `
+        <div class="recitativo-card" style="border-left-color: #ccc;">
+            <div class="recitativo-titulo">ℹ️ AVISO</div>
+            <div>Nenhum recitativo ativo encontrado para esta semana.</div>
+        </div>`;
+}
+           
 
             // 2. Perfis e Atribuições
             const { data: perfis } = await clienteSupabase.from('profiles').select('*');
@@ -148,3 +165,4 @@
     </script>
 </body>
 </html>
+
